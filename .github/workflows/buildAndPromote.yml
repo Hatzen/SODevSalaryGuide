@@ -28,20 +28,18 @@ jobs:
   Publish:
     needs: Build
     runs-on: ubuntu-latest
-    if: github.ref == 'main'
+    #if: github.ref == 'main'
     steps:
       - name: Get Dist folder
         uses: actions/download-artifact@master
         with:
           name: Release
-      - name: Push new version to release-page
-      # Switch branch and push Release files
-        run: |
-          git config --local user.email "workflow@bot.com"
-          git config --local user.name "WorkflowBot"
-          git commit -m "Update code with build files" -a
-          # git commit --amend --no-edit # Add all files to previous commit and dont edit commit message # TODO: THis doesnt work properly and resets history to only 1 commit
-          git push --force
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@4.1.7
+        with:
+          branch: release-page
+          folder: .
+          
   CreateRelease:
     needs: Publish
     runs-on: ubuntu-latest
