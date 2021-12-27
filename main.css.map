@@ -1,0 +1,1 @@
+{"version":3,"file":"main.css","mappings":";;;AAAA;IACI,eAAe;AACnB,C","sources":["webpack://sodev-salary-guide/./src/index.css"],"sourcesContent":["body {\n    color: darkblue;\n}"],"names":[],"sourceRoot":""}
