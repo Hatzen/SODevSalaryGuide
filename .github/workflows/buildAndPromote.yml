@@ -1,0 +1,70 @@
+name: Build and Deploy
+
+on:
+  push:
+  #pull_request:
+  #  types: [closed]
+
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    #if: github.event.pull_request.merged
+    steps:
+      - uses: actions/checkout@v2
+      - name: echo branchname
+        run: echo "$GITHUB_REF"
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - run: npm install
+      - run: npm run build
+      - name: Upload Release
+        uses: actions/upload-artifact@master
+        with:
+          name: Release 
+          path: dist
+      
+  Publish:
+    needs: Build
+    runs-on: ubuntu-latest
+    if: github.ref == 'main'
+    steps:
+      - name: Get Dist folder
+        uses: actions/download-artifact@master
+        with:
+          name: Release
+      - name: Push new version to release-page
+      # Switch branch and push Release files
+        run: |
+          git config --local user.email "workflow@bot.com"
+          git config --local user.name "WorkflowBot"
+          git commit -m "Update code with build files" -a
+          # git commit --amend --no-edit # Add all files to previous commit and dont edit commit message # TODO: THis doesnt work properly and resets history to only 1 commit
+          git push --force
+  CreateRelease:
+    needs: Publish
+    runs-on: ubuntu-latest
+    if: github.ref == 'main'
+    steps:
+      - uses: actions/checkout@v2 # Needed for gradle file to get version information
+      - name: Get Hub
+        run: |
+          curl -fsSL https://github.com/github/hub/raw/master/script/get | bash -s 2.14.1
+          cd bin
+          chmod +x hub
+          cd ..
+      - name: Get Dist folder
+        uses: actions/download-artifact@master
+        with:
+          name: Release
+      - name: Publish
+        run: |
+          APP_NAME="SODevSalaryGuide"
+          TAG="latest-master"
+          echo $APP_NAME
+          echo $TAG
+          git clone https://github.com/Hatzen/SODevSalaryGuide
+          cd ParAnnoying-Releases
+          ./../bin/hub release delete "${TAG}" || echo "Failed deleting TAG: ${TAG}" # If release got lost catch error with message
+          ./../bin/hub release create -a "dist" -m "Current Master Build: ${APP_NAME}" -p "${TAG}"
