@@ -1,8 +1,9 @@
 name: Build and Deploy
 
 on:
-  pull_request:
-    types: [closed]
+  push:
+  #pull_request:
+  #  types: [closed]
 
 jobs:
   Build:
