@@ -43,6 +43,6 @@ export default class StackOverflowCsvReader {
     }
 
     get baseUrl(): string {
-        return location.protocol + '//' + location.host;
+        return location.protocol + '//' + location.host + location.pathname.replace('/', '');
     }
 }
