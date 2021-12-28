@@ -34,9 +34,10 @@ export default class App extends React.Component {
         const mapper = new CsvRowMapper()
         this.storage.currentConfig.selectedYears.forEach(year => {
             reader.startWorkerForYear(year, (csvRowRaw) => {
-                debugger
                 const rowEntry = mapper.map(csvRowRaw)
-                this.storage.parsedData.push(rowEntry)
+                if (rowEntry.salary !== -1) {
+                    this.storage.parsedData.push(rowEntry)
+                }
             })
         })
     }
