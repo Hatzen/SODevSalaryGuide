@@ -14,7 +14,10 @@ export default class App extends React.Component {
 
     render() {
         return (
-            <BoxPlot storage={this.storage} ></BoxPlot>
+            <div>
+                <h1>test</h1>
+                <BoxPlot storage={this.storage} ></BoxPlot>
+            </div>
         );
     }
 /*
@@ -31,6 +34,7 @@ export default class App extends React.Component {
         const mapper = new CsvRowMapper()
         this.storage.currentConfig.selectedYears.forEach(year => {
             reader.startWorkerForYear(year, (csvRowRaw) => {
+                debugger
                 const rowEntry = mapper.map(csvRowRaw)
                 this.storage.parsedData.push(rowEntry)
             })

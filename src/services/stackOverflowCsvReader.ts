@@ -39,7 +39,7 @@ export default class StackOverflowCsvReader {
     }
 
     generateFileName(year: string, chunk: number): string {
-        return year + '-' + chunk + '.csv'
+        return year + '-chunk-' + chunk + '.csv'
     }
 
     get baseUrl(): string {

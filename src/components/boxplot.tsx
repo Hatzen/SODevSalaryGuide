@@ -10,8 +10,12 @@ export default class BoxPlot extends React.Component<BoxPlotParam> {
 
     storage!: Storage
 
+    constructor(props: any, context: any) {
+        super(props, context)
+        this.storage = this.props.storage
+    }
+
     render() {
-        console.error("size of yValues " + this.yValues.length)
         return (
             <Plot
                 data={[
