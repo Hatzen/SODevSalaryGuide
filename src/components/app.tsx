@@ -33,11 +33,21 @@ export default class App extends React.Component {
         const reader = new StackOverflowCsvReader()
         const mapper = new CsvRowMapper()
         this.storage.currentConfig.selectedYears.forEach(year => {
+            let counterForYear = 0
+            let hitsForYear = 0
             reader.startWorkerForYear(year, (csvRowRaw) => {
                 const rowEntry = mapper.map(csvRowRaw)
+                debugger
                 if (rowEntry.salary !== -1) {
+                    const listForYear = this.storage.parsedDataByYear[year as any]
+                    if (listForYear == null) {
+                        this.storage.parsedDataByYear[year as any] = []
+                    }
+                    this.storage.parsedDataByYear[year as any].push(rowEntry)
                     this.storage.parsedData.push(rowEntry)
+                    hitsForYear++
                 }
+                counterForYear++
             })
         })
     }

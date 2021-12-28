@@ -1,5 +1,5 @@
 import React from "react";
-import Plot from "react-plotly.js";
+import Plot, { PlotParams } from "react-plotly.js";
 import Storage from "../model/storage";
 
 export class BoxPlotParam {
@@ -18,25 +18,36 @@ export default class BoxPlot extends React.Component<BoxPlotParam> {
     render() {
         return (
             <Plot
-                data={[
-                {
-                    y: this.yValues,
-                    type: 'box',
-                    boxmean: 'sd',
-                    marker: {color: 'red'},
-                }
-                ]}
+                data={this.data}
                 layout={ {width: 1000, height: 1000, title: 'A Fancy Plot'} }
             />
             );
     }
 
-    private get yValues () {
-        return this.storage.parsedData.map(i => i.salary)
-    }
-
-    private get xValues () {
-        let count = 0
-        return this.storage.parsedData.map(i => count++)
+    private get data(): any {
+        debugger
+        return Object.keys(this.storage.parsedDataByYear)
+            .map(key =>{
+                return {
+                    x: key,
+                    y: this.storage.parsedDataByYear[key as any].map(i => i.salary),
+                    type: 'box',
+                    boxmean: 'sd',
+                    boxpoints: 'all',
+                    jitter: 0.3,
+                    pointpos: -1.8
+                }
+            })
+            // TODO: xAxis is not set properly and would lead to problems only one point is shown..
+            .concat([{
+                    x: 'United years',
+                    y: this.storage.parsedData.map(i => i.salary),
+                    type: 'box',
+                    boxmean: 'sd',
+                    boxpoints: 'all',
+                    jitter: 0.3,
+                    pointpos: -1.8
+                }
+            ])
     }
   }
