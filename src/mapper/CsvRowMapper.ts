@@ -6,7 +6,7 @@ export class CsvRowMapper {
     map(row: Papa.ParseStepResult<[key: string]>): SurveyEntry {
         const currentSalary = row.data[CsvRowMapper.SALARY_KEY as any] // TODO: properly
         if (currentSalary != null) {
-            console.warn("Hurray found salary" + currentSalary)
+            // console.warn("Hurray found salary" + currentSalary)
             // E.g. $60,000 - $80,000 or <20000
             if (currentSalary.indexOf('<') !== -1) {
                 return new SurveyEntry(10000)

@@ -34,6 +34,8 @@ export default class StackOverflowCsvReader {
         const chunkCountForYear = this.chunkCount[year]
         for (let chunk = 1; chunk <= chunkCountForYear; chunk++) {
             const fileUrl = this.baseUrl + '/' + this.generateFileName(year, chunk)
+            // TODO: All files get downloaded, but it seems only 4 Workers get ever started...
+            //   More probably the missing header in the chunked files lead to errors. 
             Papa.parse(fileUrl, config);
         }
     }
@@ -43,6 +45,6 @@ export default class StackOverflowCsvReader {
     }
 
     get baseUrl(): string {
-        return location.protocol + '//' + location.host + location.pathname.replace('/', '');
+        return location.protocol + '//' + location.host + location.pathname.substring(0, location.pathname.length - 1);
     }
 }
