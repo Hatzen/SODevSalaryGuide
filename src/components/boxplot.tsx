@@ -19,34 +19,35 @@ export default class BoxPlot extends React.Component<BoxPlotParam> {
         return (
             <Plot
                 data={this.data}
-                layout={ {width: 1000, height: 1000, title: 'A Fancy Plot'} }
+                layout={ {width: 2000, height: 1000, title: ''} }
             />
             );
     }
 
     private get data(): any {
-        debugger
         return Object.keys(this.storage.parsedDataByYear)
             .map(key =>{
                 return {
                     x: key,
+                    name: key,
                     y: this.storage.parsedDataByYear[key as any].map(i => i.salary),
                     type: 'box',
                     boxmean: 'sd',
-                    boxpoints: 'all',
-                    jitter: 0.3,
-                    pointpos: -1.8
+                    // boxpoints: 'all',
+                    // jitter: 0.3,
+                    // pointpos: -1.8
                 }
             })
             // TODO: xAxis is not set properly and would lead to problems only one point is shown..
             .concat([{
-                    x: 'United years',
+                    x: '>2011',
+                    name: '2009',
                     y: this.storage.parsedData.map(i => i.salary),
                     type: 'box',
                     boxmean: 'sd',
-                    boxpoints: 'all',
-                    jitter: 0.3,
-                    pointpos: -1.8
+                    // boxpoints: 'all',
+                    // jitter: 0.3,
+                    // pointpos: -1.8
                 }
             ])
     }
