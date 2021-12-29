@@ -1,6 +1,7 @@
 import React from "react";
 import { CsvRowMapper } from "../mapper/CsvRowMapper";
 import Storage from "../model/storage";
+import CurrencyService from "../services/currencyService";
 import StackOverflowCsvReader from "../services/stackOverflowCsvReader";
 import BoxPlot from "./boxplot";
 
@@ -15,7 +16,7 @@ export default class App extends React.Component {
     render() {
         return (
             <div>
-                <h1>test</h1>
+                <h1>Salary per Year Boxplots</h1>
                 <BoxPlot storage={this.storage} ></BoxPlot>
             </div>
         );
@@ -30,6 +31,9 @@ export default class App extends React.Component {
             </Allotment>
             */
     private loadData () {
+        new CurrencyService().getCurrencies()
+            .then(currencyValues => this.storage.currencyValues = currencyValues)
+
         const reader = new StackOverflowCsvReader()
         const mapper = new CsvRowMapper()
         this.storage.currentConfig.selectedYears.forEach(year => {
@@ -48,6 +52,10 @@ export default class App extends React.Component {
                     hitsForYear++
                 }
                 counterForYear++
+            },
+            () => {
+                this.render()
+                console.log('Finished parsing data for year: ' + year + ' found ' + hitsForYear + ' salary infos in ' + counterForYear + ' rows')
             })
         })
     }

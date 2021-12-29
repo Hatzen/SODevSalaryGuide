@@ -8,5 +8,4 @@ function renderLoop() {
         document.getElementById('app-root'),
     )
 }
-  
-setInterval(renderLoop, 1000);
+setInterval(renderLoop, 5000);

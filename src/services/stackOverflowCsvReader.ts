@@ -19,7 +19,7 @@ export default class StackOverflowCsvReader {
         '2021': 9
     }
 
-    startWorkerForYear (year: string, consumer: (row: Papa.ParseStepResult<[key: string]>) => void): void {
+    startWorkerForYear (year: string, consumer: (row: Papa.ParseStepResult<[key: string]>) => void, completed: () => void): void {
         const config = {
             download: true,
             worker: true,
@@ -27,9 +27,7 @@ export default class StackOverflowCsvReader {
             delimiter: ',',
             header: true,
             step: consumer,
-            complete: function() {
-                console.log("All data read for year " + year);
-            }
+            complete: completed
         }
         const chunkCountForYear = this.chunkCount[year]
         for (let chunk = 1; chunk <= chunkCountForYear; chunk++) {
