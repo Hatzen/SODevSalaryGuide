@@ -9,7 +9,12 @@ export default class CurrencyService {
 
     getCurrencies (): Promise<CurrencyValues> {
         return fetch(this.baseUrl + 'latest?apikey=d3626290-68c5-11ec-abd0-4f2669673a10&base_currency=USD')
-            .then(response => response.json())
+            .then(response => {
+                return response.json().then(data => {
+                    const cur = new CurrencyValues()
+                    return Object.assign(cur, data)
+                })
+            })
             .catch(error => console.error(error))
     }
 

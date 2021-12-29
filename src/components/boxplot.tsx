@@ -1,18 +1,10 @@
 import React from "react";
 import Plot, { PlotParams } from "react-plotly.js";
-import Storage from "../model/storage";
+import Store from "../model/Store";
 
-export class BoxPlotParam {
-    storage!: Storage
-}
+export default class BoxPlot extends React.Component {
 
-export default class BoxPlot extends React.Component<BoxPlotParam> {
-
-    storage!: Storage
-
-    constructor(props: any, context: any) {
-        super(props, context)
-        this.storage = this.props.storage
+    componentDidMount() {
     }
 
     render() {
@@ -25,12 +17,12 @@ export default class BoxPlot extends React.Component<BoxPlotParam> {
     }
 
     private get data(): any {
-        return Object.keys(this.storage.parsedDataByYear)
+        return Object.keys(Store.parsedDataByYear)
             .map(key =>{
                 return {
                     x: key,
                     name: key,
-                    y: this.storage.parsedDataByYear[key as any].map(i => i.salary),
+                    y: Store.parsedDataByYear[key as any].map(i => i.salary),
                     type: 'box',
                     boxmean: 'sd',
                     // boxpoints: 'all',
@@ -42,7 +34,7 @@ export default class BoxPlot extends React.Component<BoxPlotParam> {
             .concat([{
                     x: '>2011',
                     name: '2009',
-                    y: this.storage.parsedData.map(i => i.salary),
+                    y: Store.parsedData.map(i => i.salary),
                     type: 'box',
                     boxmean: 'sd',
                     // boxpoints: 'all',

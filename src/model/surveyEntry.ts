@@ -1,9 +1,14 @@
 export default class SurveyEntry {
-    salary: number
+    _salary!: number
     currency: Currency = Currency.USD
 
-    constructor (salary: number) {
-        this.salary = salary
+    get salary(): number {
+        return this._salary
+        // TODO: Why this will only work on 2018 and lead to very strange results...
+        // return this._salary / Store.currencyValues.getRatioByCode(this.currency)
+    }
+    get isValid(): boolean {
+        return this._salary > 0
     }
 }
 
@@ -12,5 +17,7 @@ export enum Currency {
     USD = 'USD',
     EUR = 'EUR',
     JPY = 'JPY',
-    MXN = 'MXN'
+    MXN = 'MXN',
+    GBP = 'GBP'
+    // TODO: Complete..
 }

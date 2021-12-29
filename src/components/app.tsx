@@ -1,13 +1,11 @@
 import React from "react";
 import { CsvRowMapper } from "../mapper/CsvRowMapper";
-import Storage from "../model/storage";
+import Store from "../model/Store";
 import CurrencyService from "../services/currencyService";
 import StackOverflowCsvReader from "../services/stackOverflowCsvReader";
 import BoxPlot from "./boxplot";
 
 export default class App extends React.Component {
-
-    private storage: Storage = new Storage() 
 
     componentDidMount() {
         this.loadData()
@@ -17,10 +15,11 @@ export default class App extends React.Component {
         return (
             <div>
                 <h1>Salary per Year Boxplots</h1>
-                <BoxPlot storage={this.storage} ></BoxPlot>
+                <BoxPlot></BoxPlot>
             </div>
         );
     }
+
 /*
 <Allotment >
                 <Allotment.Pane minSize={200}>
@@ -32,29 +31,39 @@ export default class App extends React.Component {
             */
     private loadData () {
         new CurrencyService().getCurrencies()
-            .then(currencyValues => this.storage.currencyValues = currencyValues)
+            .then(currencyValues => {
+                Store.currencyValues = currencyValues
+                this.initParser()
+            })
+    }
 
+    private initParser (): void {
         const reader = new StackOverflowCsvReader()
-        const mapper = new CsvRowMapper()
-        this.storage.currentConfig.selectedYears.forEach(year => {
+        Store.currentConfig.selectedYears.forEach(year => {
             let counterForYear = 0
             let hitsForYear = 0
             reader.startWorkerForYear(year, (csvRowRaw) => {
+                const numYear = parseInt(year)
+                const mapper = new CsvRowMapper(numYear)
                 const rowEntry = mapper.map(csvRowRaw)
-                debugger
-                if (rowEntry.salary !== -1) {
-                    const listForYear = this.storage.parsedDataByYear[year as any]
+                if (rowEntry.isValid) {
+                    Store.parsedData.push(rowEntry)
+
+                    const listForYear = Store.parsedDataByYear[numYear]
                     if (listForYear == null) {
-                        this.storage.parsedDataByYear[year as any] = []
+                        Store.parsedDataByYear[numYear] = []
                     }
-                    this.storage.parsedDataByYear[year as any].push(rowEntry)
-                    this.storage.parsedData.push(rowEntry)
+                    Store.parsedDataByYear[numYear].push(rowEntry)
                     hitsForYear++
                 }
                 counterForYear++
+                if (hitsForYear > 1000) {
+                    debugger
+                }
             },
             () => {
-                this.render()
+                // Force update.
+                this.setState({ key: Math.random() });
                 console.log('Finished parsing data for year: ' + year + ' found ' + hitsForYear + ' salary infos in ' + counterForYear + ' rows')
             })
         })

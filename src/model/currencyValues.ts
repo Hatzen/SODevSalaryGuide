@@ -1,9 +1,11 @@
+import { Currency } from "./surveyEntry"
+
 export default class CurrencyValues {
     query!: {
         base_currency: string // e.g. "USD"
         timestamp: number// e.g. 1632911490,
     }
-    data!: [currencyWith3Letters: string]
+    data!: { [currencyWith3Letters: string]: number }
     /*
     e.g.
         "JPY":110.432,
@@ -21,4 +23,8 @@ export default class CurrencyValues {
         "HRK":6.339,
         "RUB":73.415,
     */
+
+    getRatioByCode(currency: Currency): number {
+        return this.data[currency]
+    }
 }

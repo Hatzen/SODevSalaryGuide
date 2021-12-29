@@ -6,6 +6,7 @@ export class Option<T> {
     type!: Types
 }
 // TODO: Use subtypes for options and valid range etc.
+// TODO: Move creation to InputForumularFile and use Builder: https://www.npmjs.com/package/builder-pattern
 
 export enum Types {
     MultiChoiceCheckbox,

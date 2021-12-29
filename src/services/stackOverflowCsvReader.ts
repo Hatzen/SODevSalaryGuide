@@ -1,4 +1,5 @@
 import Papa from "papaparse"
+import CsvRow from "../model/csvRow"
 
 export default class StackOverflowCsvReader {
 
@@ -19,7 +20,7 @@ export default class StackOverflowCsvReader {
         '2021': 9
     }
 
-    startWorkerForYear (year: string, consumer: (row: Papa.ParseStepResult<[key: string]>) => void, completed: () => void): void {
+    startWorkerForYear (year: string, consumer: (row: Papa.ParseStepResult<CsvRow>) => void, completed: () => void): void {
         const config = {
             download: true,
             worker: true,

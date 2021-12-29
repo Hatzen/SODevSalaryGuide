@@ -1,59 +1,57 @@
+import CsvRow from "../model/csvRow"
 import SurveyEntry from "../model/surveyEntry"
+import { AbstractCsvRowMapper } from "./AbstractCsvRowMapper"
+import { CsvRowMapper2018 } from "./CsvRowMapper2018"
+import { CsvRowMapper2015 } from "./CsvRowMapper2015"
+import { CsvRowMapper2016 } from "./CsvRowMapper2016"
+import { CsvRowMapper2011 } from "./CsvRowMapper2011"
+import { CsvRowMapper2019 } from "./CsvRowMapper2019"
 
 export class CsvRowMapper {
-    static readonly SALARY_KEY = 'Including bonus, what is your annual compensation in USD?' // 2011 - 2014
-    static readonly SALARY_KEY_2016 = 'salary_range' // 2016
-    static readonly SALARY_KEY_2017 = 'Salary' // 2015, 2018
-    static readonly SALARY_KEY_2018 = 'ConvertedSalary' // 2018
-    static readonly SALARY_KEY_2019 = 'CompTotal' // 2019 - 2021 better use ConvertedComp
+    static readonly INVALID_ENTRY = new SurveyEntry()
+    private readonly MAPPER_2011 = new CsvRowMapper2011()
+    private readonly MAPPER_2015 = new CsvRowMapper2015()
+    private readonly MAPPER_2016 = new CsvRowMapper2016()
+    private readonly MAPPER_2018 = new CsvRowMapper2018()
+    private readonly MAPPER_2019 = new CsvRowMapper2019()
 
+    private year: number
 
-    map(row: Papa.ParseStepResult<[key: string]>): SurveyEntry {
-        debugger
-        // TODO: MAke properly. This only works from 2011 - 2014
-        let currentSalary = row.data[CsvRowMapper.SALARY_KEY as any] 
-        if (currentSalary == null) {
-            currentSalary = row.data[CsvRowMapper.SALARY_KEY_2016 as any] 
-        }
-        /*
-        2020 does not appear like this.
-        */
-        if (currentSalary == null) {
-            currentSalary = row.data[CsvRowMapper.SALARY_KEY_2018 as any] 
-        }
-        
-        if (currentSalary == null) {
-            currentSalary = row.data[CsvRowMapper.SALARY_KEY_2017 as any]
-        }
-        if (currentSalary == null) {
-            currentSalary = row.data[CsvRowMapper.SALARY_KEY_2019 as any]
-        }
-
-        if (currentSalary != null) {
-            return new SurveyEntry(this.getValue(currentSalary))
-        }
-        // 
-        return new SurveyEntry(-1)
+    constructor (year: number) {
+        this.year = year
+        CsvRowMapper.INVALID_ENTRY._salary = -1
     }
 
-    private getValue (value: string): number {
-        // console.warn("Hurray found salary" + value)
-        // E.g. $60,000 - $80,000 or <20000wqe 
-        if (typeof value === 'string') {
-            if (value.indexOf('<') !== -1) {
-                return 10000
-            } else if (value.indexOf('$') !== -1 && value.indexOf('-') !== -1) {
-                const firstValue = value
-                    .replaceAll('$', '')
-                    .replaceAll(',', '')
-                    .substring(0, value.indexOf('-'))
-                return parseInt(firstValue) + 10000
-            }
-        } 
-        try {
-            return parseInt(value)
-        } catch (error) {
-            return -1
-        } 
+    map(row: Papa.ParseStepResult<CsvRow>): SurveyEntry {
+        const csvRow = row.data
+        let mapper: AbstractCsvRowMapper
+        switch (this.year) {
+            case 2011:
+            case 2012:
+            case 2013:
+            case 2014:
+                mapper = this.MAPPER_2011
+                break
+            case 2015:
+            case 2017: // TODO: 2017 has "Currency" 2015 not..
+                mapper = this.MAPPER_2015
+                break
+            case 2016:
+                mapper = this.MAPPER_2016
+                break
+            case 2018:
+                mapper = this.MAPPER_2018
+                break
+            case 2019:
+            case 2020:
+            case 2021:
+                mapper = this.MAPPER_2019
+                break
+            default: 
+                // TODO: This can not happen?
+                return CsvRowMapper.INVALID_ENTRY
+        }
+        return mapper.map(csvRow)
     }
+
 }
