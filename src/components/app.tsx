@@ -4,6 +4,10 @@ import Store from "../model/Store";
 import CurrencyService from "../services/currencyService";
 import StackOverflowCsvReader from "../services/stackOverflowCsvReader";
 import BoxPlot from "./boxplot";
+import { Allotment } from "allotment";
+import "allotment/dist/style.css";
+import ControlPane from './controlPane'
+import DisclaimerModal from "./disclaimerModal";
 
 export default class App extends React.Component {
 
@@ -12,23 +16,22 @@ export default class App extends React.Component {
     }
 
     render() {
+        const fitAll = {position: 'absolute' as any, top:0, left:0, bottom: 0, right:0}
         return (
-            <div>
-                <h1>Salary per Year Boxplots</h1>
-                <BoxPlot></BoxPlot>
+            <div style={fitAll}>
+                <DisclaimerModal fullScreen={false}></DisclaimerModal>
+                <Allotment >
+                    <Allotment.Pane>
+                        <BoxPlot></BoxPlot>
+                    </Allotment.Pane>
+                    <Allotment.Pane snap>      
+                        <ControlPane></ControlPane>
+                    </Allotment.Pane>
+                </Allotment>
             </div>
         );
     }
 
-/*
-<Allotment >
-                <Allotment.Pane minSize={200}>
-                    <BoxPlot >
-                </Allotment.Pane>
-                <Allotment.Pane snap>
-                </Allotment.Pane>
-            </Allotment>
-            */
     private loadData () {
         new CurrencyService().getCurrencies()
             .then(currencyValues => {
