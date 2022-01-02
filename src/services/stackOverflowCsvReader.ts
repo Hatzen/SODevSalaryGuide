@@ -1,10 +1,17 @@
-import Papa from "papaparse"
+import Papa, { ParseRemoteConfig, ParseStepResult } from "papaparse"
+import { CsvRowMapper } from "../mapper/CsvRowMapper"
 import CsvRow from "../model/csvRow"
+import ResultSetForYear from "../model/resultsetForYear"
 
 export default class StackOverflowCsvReader {
 
-    readonly startYear = '2011'
-    readonly endYear = '2021'
+    static readonly BASIC_CONFIG ={
+        download: true,
+        worker: true,
+        dynamicTyping: true,
+        delimiter: ',',
+        header: true
+    }
 
     private readonly chunkCount: { [year: string]: number } = {
         '2011': 1,
@@ -20,23 +27,48 @@ export default class StackOverflowCsvReader {
         '2021': 9
     }
 
-    startWorkerForYear (year: string, consumer: (row: Papa.ParseStepResult<CsvRow>) => void, completed: () => void): void {
+    startWorkerForYear (resultsetForYear: ResultSetForYear, consumer: (row: Papa.ParseStepResult<CsvRow>) => void, completed: () => void): void {
         const config = {
-            download: true,
-            worker: true,
-            dynamicTyping: true,
-            delimiter: ',',
-            header: true,
-            step: consumer,
-            complete: completed
+            ...StackOverflowCsvReader.BASIC_CONFIG,
+            step: (row: Papa.ParseStepResult<CsvRow>) => {
+                this.handleRow(row, resultsetForYear)
+                consumer(row)
+            },
+            complete: () => {
+                this.handleNextChunk(resultsetForYear, config)
+                completed()
+            } 
         }
+        const year = resultsetForYear.year.toString()
         const chunkCountForYear = this.chunkCount[year]
-        for (let chunk = 1; chunk <= chunkCountForYear; chunk++) {
-            const fileUrl = this.baseUrl + '/' + this.generateFileName(year, chunk)
-            // TODO: All files get downloaded, but it seems only 4 Workers get ever started...
-            //   More probably the missing header in the chunked files lead to errors. 
-            Papa.parse(fileUrl, config);
+        resultsetForYear.chunksParsed = 0
+        resultsetForYear.chunksAvailable = chunkCountForYear
+        
+        this.handleNextChunk(resultsetForYear, config)
+    }
+
+    private handleRow (csvRowRaw: ParseStepResult<CsvRow>, resultsetForYear: ResultSetForYear): void {
+        const mapper = new CsvRowMapper(resultsetForYear.year)
+        const rowEntry = mapper.map(csvRowRaw)
+        if (rowEntry.isValid) {
+            resultsetForYear.resultSet.push(rowEntry)
+        } else {
+            resultsetForYear.invalidEntryCount++
         }
+        resultsetForYear.overallEntryCount++
+    }
+
+    // TODO: Typing for config: ParseRemoteConfig<CsvRow>
+    private handleNextChunk (resultsetForYear: ResultSetForYear, config: any): void {
+        resultsetForYear.chunksParsed++
+        if (resultsetForYear.chunksParsed >= resultsetForYear.chunksAvailable) {
+            return
+        }
+        const fileName = this.generateFileName(resultsetForYear.year.toString(), resultsetForYear.chunksParsed)
+        const fileUrl = this.baseUrl + '/' + fileName
+        // TODO: All files get downloaded, but it seems only 4 Workers get ever started...
+        //   More probably the missing header in the chunked files lead to errors. 
+        Papa.parse(fileUrl, config);
     }
 
     generateFileName(year: string, chunk: number): string {

@@ -1,11 +1,14 @@
-import { Option } from "./options";
-
 export default interface Config {
     selectedYears: string[]
-    gender: Gender
-    expirienceInYears: number
+    gender: Gender[]
+    expirienceInYears: ExpirienceRange
     languages: Abilities[]
-    // TODO:
+    // TODO: Inflation and working hours button etc.
+}
+
+export interface ExpirienceRange {
+    min: number
+    max: number
 }
 
 export enum Abilities {

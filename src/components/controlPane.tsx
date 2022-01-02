@@ -1,6 +1,7 @@
-import React from "react";
+import React, { ChangeEvent } from "react";
 import Store from "../model/Store";
-import { Checkbox, FormGroup, FormControl, FormControlLabel, Grid } from '@material-ui/core';
+import { Checkbox, FormGroup, FormControl, FormControlLabel, Grid, Slider } from '@material-ui/core';
+import DefaultConfig from "../model/defaultConfig";
 
 
 export default class ControlPane extends React.Component {
@@ -11,33 +12,58 @@ export default class ControlPane extends React.Component {
       });*/
 
     render() {
+        const yearOption = new DefaultConfig().selectedYears.map((year: string) => 
+            <FormControlLabel control={<Checkbox defaultChecked />} label={year} />)
+
         return (
-            <div style={{padding: 50, position: 'relative', top: 0, left: 0, right: 0, bottom: 0}}>
+            <div style={{padding: 50, overflowX: 'auto', position: 'relative', top: 0, left: 0, right: 0, bottom: 0}}>
                 <FormControl aria-colcount={2} component="fieldset" variant="standard">
-                <FormGroup >
-                    <Grid container>
-                        <Grid item xs={2}>
-                            <FormControlLabel control={<Checkbox defaultChecked />} label="2011" />
-                            <FormControlLabel control={<Checkbox defaultChecked />} label="2012" />
-                            <FormControlLabel control={<Checkbox defaultChecked />} label="2013" />
-                            <FormControlLabel control={<Checkbox defaultChecked />} label="2014" />
-                            <FormControlLabel control={<Checkbox defaultChecked />} label="2015" />
-                            <FormControlLabel control={<Checkbox defaultChecked />} label="2016" />
+                <FormGroup>
+                    <Grid container
+                        direction="row"
+                        justifyContent="center"
+                        alignItems="center"
+                        style={{width: '100%'}}
+                        >
+                        <Grid item 
+                        style={{width: '100%'}}>
+                            {yearOption}
                         </Grid>
-                        <Grid item xs={2}>
-                            <FormControlLabel control={<Checkbox defaultChecked />} label="2017" />
-                            <FormControlLabel control={<Checkbox defaultChecked />} label="2018" />
-                            <FormControlLabel control={<Checkbox defaultChecked />} label="2019" />
-                            <FormControlLabel control={<Checkbox defaultChecked />} label="2020" />
-                            <FormControlLabel control={<Checkbox defaultChecked />} label="2021" />
+                        <br></br>
+                       
+                        
+                    </Grid>
+
+                    <Grid container
+                        direction="row"
+                        justifyContent="center"
+                        alignItems="center"
+                        style={{width: '100%'}}
+                        >
+                        <Grid item >
+                            <Slider
+                                style={{ width: '500px' }}
+                                value={[3,6]}
+                                min={0}
+                                step={1}
+                                max={40}
+                                // valueLabelFormat={numFormatter}
+                                // marks={followersMarks}
+                                // scale={scaleValues}
+                                onChange={this.handleChange}
+                                valueLabelDisplay="auto"
+                                aria-labelledby="non-linear-slider"
+                            />
                         </Grid>
                     </Grid>
                 </FormGroup>
                 </FormControl>
-                
             </div>
-            
             );
+    }
+
+    handleChange(event: ChangeEvent<{}>) : void {
+
     }
 
     private get data(): any {

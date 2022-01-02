@@ -5,33 +5,48 @@ import Loader from "react-loader-spinner";
 
 export default class BoxPlot extends React.Component {
 
+    defaultBoxConfig: Partial<Plotly.Data> = {
+        type: 'box',
+        boxmean: 'sd',
+        // boxpoints: 'all',
+        // jitter: 0.3,
+        // pointpos: -1.8
+    }
+
     render() {
         return (
+        <div style={{background: 'rgba(52, 52, 52, 0.8)', zIndex:1000, padding: 'auto',
+            position: 'absolute', top: 0, left: 0, right:0, bottom: 0}}>
             <div>
-                <div style={{background: 'rgba(52, 52, 52, 0.8)', zIndex:1000, padding: 'auto',
-                position: 'absolute', top: 0, left: 0, right:0, bottom: 0}}>
-                <div style={{position: 'relative', 
-                    top: 'calc(50% - 75px)', 
-                    bottom: 'calc(50% - 75px)', 
-                    left: 'calc(50% - 75px)', 
-                    right: 'calc(50% - 75px)'
-                    }}>
-                <Loader
-                    type="Audio"
-                    color="#993300"
-                    height={150}
-                    width={150}
-                    secondaryColor="#000000"
-                /></div>
+                getLoader()
             </div>
-            <div style={{position: 'absolute', top: 0, bottom: 0, left:0, right: 0, overflow: 'scroll'}}>
+            <div style={{position: 'absolute', top: 0, bottom: 0, left:0, right: 0, overflow: 'auto'}}>
                 <Plot
                     data={this.data}
-                    layout={ {width: 2000, height: 1000, title: ''} }
+                    layout={ {width: this.width, height: this.height, title: '', showlegend: false} }
+                    // TODO: Check Layout.template
+                    // TODO: Check Config.static for temporary disable?
                 />
             </div>
         </div>
             );
+    }
+
+    getLoader() {
+        return (
+                    <div style={{position: 'relative', 
+                        top: 'calc(50% - 75px)', 
+                        bottom: 'calc(50% - 75px)', 
+                        left: 'calc(50% - 75px)', 
+                        right: 'calc(50% - 75px)'
+                        }}>
+                    <Loader
+                        type="Audio"
+                        color="#993300"
+                        height={150}
+                        width={150}
+                        secondaryColor="#000000" />
+                </div>)
     }
 
     private get data(): any {
@@ -41,11 +56,7 @@ export default class BoxPlot extends React.Component {
                     x: key,
                     name: key,
                     y: Store.parsedDataByYear[key as any].map(i => i.salary),
-                    type: 'box',
-                    boxmean: 'sd',
-                    // boxpoints: 'all',
-                    // jitter: 0.3,
-                    // pointpos: -1.8
+                    ...this.defaultBoxConfig
                 }
             })
             // TODO: xAxis is not set properly and would lead to problems only one point is shown..
@@ -53,12 +64,16 @@ export default class BoxPlot extends React.Component {
                     x: '>2011',
                     name: '2009',
                     y: Store.parsedData.map(i => i.salary),
-                    type: 'box',
-                    boxmean: 'sd',
-                    // boxpoints: 'all',
-                    // jitter: 0.3,
-                    // pointpos: -1.8
+                    ...this.defaultBoxConfig
                 }
             ])
+    }
+
+    get width(): number {
+        return window.innerWidth * 0.8
+    }
+    
+    get height(): number {
+        return window.document.documentElement.clientHeight
     }
   }

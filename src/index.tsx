@@ -2,7 +2,8 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import App from './components/app';
 import { createTheme , MuiThemeProvider } from '@material-ui/core';
-import { Provider } from 'react-redux'
+import { Provider } from 'mobx-react'
+import Store from './model/Store';
 
 const theme = createTheme ({
     palette: {
@@ -15,13 +16,17 @@ const theme = createTheme ({
     }
   });
 
-const store: any = {} // TODO:
+const store: Store = new Store()
 
 ReactDOM.render(
-    // <Provider store={store}>
-        <MuiThemeProvider theme={theme}>
-            <App/>
-        </MuiThemeProvider>,
-    // </Provider>,
+    <MuiThemeProvider theme={theme}>
+      <Provider entryStore={store}>
+          <App/>
+      </Provider>
+    </MuiThemeProvider>,
     document.getElementById('app-root'),
 )
+
+// Check config is working for observable non instantiated attributes.
+// https://mobx.js.org/installation.html#installation
+if (!new class { x: any }().hasOwnProperty('x')) throw new Error('Transpiler is not configured correctly')
