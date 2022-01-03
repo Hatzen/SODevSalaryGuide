@@ -32,23 +32,25 @@ class App extends React.Component {
                 <Provider {...stores}>
                     <DisclaimerModal fullScreen={false}></DisclaimerModal>
                     <MenuAppBar menuClicked={this.toggleControls.bind(this)}></MenuAppBar>
-                    <Allotment ref={this.controlPane}>
-                        {panes.map((pane: number) => {
-                            if (pane === 0) {
-                                return (
-                                    <Allotment.Pane key={pane}>
-                                        <BoxPlot></BoxPlot>
-                                    </Allotment.Pane>
-                                )
-                            } else {
-                                return (
-                                    <Allotment.Pane snap maxSize={400}>      
-                                        <ControlPane></ControlPane>
-                                    </Allotment.Pane>
-                                )
-                            }
-                        })}
-                    </Allotment>
+                    <div style={{position: 'absolute', top: 64, bottom: 0, left: 0, right:0}}>
+                        <Allotment ref={this.controlPane}>
+                            {panes.map((pane: number) => {
+                                if (pane === 0) {
+                                    return (
+                                        <Allotment.Pane key={pane}>
+                                            <BoxPlot></BoxPlot>
+                                        </Allotment.Pane>
+                                    )
+                                } else {
+                                    return (
+                                        <Allotment.Pane  key={pane} snap maxSize={400}>      
+                                            <ControlPane></ControlPane>
+                                        </Allotment.Pane>
+                                    )
+                                }
+                            })}
+                        </Allotment>
+                    </div>
                 </Provider>
             </div>
         );

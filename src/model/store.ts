@@ -33,7 +33,6 @@ export class EntryStore {
     }
 
     setCurrencyValues(currencyValues: FreeCurrency): void {
-        debugger
         this.currencyValues = currencyValues
     }
 
@@ -48,7 +47,6 @@ export class EntryStore {
                 resultsetForYear,
                 this.addRow,
                 function () {
-                    debugger
                     // Force update.
                     // this.setState({ key: (Math.random()) }); // TODO: Should be done by mobx
                     const parsed = _this.parsedDataByYear[year as any].chunksParsed
