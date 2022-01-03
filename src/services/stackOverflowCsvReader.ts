@@ -1,4 +1,4 @@
-import Papa, { ParseRemoteConfig, ParseStepResult } from "papaparse"
+import Papa, { ParseStepResult } from "papaparse"
 import { CsvRowMapper } from "../mapper/CsvRowMapper"
 import CsvRow from "../model/csvRow"
 import ResultSetForYear from "../model/resultsetForYear"
@@ -61,7 +61,7 @@ export default class StackOverflowCsvReader {
     // TODO: Typing for config: ParseRemoteConfig<CsvRow>
     private handleNextChunk (resultsetForYear: ResultSetForYear, config: any): void {
         resultsetForYear.chunksParsed++
-        if (resultsetForYear.chunksParsed >= resultsetForYear.chunksAvailable) {
+        if (resultsetForYear.chunksParsed > resultsetForYear.chunksAvailable) {
             return
         }
         const fileName = this.generateFileName(resultsetForYear.year.toString(), resultsetForYear.chunksParsed)

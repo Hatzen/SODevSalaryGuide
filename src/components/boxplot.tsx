@@ -1,9 +1,10 @@
 import React from "react";
-import Plot, { PlotParams } from "react-plotly.js";
-import Store from "../model/Store";
+import Plot from "react-plotly.js";
+import { StoreProps } from "../model/Store";
 import Loader from "react-loader-spinner";
+import { inject, observer } from "mobx-react";
 
-export default class BoxPlot extends React.Component {
+class BoxPlot extends React.Component<StoreProps> {
 
     defaultBoxConfig: Partial<Plotly.Data> = {
         type: 'box',
@@ -34,28 +35,33 @@ export default class BoxPlot extends React.Component {
 
     getLoader() {
         return (
-                    <div style={{position: 'relative', 
-                        top: 'calc(50% - 75px)', 
-                        bottom: 'calc(50% - 75px)', 
-                        left: 'calc(50% - 75px)', 
-                        right: 'calc(50% - 75px)'
-                        }}>
-                    <Loader
-                        type="Audio"
-                        color="#993300"
-                        height={150}
-                        width={150}
-                        secondaryColor="#000000" />
-                </div>)
+            <div style={{position: 'relative', 
+                top: 'calc(50% - 75px)', 
+                bottom: 'calc(50% - 75px)', 
+                left: 'calc(50% - 75px)', 
+                right: 'calc(50% - 75px)'
+                }}>
+                <Loader
+                    type="Audio"
+                    color="#993300"
+                    height={150}
+                    width={150}
+                    secondaryColor="#000000" />
+            </div>
+        )
     }
 
     private get data(): any {
-        return Object.keys(Store.parsedDataByYear)
+        // TODO: Rename
+        const resultList = this.props.entryStore!.parsedDataByYear
+        const allData = this.props.entryStore!.parsedData
+
+        return Object.keys(resultList)
             .map(key =>{
                 return {
                     x: key,
                     name: key,
-                    y: Store.parsedDataByYear[key as any].map(i => i.salary),
+                    y: resultList[key as any].resultSet.map(i => i.salary),
                     ...this.defaultBoxConfig
                 }
             })
@@ -63,7 +69,7 @@ export default class BoxPlot extends React.Component {
             .concat([{
                     x: '>2011',
                     name: '2009',
-                    y: Store.parsedData.map(i => i.salary),
+                    y: allData.resultSet.map(i => i.salary),
                     ...this.defaultBoxConfig
                 }
             ])
@@ -76,4 +82,6 @@ export default class BoxPlot extends React.Component {
     get height(): number {
         return window.document.documentElement.clientHeight
     }
-  }
+}
+
+export default inject('entryStore')(observer(BoxPlot))

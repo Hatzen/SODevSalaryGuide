@@ -1,9 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import App from './components/app';
-import { createTheme , MuiThemeProvider } from '@material-ui/core';
-import { Provider } from 'mobx-react'
-import Store from './model/Store';
+import App from './components/app'
+import { createTheme , MuiThemeProvider } from '@material-ui/core'
 
 const theme = createTheme ({
     palette: {
@@ -16,13 +14,9 @@ const theme = createTheme ({
     }
   });
 
-const store: Store = new Store()
-
 ReactDOM.render(
     <MuiThemeProvider theme={theme}>
-      <Provider entryStore={store}>
-          <App/>
-      </Provider>
+      <App/>
     </MuiThemeProvider>,
     document.getElementById('app-root'),
 )

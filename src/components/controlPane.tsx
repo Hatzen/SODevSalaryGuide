@@ -1,15 +1,13 @@
-import React, { ChangeEvent } from "react";
-import Store from "../model/Store";
+import React, { ChangeEvent, useState } from "react";
+import { StoreProps } from "../model/Store";
 import { Checkbox, FormGroup, FormControl, FormControlLabel, Grid, Slider } from '@material-ui/core';
 import DefaultConfig from "../model/defaultConfig";
+import { inject, observer } from "mobx-react";
 
-
-export default class ControlPane extends React.Component {
-    /*state: any = React.useState({
-        gilad: true,
-        jason: false,
-        antoine: false,
-      });*/
+class ControlPane extends React.Component<StoreProps> {
+    state = {
+        range: [3, 6]
+    }
 
     render() {
         const yearOption = new DefaultConfig().selectedYears.map((year: string) => 
@@ -42,15 +40,15 @@ export default class ControlPane extends React.Component {
                         >
                         <Grid item >
                             <Slider
-                                style={{ width: '500px' }}
-                                value={[3,6]}
+                                style={{ width: '90%', minWidth: '200px' }}
+                                value={this.state.range}
                                 min={0}
                                 step={1}
                                 max={40}
                                 // valueLabelFormat={numFormatter}
                                 // marks={followersMarks}
                                 // scale={scaleValues}
-                                onChange={this.handleChange}
+                                onChange={this.handleChange.bind(this)}
                                 valueLabelDisplay="auto"
                                 aria-labelledby="non-linear-slider"
                             />
@@ -62,35 +60,10 @@ export default class ControlPane extends React.Component {
             );
     }
 
-    handleChange(event: ChangeEvent<{}>) : void {
-
+    handleChange(event: ChangeEvent<{}>, value: number | number[]) : void {
+        this.setState({range: value as number[]})
     }
 
-    private get data(): any {
-        return Object.keys(Store.parsedDataByYear)
-            .map(key =>{
-                return {
-                    x: key,
-                    name: key,
-                    y: Store.parsedDataByYear[key as any].map(i => i.salary),
-                    type: 'box',
-                    boxmean: 'sd',
-                    // boxpoints: 'all',
-                    // jitter: 0.3,
-                    // pointpos: -1.8
-                }
-            })
-            // TODO: xAxis is not set properly and would lead to problems only one point is shown..
-            .concat([{
-                    x: '>2011',
-                    name: '2009',
-                    y: Store.parsedData.map(i => i.salary),
-                    type: 'box',
-                    boxmean: 'sd',
-                    // boxpoints: 'all',
-                    // jitter: 0.3,
-                    // pointpos: -1.8
-                }
-            ])
-    }
-  }
+}
+
+export default inject('entryStore')(observer(ControlPane))
