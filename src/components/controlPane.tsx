@@ -1,7 +1,6 @@
 import React, { ChangeEvent } from "react";
 import { StoreProps } from "../model/Store";
 import { Checkbox, FormGroup, FormControl, FormControlLabel, Grid, Slider, FormLabel, Box } from '@material-ui/core';
-import DefaultConfig from "../model/defaultConfig";
 import { inject, observer } from "mobx-react";
 import { Abilities, Gender } from "../model/config";
 
@@ -11,7 +10,6 @@ class ControlPane extends React.Component<StoreProps> {
     }
 
     render() {
-
         return (
             <div style={{padding: 50, overflow: 'hidden', position: 'relative', top: 0, left: 0, right: 0, bottom: 0}}>
                 <Box sx={{ display: 'flex' }}>
@@ -94,6 +92,8 @@ class ControlPane extends React.Component<StoreProps> {
         )
     }
 
+    // TODO: Get General generator for checkbox, slider, dropdown (company size) 
+        // Add generic header for: collapsible, active, weight
     // TODO: Replace any with Enum.class
     getCheckboxesForValues<T>(selectedValues: T[], enumClass: any, title: string): any {
         // Get enum values of typescript: https://stackoverflow.com/a/48768775/8524651
