@@ -12,6 +12,7 @@ import ResultSetForYear from "./resultsetForYear";
 export class EntryStore {
     
     parsedData: ResultSetForYear = new ResultSetForYear()
+    // TODO: Remove initalizer as they are not needed (?)
     parsedDataByYear: EntriesByYearMap = {
         2011: new ResultSetForYear(),
         2012: new ResultSetForYear(),
@@ -26,6 +27,7 @@ export class EntryStore {
         2021: new ResultSetForYear(),
         2022: new ResultSetForYear()
     }
+    lastUpdatedYear = '-1'
 
     currentConfig: Config = new DefaultConfig()
     currencyValues!: FreeCurrency
@@ -56,10 +58,12 @@ export class EntryStore {
             const resultsetForYear = new ResultSetForYear()
             resultsetForYear.year = parseInt(year)
             this.parsedDataByYear[year as any] = resultsetForYear
+            // TODO: This does not seem to trigger anything..
+            debugger
             reader.startWorkerForYear(
                 resultsetForYear,
                 this.addRow,
-                function () {
+                () => {
                     // Force update.
                     // this.setState({ key: (Math.random()) }); // TODO: Should be done by mobx
                     const parsed = _this.parsedDataByYear[year as any].chunksParsed
@@ -69,8 +73,10 @@ export class EntryStore {
                     console.log('Finished parsing a chunk for year: ' + year + '\n'
                          + '\t chunks parsed ' + parsed + ' chunks to go ' + available + '\n '
                          + '\t entries parsed ' + overallEntryCount + ' invalid ones ' + invalidEntryCount + ' ')
+                    const store = (this as any)
+                    store.lastUpdatedYear = 'xyz'
                     debugger
-                }.bind(this)
+                } // .bind(this)
             )
         })
     }

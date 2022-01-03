@@ -11,3 +11,7 @@ https://dev.to/alekseiberezkin/setting-up-react-typescript-app-without-create-re
 - Historgram to view number of participations regarding the current setting
     - 
 - Overview for all features per column
+
+
+- React to changes of ControlPanel
+    - MobXStore doesnt update BoxPlot
