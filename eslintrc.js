@@ -3,17 +3,11 @@ module.exports = {
   env: {
     node: true
   },
-  plugins: ['jest'],
+  plugins: ["jsx-a11y"],
   extends: [
-    // https://www.npmjs.com/package/@vue/eslint-config-typescript
-    'plugin:vue/recommended',
     'eslint:recommended',
-    '@vue/typescript',
-    '@vue/prettier',
-    '@vue/prettier/@typescript-eslint',
-
-    'plugin:jest/recommended',
-    'plugin:jest/style'
+    'plugin:react/recommended',
+    "plugin:jsx-a11y/recommended"
   ],
   rules: {
     // general
@@ -23,16 +17,6 @@ module.exports = {
     'no-var': 'error',
     'no-trailing-spaces': ['error', { skipBlankLines: true }],
     'no-useless-constructor': 'off', // disabled in favour of @typescript-eslint/no-useless-constructor
-
-    // vue
-    'vue/html-indent': [
-      'error',
-      2,
-      { attribute: 1, closeBracket: 0, alignAttributesVertically: false }
-    ],
-    'vue/component-name-in-template-casing': ['error', 'kebab-case'],
-    'vue/attribute-hyphenation': ['warn'],
-    'vue/eqeqeq': ['error', 'always', { null: 'ignore' }],
 
     // typescript rules
     '@typescript-eslint/adjacent-overload-signatures': 'error',
@@ -49,25 +33,6 @@ module.exports = {
     '@typescript-eslint/no-var-requires': 'error',
     '@typescript-eslint/type-annotation-spacing': 'error',
     '@typescript-eslint/no-unused-vars': 'error',
-
-    // jest rules
-    'jest/no-alias-methods': 0,
-    'jest/no-if': 'error',
-    'jest/no-test-prefixes': 0
-
-    // TODO: following rules conflict with prettier:
-    // "vue/max-attributes-per-line": [
-    //   2,
-    //   { singleline: 2, multiline: { max: 1, allowFirstLine: true } },
-    // ],
-    // "vue/html-closing-bracket-newline": ["error", { multiline: "never" }],
-
-    // TODO: following rule does not exist
-    // '@typescript-eslint/class-name-casing': 'error',
-
-    // TODO: legacy rules (may not be useful any more)
-    // "arrow-parens": 0,
-    // "generator-star-spacing": 0,
   },
   parserOptions: {
     parser: '@typescript-eslint/parser',

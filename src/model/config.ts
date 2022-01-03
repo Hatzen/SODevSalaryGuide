@@ -12,15 +12,14 @@ export interface ExpirienceRange {
 }
 
 export enum Abilities {
-    JAVA,
-    C,
-    SQL
+    JAVA = 'Java',
+    C = 'C',
+    SQL = 'SQL'
     // TODO: Complete..
 }
 
 export enum Gender {
-    MALE,
-    FEMALE,
-    OTHER,
-    NONE
+    MALE = 'Male',
+    FEMALE = 'Female',
+    OTHER = 'Other'
 }

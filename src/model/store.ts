@@ -12,7 +12,20 @@ import ResultSetForYear from "./resultsetForYear";
 export class EntryStore {
     
     parsedData: ResultSetForYear = new ResultSetForYear()
-    parsedDataByYear: EntriesByYearMap = {}
+    parsedDataByYear: EntriesByYearMap = {
+        2011: new ResultSetForYear(),
+        2012: new ResultSetForYear(),
+        2013: new ResultSetForYear(),
+        2014: new ResultSetForYear(),
+        2015: new ResultSetForYear(),
+        2016: new ResultSetForYear(),
+        2017: new ResultSetForYear(),
+        2018: new ResultSetForYear(),
+        2019: new ResultSetForYear(),
+        2020: new ResultSetForYear(),
+        2021: new ResultSetForYear(),
+        2022: new ResultSetForYear()
+    }
 
     currentConfig: Config = new DefaultConfig()
     currencyValues!: FreeCurrency
@@ -56,6 +69,7 @@ export class EntryStore {
                     console.log('Finished parsing a chunk for year: ' + year + '\n'
                          + '\t chunks parsed ' + parsed + ' chunks to go ' + available + '\n '
                          + '\t entries parsed ' + overallEntryCount + ' invalid ones ' + invalidEntryCount + ' ')
+                    debugger
                 }.bind(this)
             )
         })

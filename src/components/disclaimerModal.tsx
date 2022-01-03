@@ -43,6 +43,8 @@ export default class DisclaimerModal extends React.Component<IDisclaimerModalPro
             <DialogContentText>
               The shown data is taken from stackoverflow there is no warranty that the data is correct or is related to reality.
               But it is the best approach for developers to get a short overview how the salary of other developers probably look like.
+
+              We dont use cookies or store or gain any data from you. Feel free while playing around!
             </DialogContentText>
           </DialogContent>
           <DialogActions>

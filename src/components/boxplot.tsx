@@ -52,6 +52,7 @@ class BoxPlot extends React.Component<StoreProps> {
     }
 
     private get data(): any {
+        debugger
         // TODO: Rename
         const resultList = this.props.entryStore!.parsedDataByYear
         const allData = this.props.entryStore!.parsedData
