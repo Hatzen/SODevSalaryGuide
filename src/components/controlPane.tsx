@@ -122,7 +122,7 @@ class ControlPane extends React.Component<StoreProps> {
 
     // https://stackoverflow.com/a/43746799/8524651
     private handleChanges(event: any, newValue: any): void {
-        event.persist() // allow native event access (see: https://facebook.github.io/react/docs/events.html)          
+        event.persist() // allow native event access (see: https://facebook.github.io/react/docs/events.html)
         this.props.controlStore!.setControlStateValue(event.target.name, newValue)
     }
 
