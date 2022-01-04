@@ -52,38 +52,30 @@ export class EntryStore {
         this.currencyValues = currencyValues
     }
 
-    setDataForYear (entrySet: ResultSetForYear, year: number): void {
-        this.parsedDataByYear[year] = entrySet
+    setDataForYear (entrySet: ResultSetForYear): void {
+        this.parsedDataByYear[entrySet.year] = entrySet
         this.lastUpdatedYear = 'ab'
     }
 
     initParser (): void {
-        const _this = this
         const reader = new StackOverflowCsvReader()
         this.currentConfig.selectedYears.forEach(year => {
             const resultsetForYear = new ResultSetForYear()
             resultsetForYear.year = parseInt(year)
-            this.parsedDataByYear[year as any] = resultsetForYear
             reader.startWorkerForYear(
                 resultsetForYear,
                 this.addRow,
                 () => {
-                    // Force update.
-                    // this.setState({ key: (Math.random()) }); // TODO: Should be done by mobx
-                    const parsed = _this.parsedDataByYear[year as any].chunksParsed
-                    const available = _this.parsedDataByYear[year as any].chunksAvailable
-                    const invalidEntryCount = _this.parsedDataByYear[year as any].invalidEntryCount
-                    const overallEntryCount = _this.parsedDataByYear[year as any].overallEntryCount
+                    const parsed = resultsetForYear.chunksParsed
+                    const available = resultsetForYear.chunksAvailable
+                    const invalidEntryCount = resultsetForYear.invalidEntryCount
+                    const overallEntryCount = resultsetForYear.overallEntryCount
                     // eslint-disable-next-line no-console
                     console.log('Finished parsing a chunk for year: ' + year + '\n'
                          + '\t chunks parsed ' + parsed + ' chunks to go ' + available + '\n '
                          + '\t entries parsed ' + overallEntryCount + ' invalid ones ' + invalidEntryCount + ' ')
-                    const store = (this as any)
-
-                    // TODO: Remove trigger update
-                    store.lastUpdatedYear = 'xyz'
-                    // debugger
-                } // .bind(this)
+                    this.setDataForYear(resultsetForYear)
+                }
             )
         })
     }

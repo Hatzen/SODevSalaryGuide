@@ -5,6 +5,7 @@ import { inject, observer } from 'mobx-react'
 import { Abilities, Gender } from '../model/config'
 
 class ControlPane extends React.Component<StoreProps> {
+    private key = 0
     state = {
         range: [3, 6]
     }
@@ -35,7 +36,7 @@ class ControlPane extends React.Component<StoreProps> {
         }
         const yearOption = selectableYears.map((year: string) => {
             const yearSelected = config.selectedYears.find(aYear => aYear === year) != null
-            return <FormControlLabel key={12} control={<Checkbox defaultChecked={yearSelected} />} label={year} />
+            return <FormControlLabel key={this.key++} control={<Checkbox defaultChecked={yearSelected} />} label={year} />
         })
         return (
             <Grid container
@@ -104,7 +105,7 @@ class ControlPane extends React.Component<StoreProps> {
             // TODO: How to get values
             const check = selectedValues.find(selected => (selected as any).toString() === value) != null
             return (
-                <FormControlLabel key={15} control={<Checkbox defaultChecked={check} />} label={value} />
+                <FormControlLabel key={this.key++} control={<Checkbox defaultChecked={check} />} label={value} />
             )
         })
         return (

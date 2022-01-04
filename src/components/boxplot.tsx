@@ -20,7 +20,7 @@ class BoxPlot extends React.Component<StoreProps> {
             <div style={{background: 'rgba(52, 52, 52, 0.8)', zIndex:1000, padding: 'auto',
                 position: 'absolute', top: 0, left: 0, right:0, bottom: 0}}>
                 <div>
-                getLoader()
+                    {this.getLoader()}
                 </div>
                 <div style={{position: 'absolute', top: 0, bottom: 0, left:0, right: 0, overflow: 'auto'}}>
                     <Plot
@@ -52,14 +52,7 @@ class BoxPlot extends React.Component<StoreProps> {
         )
     }
 
-    private get data(): any {
-        // TODO: This makes it responsive.. But why not changes of parsedDataByYear which occure...
-        const test = this.props.entryStore!.lastUpdatedYear
-        if (test != null) {
-            console.log('triggered')
-        }
-        // Remove above..
-
+    private get data(): any { // TODO: Plotty Data
         const resultList = this.props.entryStore!.parsedDataByYear
         const allData = this.props.entryStore!.parsedData
 
