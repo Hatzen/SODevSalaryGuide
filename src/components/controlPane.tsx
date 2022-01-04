@@ -1,8 +1,8 @@
 import React, { ChangeEvent } from 'react'
-import { StoreProps } from '../model/store'
 import { Checkbox, FormGroup, FormControl, FormControlLabel, Grid, Slider, FormLabel, Box } from '@material-ui/core'
 import { inject, observer } from 'mobx-react'
 import { Abilities, Gender } from '../model/config'
+import { StoreProps } from './app'
 
 class ControlPane extends React.Component<StoreProps> {
     private key = 0
@@ -29,14 +29,14 @@ class ControlPane extends React.Component<StoreProps> {
     }
 
     get years(): JSX.Element {
-        const config = this.props.entryStore!.currentConfig
+        const config = this.props.controlStore!
         const selectableYears = []
         for (let i = 2011; i < 2022; i++) {
             selectableYears.push(i.toString())
         }
         const yearOption = selectableYears.map((year: string) => {
-            const yearSelected = config.selectedYears.find(aYear => aYear === year) != null
-            return <FormControlLabel key={this.key++} control={<Checkbox defaultChecked={yearSelected} />} label={year} />
+            const yearSelected = config.controlState.selectedYears[parseInt(year)]
+            return <FormControlLabel key={this.key++} control={<Checkbox name={year} defaultChecked={yearSelected} onChange={this.handleChanges.bind(this)}/>} label={year} />
         })
         return (
             <Grid container
@@ -120,6 +120,12 @@ class ControlPane extends React.Component<StoreProps> {
         this.setState({range: value as number[]})
     }
 
+    // https://stackoverflow.com/a/43746799/8524651
+    private handleChanges(event: any, newValue: any): void {
+        event.persist() // allow native event access (see: https://facebook.github.io/react/docs/events.html)          
+        this.props.controlStore!.setControlStateValue(event.target.name, newValue)
+    }
+
 }
 
-export default inject('entryStore')(observer(ControlPane))
+export default inject('entryStore', 'controlStore')(observer(ControlPane))

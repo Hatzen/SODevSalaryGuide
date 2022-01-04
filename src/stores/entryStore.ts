@@ -1,34 +1,18 @@
-import Config from './config'
-import FreeCurrency from './currencyValues'
-import DefaultConfig from './defaultConfig'
+import Config from '../model/config'
+import FreeCurrency from '../model/currencyValues'
+import DefaultConfig from '../model/defaultConfig'
 import { makeAutoObservable } from 'mobx'
 import CurrencyService from '../services/currencyService'
 import StackOverflowCsvReader from '../services/stackOverflowCsvReader'
 import { ParseStepResult } from 'papaparse'
-import CsvRow from './csvRow'
-import ResultSetForYear from './resultSetForYear'
+import CsvRow from '../model/csvRow'
+import ResultSetForYear from '../model/resultSetForYear'
 
 // https://devlinduldulao.pro/mobx-in-a-nutshell/
 export class EntryStore {
     
     parsedData: ResultSetForYear = new ResultSetForYear()
-    // TODO: Remove initalizer as they are not needed (?)
-    parsedDataByYear: EntriesByYearMap = {
-        2011: new ResultSetForYear(),
-        2012: new ResultSetForYear(),
-        2013: new ResultSetForYear(),
-        2014: new ResultSetForYear(),
-        2015: new ResultSetForYear(),
-        2016: new ResultSetForYear(),
-        2017: new ResultSetForYear(),
-        2018: new ResultSetForYear(),
-        2019: new ResultSetForYear(),
-        2020: new ResultSetForYear(),
-        2021: new ResultSetForYear(),
-        2022: new ResultSetForYear()
-    }
-    // TODO: Remove dummy only used for updating..
-    lastUpdatedYear = '-1'
+    parsedDataByYear: EntriesByYearMap = {}
 
     currentConfig: Config = new DefaultConfig()
     currencyValues!: FreeCurrency
@@ -54,7 +38,6 @@ export class EntryStore {
 
     setDataForYear (entrySet: ResultSetForYear): void {
         this.parsedDataByYear[entrySet.year] = entrySet
-        this.lastUpdatedYear = 'ab'
     }
 
     initParser (): void {
@@ -91,9 +74,5 @@ export class EntryStore {
 }
 
 export type EntriesByYearMap = { [year: number]: ResultSetForYear }
-
-export interface StoreProps {  // TODO: Making it optional is bad i guess..
-    entryStore?: EntryStore
-}
 
 export default new EntryStore()

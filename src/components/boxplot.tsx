@@ -1,9 +1,9 @@
 import React from 'react'
 import Plot from 'react-plotly.js'
-import { StoreProps } from '../model/store'
 import Loader from 'react-loader-spinner'
 import { inject, observer } from 'mobx-react'
 import SurveyEntry from '../model/surveyEntry'
+import { StoreProps } from './app'
 
 class BoxPlot extends React.Component<StoreProps> {
 
@@ -56,7 +56,10 @@ class BoxPlot extends React.Component<StoreProps> {
         const resultList = this.props.entryStore!.parsedDataByYear
         const allData = this.props.entryStore!.parsedData
 
+        const displayYears = this.props.controlStore?.controlState.selectedYears
+
         return Object.keys(resultList)
+            .filter(year => displayYears![year as any] === true)
             .map(key =>{
                 return {
                     x: key,
@@ -84,4 +87,4 @@ class BoxPlot extends React.Component<StoreProps> {
     }
 }
 
-export default inject('entryStore')(observer(BoxPlot))
+export default inject('entryStore', 'controlStore')(observer(BoxPlot))
