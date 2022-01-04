@@ -14,7 +14,7 @@ class BoxPlot extends React.Component<StoreProps> {
         // pointpos: -1.8
     }
 
-    render() {
+    render(): JSX.Element {
         return (
             <div style={{background: 'rgba(52, 52, 52, 0.8)', zIndex:1000, padding: 'auto',
                 position: 'absolute', top: 0, left: 0, right:0, bottom: 0}}>
@@ -33,12 +33,12 @@ class BoxPlot extends React.Component<StoreProps> {
         )
     }
 
-    getLoader() {
+    getLoader(): JSX.Element {
         return (
-            <div style={{position: 'relative', 
-                top: 'calc(50% - 75px)', 
-                bottom: 'calc(50% - 75px)', 
-                left: 'calc(50% - 75px)', 
+            <div style={{position: 'relative',
+                top: 'calc(50% - 75px)',
+                bottom: 'calc(50% - 75px)',
+                left: 'calc(50% - 75px)',
                 right: 'calc(50% - 75px)'
             }}>
                 <Loader

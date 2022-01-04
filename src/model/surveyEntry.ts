@@ -47,7 +47,7 @@ export default class SurveyEntry {
 
     get salary(): number {
         return this._salary
-        // TODO: Especially this is incorrect when using converted salary is not it? 
+        // TODO: Especially this is incorrect when using converted salary is not it?
         // TODO: Why this will only work on 2018 and lead to very strange results...
         // return this._salary / Store.currencyValues.getRatioByCode(this.currency)
     }

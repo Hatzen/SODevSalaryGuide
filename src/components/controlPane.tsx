@@ -9,7 +9,7 @@ class ControlPane extends React.Component<StoreProps> {
         range: [3, 6]
     }
 
-    render() {
+    render(): JSX.Element {
         return (
             <div style={{padding: 50, overflow: 'hidden', position: 'relative', top: 0, left: 0, right: 0, bottom: 0}}>
                 <Box sx={{ display: 'flex' }}>
@@ -27,7 +27,7 @@ class ControlPane extends React.Component<StoreProps> {
         )
     }
 
-    get years(): any {
+    get years(): JSX.Element {
         const config = this.props.entryStore!.currentConfig
         const selectableYears = []
         for (let i = 2011; i < 2022; i++) {
@@ -35,7 +35,7 @@ class ControlPane extends React.Component<StoreProps> {
         }
         const yearOption = selectableYears.map((year: string) => {
             const yearSelected = config.selectedYears.find(aYear => aYear === year) != null
-            return <FormControlLabel control={<Checkbox defaultChecked={yearSelected} />} label={year} />
+            return <FormControlLabel key={12} control={<Checkbox defaultChecked={yearSelected} />} label={year} />
         })
         return (
             <Grid container
@@ -45,7 +45,7 @@ class ControlPane extends React.Component<StoreProps> {
                 alignItems="center"
                 style={{width: '100%'}}
             >
-                <Grid item 
+                <Grid item
                     style={{width: '100%'}}>
                     {yearOption}
                 </Grid>
@@ -92,7 +92,7 @@ class ControlPane extends React.Component<StoreProps> {
         )
     }
 
-    // TODO: Get General generator for checkbox, slider, dropdown (company size) 
+    // TODO: Get General generator for checkbox, slider, dropdown (company size)
     // Add generic header for: collapsible, active, weight
     // TODO: Replace any with Enum.class
     getCheckboxesForValues<T>(selectedValues: T[], enumClass: any, title: string): any {
@@ -102,9 +102,9 @@ class ControlPane extends React.Component<StoreProps> {
         })
         const checkboxes = values.map(value => {
             // TODO: How to get values
-            const check = selectedValues.find(selected => (selected as any).toString() == value) != null
+            const check = selectedValues.find(selected => (selected as any).toString() === value) != null
             return (
-                <FormControlLabel control={<Checkbox defaultChecked={check} />} label={value} />
+                <FormControlLabel key={15} control={<Checkbox defaultChecked={check} />} label={value} />
             )
         })
         return (
@@ -113,9 +113,9 @@ class ControlPane extends React.Component<StoreProps> {
                 {checkboxes}
             </div>
         )
-    } 
+    }
 
-    handleChange(event: ChangeEvent<{}>, value: number | number[]) : void {
+    handleChange(event: ChangeEvent<any>, value: number | number[]): void {
         this.setState({range: value as number[]})
     }
 

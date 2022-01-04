@@ -47,7 +47,7 @@ export class CsvRowMapper {
         case 2021:
             mapper = this.MAPPER_2019
             break
-        default: 
+        default:
             // TODO: This can not happen?
             return CsvRowMapper.INVALID_ENTRY
         }

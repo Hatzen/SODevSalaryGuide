@@ -40,7 +40,7 @@
         
         // general
         "eqeqeq": ["error", "always", { "null": "ignore" }],
-        "no-console": "error",
+        // "no-console": "error",  // TODO: Better replace console statements with "CheckedConsole"
         "no-debugger": "error",
         "no-var": "error",
         "no-trailing-spaces": ["error", { "skipBlankLines": true }],

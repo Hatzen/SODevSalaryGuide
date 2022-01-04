@@ -9,7 +9,7 @@ interface ICsvRowMapper {
 export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
     static COLUMN_DONT_EXIST = 'COLUMN_DONT_EXIST'
 
-    abstract readonly SALARY_KEY: string 
+    abstract readonly SALARY_KEY: string
     abstract readonly CURRENCY_KEY: string
 
     map (csvRow: CsvRow): SurveyEntry {
@@ -51,14 +51,14 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
 
     }
 
-    protected containsValue (value: string, find: string) {
+    protected containsValue (value: string, find: string): boolean {
         return value.toUpperCase().indexOf(value) !== -1
     }
 
     protected getSalaryValue (value: string): number {
         // debugger
         // console.warn("Hurray found salary" + value)
-        // E.g. $60,000 - $80,000 or <20000wqe 
+        // E.g. $60,000 - $80,000 or <20000wqe
         if (typeof value === 'string') {
             if (value.indexOf('<') !== -1) {
                 return 10000 // <20k consider as 10k in average
@@ -69,7 +69,7 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
                     .substring(0, value.indexOf('-'))
                 return parseInt(firstValue) + 10000 // 20-40k => average 30k
             }
-        } 
+        }
         try {
             let result = parseInt(value)
             if (isNaN(result)) {
@@ -79,15 +79,15 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
             // TODO: Make these manipulation readable for the user.
             // If the value is greater 500k and it is "even" consider it as wrong decimal input
             if (result > 500000 && (result % 10000 === 0)) {
-                result /= 100 
+                result /= 100
             }
-            // dont consider income over 1 million as loan.. 
+            // dont consider income over 1 million as loan..
             if (result > 1000000) {
                 result = -1
             }
             return result
         } catch (error) {
             return -1
-        } 
+        }
     }
 }

@@ -25,10 +25,10 @@ export default class DisclaimerModal extends React.Component<IDisclaimerModalPro
     }
   
     get alreadyStoredConfirmation (): boolean {
-        return localStorage.getItem('alreadyAgreed') == 'true'
+        return localStorage.getItem('alreadyAgreed') === 'true'
     }
 
-    render() {
+    render(): JSX.Element {
         const { fullScreen } = this.props
         const _this = this
         return (

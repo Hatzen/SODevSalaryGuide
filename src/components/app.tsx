@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React from 'react'
 import entryStore from '../model/store'
 import BoxPlot from './boxplot'
 import { Allotment, AllotmentHandle } from 'allotment'
@@ -11,7 +11,7 @@ import { Provider } from 'mobx-react'
 class App extends React.Component {
     private controlPane: React.RefObject<AllotmentHandle>
     
-    constructor(props: {}) {
+    constructor(props: any) {
         super(props)
         this.controlPane = React.createRef()
         this.state ={
@@ -19,7 +19,7 @@ class App extends React.Component {
         }
     }
 
-    render() {
+    render(): JSX.Element {
         const fitAll = {position: 'absolute' as any, top:0, left:0, bottom: 0, right:0}
         const stores = {
             entryStore
@@ -43,7 +43,7 @@ class App extends React.Component {
                                     )
                                 } else {
                                     return (
-                                        <Allotment.Pane  key={pane} snap maxSize={400}>      
+                                        <Allotment.Pane  key={pane} snap maxSize={400}>
                                             <ControlPane></ControlPane>
                                         </Allotment.Pane>
                                     )
@@ -56,7 +56,7 @@ class App extends React.Component {
         )
     }
 
-    private toggleControls() {
+    private toggleControls(): void {
         if ((this.state as any).components.length === 1) {
             this.setState({
                 components: [0 ,1]

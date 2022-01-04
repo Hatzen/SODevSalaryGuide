@@ -7,13 +7,13 @@ import { Typography } from '@material-ui/core'
 
 export interface MenuAppBarProps {
   menuClicked: () => void
-} 
+}
 
 // https://v1.mui.com/demos/app-bar/
 export default class MenuAppBar extends React.Component<MenuAppBarProps> {
 
-    render() {
-    // TODO: Info Button explain all relevant aspects to consider the salary. 
+    render(): JSX.Element {
+    // TODO: Info Button explain all relevant aspects to consider the salary.
     //   CompanyBranch (Banks, Resellers), How old the company is (Backup money), etc.
         return (
             <div>
@@ -23,7 +23,7 @@ export default class MenuAppBar extends React.Component<MenuAppBarProps> {
                             <MenuIcon />
                         </IconButton>
                         <Typography variant="h5">
-              Stackoverflow Developer Salary Guide 
+              Stackoverflow Developer Salary Guide
                         </Typography>
                     </Toolbar>
                 </AppBar>
