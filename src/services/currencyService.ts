@@ -1,4 +1,4 @@
-import CurrencyValues from "../model/currencyValues";
+import CurrencyValues from '../model/currencyValues'
 
 // https://freecurrencyapi.net/api/v2/latest?apikey=d3626290-68c5-11ec-abd0-4f2669673a10&base_currency=USD
 

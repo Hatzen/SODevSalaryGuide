@@ -1,12 +1,12 @@
-import SurveyEntry from "./surveyEntry";
+import SurveyEntry from './surveyEntry'
 
 export default class ResultSetForYear {
     resultSet: SurveyEntry[] = []
-    overallEntryCount: number = 0
-    invalidEntryCount: number = 0
+    overallEntryCount = 0
+    invalidEntryCount = 0
 
-    year: number = -1
+    year = -1
 
-    chunksAvailable: number = -1
-    chunksParsed: number = -1
+    chunksAvailable = -1
+    chunksParsed = -1
 }

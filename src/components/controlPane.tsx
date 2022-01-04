@@ -1,8 +1,8 @@
-import React, { ChangeEvent } from "react";
-import { StoreProps } from "../model/store";
-import { Checkbox, FormGroup, FormControl, FormControlLabel, Grid, Slider, FormLabel, Box } from '@material-ui/core';
-import { inject, observer } from "mobx-react";
-import { Abilities, Gender } from "../model/config";
+import React, { ChangeEvent } from 'react'
+import { StoreProps } from '../model/store'
+import { Checkbox, FormGroup, FormControl, FormControlLabel, Grid, Slider, FormLabel, Box } from '@material-ui/core'
+import { inject, observer } from 'mobx-react'
+import { Abilities, Gender } from '../model/config'
 
 class ControlPane extends React.Component<StoreProps> {
     state = {
@@ -24,7 +24,7 @@ class ControlPane extends React.Component<StoreProps> {
                     </FormControl>
                 </Box>
             </div>
-            );
+        )
     }
 
     get years(): any {
@@ -44,9 +44,9 @@ class ControlPane extends React.Component<StoreProps> {
                 justifyContent="center"
                 alignItems="center"
                 style={{width: '100%'}}
-                >
+            >
                 <Grid item 
-                style={{width: '100%'}}>
+                    style={{width: '100%'}}>
                     {yearOption}
                 </Grid>
                 <br></br>
@@ -93,13 +93,13 @@ class ControlPane extends React.Component<StoreProps> {
     }
 
     // TODO: Get General generator for checkbox, slider, dropdown (company size) 
-        // Add generic header for: collapsible, active, weight
+    // Add generic header for: collapsible, active, weight
     // TODO: Replace any with Enum.class
     getCheckboxesForValues<T>(selectedValues: T[], enumClass: any, title: string): any {
         // Get enum values of typescript: https://stackoverflow.com/a/48768775/8524651
         const values = Object.keys(enumClass).filter((item) => {
-            return isNaN(Number(item));
-        });
+            return isNaN(Number(item))
+        })
         const checkboxes = values.map(value => {
             // TODO: How to get values
             const check = selectedValues.find(selected => (selected as any).toString() == value) != null

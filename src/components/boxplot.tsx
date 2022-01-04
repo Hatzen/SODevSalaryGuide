@@ -1,8 +1,8 @@
-import React from "react";
-import Plot from "react-plotly.js";
-import { StoreProps } from "../model/store";
-import Loader from "react-loader-spinner";
-import { inject, observer } from "mobx-react";
+import React from 'react'
+import Plot from 'react-plotly.js'
+import { StoreProps } from '../model/store'
+import Loader from 'react-loader-spinner'
+import { inject, observer } from 'mobx-react'
 
 class BoxPlot extends React.Component<StoreProps> {
 
@@ -16,21 +16,21 @@ class BoxPlot extends React.Component<StoreProps> {
 
     render() {
         return (
-        <div style={{background: 'rgba(52, 52, 52, 0.8)', zIndex:1000, padding: 'auto',
-            position: 'absolute', top: 0, left: 0, right:0, bottom: 0}}>
-            <div>
+            <div style={{background: 'rgba(52, 52, 52, 0.8)', zIndex:1000, padding: 'auto',
+                position: 'absolute', top: 0, left: 0, right:0, bottom: 0}}>
+                <div>
                 getLoader()
-            </div>
-            <div style={{position: 'absolute', top: 0, bottom: 0, left:0, right: 0, overflow: 'auto'}}>
-                <Plot
-                    data={this.data}
-                    layout={ {width: this.width, height: this.height, title: '', showlegend: false} }
+                </div>
+                <div style={{position: 'absolute', top: 0, bottom: 0, left:0, right: 0, overflow: 'auto'}}>
+                    <Plot
+                        data={this.data}
+                        layout={ {width: this.width, height: this.height, title: '', showlegend: false} }
                     // TODO: Check Layout.template
                     // TODO: Check Config.static for temporary disable?
-                />
+                    />
+                </div>
             </div>
-        </div>
-            );
+        )
     }
 
     getLoader() {
@@ -40,7 +40,7 @@ class BoxPlot extends React.Component<StoreProps> {
                 bottom: 'calc(50% - 75px)', 
                 left: 'calc(50% - 75px)', 
                 right: 'calc(50% - 75px)'
-                }}>
+            }}>
                 <Loader
                     type="Audio"
                     color="#993300"
@@ -57,7 +57,7 @@ class BoxPlot extends React.Component<StoreProps> {
         if (test != null) {
             console.log('triggered')
         }
-         // Remove above..
+        // Remove above..
 
         const resultList = this.props.entryStore!.parsedDataByYear
         const allData = this.props.entryStore!.parsedData
@@ -73,11 +73,11 @@ class BoxPlot extends React.Component<StoreProps> {
             })
             // TODO: xAxis is not set properly and would lead to problems only one point is shown..
             .concat([{
-                    x: '>2011',
-                    name: '2009',
-                    y: allData.resultSet.map(i => i.salary),
-                    ...this.defaultBoxConfig
-                }
+                x: '>2011',
+                name: '2009',
+                y: allData.resultSet.map(i => i.salary),
+                ...this.defaultBoxConfig
+            }
             ])
     }
 

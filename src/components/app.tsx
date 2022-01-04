@@ -1,12 +1,12 @@
-import React, { useRef } from "react";
-import entryStore from "../model/store";
-import BoxPlot from "./boxplot";
-import { Allotment, AllotmentHandle } from "allotment";
-import "allotment/dist/style.css";
+import React, { useRef } from 'react'
+import entryStore from '../model/store'
+import BoxPlot from './boxplot'
+import { Allotment, AllotmentHandle } from 'allotment'
+import 'allotment/dist/style.css'
 import ControlPane from './controlPane'
-import DisclaimerModal from "./disclaimerModal";
-import MenuAppBar from "./appBar";
-import { Provider } from "mobx-react";
+import DisclaimerModal from './disclaimerModal'
+import MenuAppBar from './appBar'
+import { Provider } from 'mobx-react'
 
 class App extends React.Component {
     private controlPane: React.RefObject<AllotmentHandle>
@@ -16,7 +16,7 @@ class App extends React.Component {
         this.controlPane = React.createRef()
         this.state ={
             components: [0, 1]
-            }
+        }
     }
 
     render() {
@@ -53,7 +53,7 @@ class App extends React.Component {
                     </div>
                 </Provider>
             </div>
-        );
+        )
     }
 
     private toggleControls() {

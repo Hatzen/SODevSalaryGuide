@@ -1,7 +1,7 @@
-import Papa, { ParseStepResult } from "papaparse"
-import { CsvRowMapper } from "../mapper/CsvRowMapper"
-import CsvRow from "../model/csvRow"
-import ResultSetForYear from "../model/resultsetForYear"
+import Papa, { ParseStepResult } from 'papaparse'
+import { CsvRowMapper } from '../mapper/CsvRowMapper'
+import CsvRow from '../model/csvRow'
+import ResultSetForYear from '../model/resultsetForYear'
 
 export default class StackOverflowCsvReader {
 
@@ -62,14 +62,13 @@ export default class StackOverflowCsvReader {
     private handleNextChunk (resultsetForYear: ResultSetForYear, config: any): void {
         resultsetForYear.chunksParsed++
         if (resultsetForYear.chunksParsed > resultsetForYear.chunksAvailable) {
-            debugger
             return
         }
         const fileName = this.generateFileName(resultsetForYear.year.toString(), resultsetForYear.chunksParsed)
         const fileUrl = this.baseUrl + '/' + fileName
         // TODO: All files get downloaded, but it seems only 4 Workers get ever started...
         //   More probably the missing header in the chunked files lead to errors. 
-        Papa.parse(fileUrl, config);
+        Papa.parse(fileUrl, config)
     }
 
     generateFileName(year: string, chunk: number): string {
@@ -77,6 +76,6 @@ export default class StackOverflowCsvReader {
     }
 
     get baseUrl(): string {
-        return location.protocol + '//' + location.host + location.pathname.substring(0, location.pathname.length - 1);
+        return location.protocol + '//' + location.host + location.pathname.substring(0, location.pathname.length - 1)
     }
 }

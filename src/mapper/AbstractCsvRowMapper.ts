@@ -1,5 +1,5 @@
-import CsvRow from "../model/csvRow"
-import SurveyEntry, { Currency } from "../model/surveyEntry"
+import CsvRow from '../model/csvRow'
+import SurveyEntry, { Currency } from '../model/surveyEntry'
 
 interface ICsvRowMapper {
     readonly SALARY_KEY: string

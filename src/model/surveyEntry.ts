@@ -1,4 +1,4 @@
-import { Abilities, Gender } from "./config"
+import { Abilities, Gender } from './config'
 
 export default class SurveyEntry {
     _salary!: number
@@ -21,7 +21,7 @@ export default class SurveyEntry {
     gender?: Gender
     // 2011: What type of project are you developing? => #30 - #43
     // 2012: What type of project are you developing? #22
-            // Which languages are you proficient in? => #23 - #37
+    // Which languages are you proficient in? => #23 - #37
     // 2013: Which of the following languages or technologies have you used significantly in the past year? => x - x + 13
     // 2014: Which of the following languages or technologies have you used significantly in the past year? => 43 - 54
     // 2015: ??

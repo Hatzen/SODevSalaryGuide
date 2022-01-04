@@ -6,7 +6,8 @@
   "scripts": {
     "start": "webpack serve --port 3000",
     "build": "set NODE_ENV=production && webpack",
-    "lint": "eslint \"**/*.{ts,tsx}\""
+    "lint": "eslint \"**/*.{ts,tsx}\"",
+    "lint:fix": "eslint \"**/*.{ts,tsx}\" --fix"
   },
   "author": "",
   "license": "ISC",

@@ -1,12 +1,12 @@
-import Config from "./config";
-import FreeCurrency from "./currencyValues";
-import DefaultConfig from "./defaultConfig";
-import { makeAutoObservable } from "mobx";
-import CurrencyService from "../services/currencyService";
-import StackOverflowCsvReader from "../services/stackOverflowCsvReader";
-import { ParseStepResult } from "papaparse";
-import CsvRow from "./csvRow";
-import ResultSetForYear from "./resultsetForYear";
+import Config from './config'
+import FreeCurrency from './currencyValues'
+import DefaultConfig from './defaultConfig'
+import { makeAutoObservable } from 'mobx'
+import CurrencyService from '../services/currencyService'
+import StackOverflowCsvReader from '../services/stackOverflowCsvReader'
+import { ParseStepResult } from 'papaparse'
+import CsvRow from './csvRow'
+import ResultSetForYear from './resultsetForYear'
 
 // https://devlinduldulao.pro/mobx-in-a-nutshell/
 export class EntryStore {
@@ -92,7 +92,7 @@ export class EntryStore {
     }
 
     private onChunkComplete () {
-        
+        // TODO:
     }
 
 }

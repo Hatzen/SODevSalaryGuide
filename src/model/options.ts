@@ -1,7 +1,7 @@
-import { Abilities, Gender } from "./config"
+import { Abilities, Gender } from './config'
 
 export class Option<T> {
-    weight: number = 0.5
+    weight = 0.5
     value!: T
     type!: Types
 }

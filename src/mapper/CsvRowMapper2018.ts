@@ -1,4 +1,4 @@
-import { AbstractCsvRowMapper } from "./AbstractCsvRowMapper"
+import { AbstractCsvRowMapper } from './AbstractCsvRowMapper'
 
 export class CsvRowMapper2018 extends AbstractCsvRowMapper {
     readonly SALARY_KEY = 'ConvertedSalary' // 2018

@@ -5,18 +5,18 @@ import { createTheme , MuiThemeProvider } from '@material-ui/core'
 
 const theme = createTheme ({
     palette: {
-      primary: {
-        main: '#E3E6E8', // Gray
-      },
-      secondary: {
-        main: '#F48024', // Gray
-      }
+        primary: {
+            main: '#E3E6E8', // Gray
+        },
+        secondary: {
+            main: '#F48024', // Gray
+        }
     }
-  });
+})
 
 ReactDOM.render(
     <MuiThemeProvider theme={theme}>
-      <App/>
+        <App/>
     </MuiThemeProvider>,
     document.getElementById('app-root'),
 )
