@@ -1,11 +1,12 @@
-import { Abilities, Gender } from "./config"
+import { Abilities, Gender } from './config'
 
 export class Option<T> {
-    weight: number = 0.5
+    weight = 0.5
     value!: T
     type!: Types
 }
 // TODO: Use subtypes for options and valid range etc.
+// TODO: Move creation to InputForumularFile and use Builder: https://www.npmjs.com/package/builder-pattern
 
 export enum Types {
     MultiChoiceCheckbox,

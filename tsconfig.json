@@ -11,6 +11,12 @@
       "strict": true,
       "sourceMap": true,
       "target": "esnext",
+      // Additional:
+      // Allow mobx-react decoraters.
+      "experimentalDecorators": true,
+      // Avoid must have default values for class based observables
+      // https://mobx.js.org/installation.html#installation 
+      "useDefineForClassFields": true,
     },
     "exclude": [
       "node_modules"
