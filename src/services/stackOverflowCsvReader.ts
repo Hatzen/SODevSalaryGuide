@@ -7,7 +7,7 @@ export default class StackOverflowCsvReader {
 
     static readonly BASIC_CONFIG ={
         download: true,
-        worker: true,
+        worker: false, // TODO: When setting to true, all years are parsed successfully. But not all are downloaded. When setting to false all are downloaded but not all parsed..
         dynamicTyping: true,
         delimiter: ',',
         header: true
@@ -62,6 +62,7 @@ export default class StackOverflowCsvReader {
     private handleNextChunk (resultsetForYear: ResultSetForYear, config: any): void {
         resultsetForYear.chunksParsed++
         if (resultsetForYear.chunksParsed > resultsetForYear.chunksAvailable) {
+            debugger
             return
         }
         const fileName = this.generateFileName(resultsetForYear.year.toString(), resultsetForYear.chunksParsed)

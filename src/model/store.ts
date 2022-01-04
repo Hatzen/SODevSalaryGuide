@@ -58,8 +58,6 @@ export class EntryStore {
             const resultsetForYear = new ResultSetForYear()
             resultsetForYear.year = parseInt(year)
             this.parsedDataByYear[year as any] = resultsetForYear
-            // TODO: This does not seem to trigger anything..
-            debugger
             reader.startWorkerForYear(
                 resultsetForYear,
                 this.addRow,
@@ -74,8 +72,10 @@ export class EntryStore {
                          + '\t chunks parsed ' + parsed + ' chunks to go ' + available + '\n '
                          + '\t entries parsed ' + overallEntryCount + ' invalid ones ' + invalidEntryCount + ' ')
                     const store = (this as any)
+
+                    // TODO: Remove trigger update
                     store.lastUpdatedYear = 'xyz'
-                    debugger
+                    // debugger
                 } // .bind(this)
             )
         })

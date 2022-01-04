@@ -52,8 +52,6 @@ class BoxPlot extends React.Component<StoreProps> {
     }
 
     private get data(): any {
-        // TODO: Rename
-        debugger
         // TODO: This makes it responsive.. But why not changes of parsedDataByYear which occure...
         const test = this.props.entryStore!.lastUpdatedYear
         if (test != null) {
