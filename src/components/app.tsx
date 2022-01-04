@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import entryStore from "../model/Store";
+import entryStore from "../model/store";
 import BoxPlot from "./boxplot";
 import { Allotment, AllotmentHandle } from "allotment";
 import "allotment/dist/style.css";

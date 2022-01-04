@@ -1,5 +1,5 @@
 import React, { ChangeEvent } from "react";
-import { StoreProps } from "../model/Store";
+import { StoreProps } from "../model/store";
 import { Checkbox, FormGroup, FormControl, FormControlLabel, Grid, Slider, FormLabel, Box } from '@material-ui/core';
 import { inject, observer } from "mobx-react";
 import { Abilities, Gender } from "../model/config";

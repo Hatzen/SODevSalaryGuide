@@ -1,6 +1,6 @@
 import React from "react";
 import Plot from "react-plotly.js";
-import { StoreProps } from "../model/Store";
+import { StoreProps } from "../model/store";
 import Loader from "react-loader-spinner";
 import { inject, observer } from "mobx-react";
 
