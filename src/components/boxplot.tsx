@@ -3,6 +3,7 @@ import Plot from 'react-plotly.js'
 import { StoreProps } from '../model/store'
 import Loader from 'react-loader-spinner'
 import { inject, observer } from 'mobx-react'
+import SurveyEntry from '../model/surveyEntry'
 
 class BoxPlot extends React.Component<StoreProps> {
 
@@ -67,7 +68,7 @@ class BoxPlot extends React.Component<StoreProps> {
                 return {
                     x: key,
                     name: key,
-                    y: resultList[key as any].resultSet.map(i => i.salary),
+                    y: resultList[key as any].resultSet.map((entry: SurveyEntry)  => entry.salary),
                     ...this.defaultBoxConfig
                 }
             })
@@ -75,7 +76,7 @@ class BoxPlot extends React.Component<StoreProps> {
             .concat([{
                 x: '>2011',
                 name: '2009',
-                y: allData.resultSet.map(i => i.salary),
+                y: allData.resultSet.map((entry: SurveyEntry) => entry.salary),
                 ...this.defaultBoxConfig
             }
             ])

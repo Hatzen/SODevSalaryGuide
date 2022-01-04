@@ -6,7 +6,7 @@ import CurrencyService from '../services/currencyService'
 import StackOverflowCsvReader from '../services/stackOverflowCsvReader'
 import { ParseStepResult } from 'papaparse'
 import CsvRow from './csvRow'
-import ResultSetForYear from './resultsetForYear'
+import ResultSetForYear from './resultSetForYear'
 
 // https://devlinduldulao.pro/mobx-in-a-nutshell/
 export class EntryStore {

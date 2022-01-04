@@ -1,7 +1,7 @@
 import Papa, { ParseStepResult } from 'papaparse'
 import { CsvRowMapper } from '../mapper/CsvRowMapper'
 import CsvRow from '../model/csvRow'
-import ResultSetForYear from '../model/resultsetForYear'
+import ResultSetForYear from '../model/resultSetForYear'
 
 export default class StackOverflowCsvReader {
 
