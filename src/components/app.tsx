@@ -1,5 +1,5 @@
 import React from 'react'
-import entryStore from '../model/store'
+import entryStore, { EntryStore } from '../stores/entryStore'
 import BoxPlot from './boxplot'
 import { Allotment, AllotmentHandle } from 'allotment'
 import 'allotment/dist/style.css'
@@ -7,6 +7,7 @@ import ControlPane from './controlPane'
 import DisclaimerModal from './disclaimerModal'
 import MenuAppBar from './appBar'
 import { Provider } from 'mobx-react'
+import controlStore, { ControlStore } from '../stores/controlStore'
 
 class App extends React.Component {
     private controlPane: React.RefObject<AllotmentHandle>
@@ -22,7 +23,8 @@ class App extends React.Component {
     render(): JSX.Element {
         const fitAll = {position: 'absolute' as any, top:0, left:0, bottom: 0, right:0}
         const stores = {
-            entryStore
+            entryStore,
+            controlStore
         }
 
         const panes = (this.state as any).components
@@ -72,3 +74,8 @@ class App extends React.Component {
 }
 
 export default App
+
+export interface StoreProps {  // TODO: Making it optional is bad i guess..
+    entryStore?: EntryStore
+    controlStore?: ControlStore
+}
