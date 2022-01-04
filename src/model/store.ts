@@ -74,6 +74,7 @@ export class EntryStore {
                     const available = _this.parsedDataByYear[year as any].chunksAvailable
                     const invalidEntryCount = _this.parsedDataByYear[year as any].invalidEntryCount
                     const overallEntryCount = _this.parsedDataByYear[year as any].overallEntryCount
+                    // eslint-disable-next-line no-console
                     console.log('Finished parsing a chunk for year: ' + year + '\n'
                          + '\t chunks parsed ' + parsed + ' chunks to go ' + available + '\n '
                          + '\t entries parsed ' + overallEntryCount + ' invalid ones ' + invalidEntryCount + ' ')
@@ -88,11 +89,11 @@ export class EntryStore {
     }
 
     private addRow (csvRowRaw: ParseStepResult<CsvRow>): void  {
-        // TODO: 
+        // TODO:
     }
 
-    private onChunkComplete () {
-        // TODO:
+    private onChunkComplete (): void {
+        // TODO
     }
 
 }

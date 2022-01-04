@@ -4,7 +4,7 @@ export default class SurveyEntry {
     _salary!: number
     currency: Currency = Currency.USD
 
-    // TODO: 
+    // TODO:
     // 2011-2014: How many years of IT/Programming experience do you have?
     // 2015: Years IT / Programming Experience   ; Acutally bad headers
     // 2016: experience_range and midpoint
