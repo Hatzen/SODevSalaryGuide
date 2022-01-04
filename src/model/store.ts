@@ -27,6 +27,7 @@ export class EntryStore {
         2021: new ResultSetForYear(),
         2022: new ResultSetForYear()
     }
+    // TODO: Remove dummy only used for updating..
     lastUpdatedYear = '-1'
 
     currentConfig: Config = new DefaultConfig()
@@ -49,6 +50,11 @@ export class EntryStore {
 
     setCurrencyValues(currencyValues: FreeCurrency): void {
         this.currencyValues = currencyValues
+    }
+
+    setDataForYear (entrySet: ResultSetForYear, year: number): void {
+        this.parsedDataByYear[year] = entrySet
+        this.lastUpdatedYear = 'ab'
     }
 
     initParser (): void {
