@@ -13,7 +13,10 @@ export default class SurveyEntry {
     // 2019: YearsCode,Age1stCode,YearsCodePro
     // 2020: YearsCode,YearsCodePro
     // 2021: YearsCode,YearsCodePro
-    expirienceInYears?: number
+    expirienceInYears?: {
+        min: number,
+        max: number
+    }
     // 2011 - 2013: ???
     // 2014: Gender
     // ...
@@ -44,6 +47,8 @@ export default class SurveyEntry {
     // 2019: EdLevel
     highestDegree?: string
 
+
+    country?: string
 
     get salary(): number {
         return this._salary

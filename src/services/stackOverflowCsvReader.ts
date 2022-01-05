@@ -1,4 +1,5 @@
 import Papa, { ParseStepResult } from 'papaparse'
+import { AbstractCsvRowMapper } from '../mapper/AbstractCsvRowMapper'
 import { CsvRowMapper } from '../mapper/CsvRowMapper'
 import CsvRow from '../model/csvRow'
 import ResultSetForYear from '../model/resultSetForYear'
@@ -8,9 +9,15 @@ export default class StackOverflowCsvReader {
     static readonly BASIC_CONFIG ={
         download: true,
         worker: false, // TODO: When setting to true, all years are parsed successfully. But not all are downloaded. When setting to false all are downloaded but not all parsed..
-        dynamicTyping: true,
+        // dynamicTyping: true,
         delimiter: ',',
-        header: true
+        header: true,
+        transformHeader: (header: string, index: number): string => {
+            if (header == null || header === '') {
+                return 'columnIndex-' + index
+            }
+            return header
+        }
     }
 
     private readonly chunkCount: { [year: string]: number } = {
@@ -62,6 +69,11 @@ export default class StackOverflowCsvReader {
     private handleNextChunk (resultsetForYear: ResultSetForYear, config: any): void {
         resultsetForYear.chunksParsed++
         if (resultsetForYear.chunksParsed > resultsetForYear.chunksAvailable) {
+            console.error('Set for exp:' + resultsetForYear.year)
+            console.log(AbstractCsvRowMapper.years)
+
+            console.error('Set for gender:' + resultsetForYear.year)
+            console.log(AbstractCsvRowMapper.genders)
             return
         }
         const fileName = this.generateFileName(resultsetForYear.year.toString(), resultsetForYear.chunksParsed)

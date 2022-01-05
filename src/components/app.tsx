@@ -9,7 +9,7 @@ import DisclaimerModal from './disclaimerModal'
 import MenuAppBar from './appBar'
 import { Provider } from 'mobx-react'
 import controlStore, { ControlStore } from '../stores/controlStore'
-import { Box, Tab, Tabs } from '@material-ui/core'
+import { Tab, Tabs } from '@material-ui/core'
 
 interface AppState {
     components: number[],

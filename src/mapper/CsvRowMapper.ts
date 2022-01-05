@@ -6,12 +6,16 @@ import { CsvRowMapper2015 } from './CsvRowMapper2015'
 import { CsvRowMapper2016 } from './CsvRowMapper2016'
 import { CsvRowMapper2011 } from './CsvRowMapper2011'
 import { CsvRowMapper2019 } from './CsvRowMapper2019'
+import { CsvRowMapper2014 } from './CsvRowMapper2014'
+import { CsvRowMapper2017 } from './CsvRowMapper2017'
 
 export class CsvRowMapper {
     static readonly INVALID_ENTRY = new SurveyEntry()
     private readonly MAPPER_2011 = new CsvRowMapper2011()
+    private readonly MAPPER_2014 = new CsvRowMapper2014()
     private readonly MAPPER_2015 = new CsvRowMapper2015()
     private readonly MAPPER_2016 = new CsvRowMapper2016()
+    private readonly MAPPER_2017 = new CsvRowMapper2017()
     private readonly MAPPER_2018 = new CsvRowMapper2018()
     private readonly MAPPER_2019 = new CsvRowMapper2019()
 
@@ -29,15 +33,19 @@ export class CsvRowMapper {
         case 2011:
         case 2012:
         case 2013:
-        case 2014:
             mapper = this.MAPPER_2011
             break
+        case 2014:
+            mapper = this.MAPPER_2014
+            break
         case 2015:
-        case 2017: // TODO: 2017 has "Currency" 2015 not..
             mapper = this.MAPPER_2015
             break
         case 2016:
             mapper = this.MAPPER_2016
+            break
+        case 2017: // TODO: 2017 has "Currency" 2015 not..
+            mapper = this.MAPPER_2017
             break
         case 2018:
             mapper = this.MAPPER_2018
