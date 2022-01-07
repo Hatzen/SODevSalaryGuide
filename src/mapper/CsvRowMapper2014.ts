@@ -5,4 +5,9 @@ export class CsvRowMapper2014 extends AbstractCsvRowMapper {
     readonly CURRENCY_KEY = AbstractCsvRowMapper.COLUMN_DONT_EXIST
     readonly GENDER_KEY = 'Gender'
     readonly YEARS_OF_EXPIERIENCE = 'How many years of IT/Programming experience do you have?'
+    readonly ABILITIES_KEY = {
+        initial: 'Which of the following languages or technologies have you used significantly in the past year?',
+        from: 43,
+        to: 54
+    }
 }

@@ -5,4 +5,5 @@ export class CsvRowMapper2015 extends AbstractCsvRowMapper {
     readonly CURRENCY_KEY = AbstractCsvRowMapper.COLUMN_DONT_EXIST
     readonly GENDER_KEY = 'Gender'
     readonly YEARS_OF_EXPIERIENCE = 'Years IT / Programming Experience'
+    readonly ABILITIES_KEY = AbstractCsvRowMapper.COLUMN_DONT_EXIST
 }

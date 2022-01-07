@@ -69,11 +69,25 @@ export default class StackOverflowCsvReader {
     private handleNextChunk (resultsetForYear: ResultSetForYear, config: any): void {
         resultsetForYear.chunksParsed++
         if (resultsetForYear.chunksParsed > resultsetForYear.chunksAvailable) {
+            /*
             console.error('Set for exp:' + resultsetForYear.year)
             console.log(AbstractCsvRowMapper.years)
 
             console.error('Set for gender:' + resultsetForYear.year)
             console.log(AbstractCsvRowMapper.genders)
+            */
+
+            console.error('Set for abi:' + resultsetForYear.year)
+
+            const filteredValues = new Map(
+                [...AbstractCsvRowMapper.abilities]
+                    .filter(([k, v]) => v > 10 )
+            )
+              
+            // const filteredValues =
+            //    .filter(e => AbstractCsvRowMapper.abilities.get(e) > 3)
+            console.log(filteredValues)
+
             return
         }
         const fileName = this.generateFileName(resultsetForYear.year.toString(), resultsetForYear.chunksParsed)

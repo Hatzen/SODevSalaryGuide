@@ -2,11 +2,14 @@ import { Gender } from '../model/config'
 import CsvRow from '../model/csvRow'
 import SurveyEntry, { Currency } from '../model/surveyEntry'
 
+type ColumnList = { initial: string, from: number, to: number}
+
 interface ICsvRowMapper {
     readonly SALARY_KEY: string
     readonly CURRENCY_KEY: string
     readonly GENDER_KEY: string
     readonly YEARS_OF_EXPIERIENCE: string
+    readonly ABILITIES_KEY: string | ColumnList
 }
 
 export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
@@ -14,19 +17,50 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
 
     static genders: Set<any> = new Set()
     static years: Set<any> = new Set()
+    static abilities: Map<any, number> = new Map()
 
     abstract readonly SALARY_KEY: string
     abstract readonly CURRENCY_KEY: string
     abstract readonly GENDER_KEY: string
     abstract readonly YEARS_OF_EXPIERIENCE: string
+    abstract readonly ABILITIES_KEY: string | { initial: string, from: number, to: number}
 
     map (csvRow: CsvRow): SurveyEntry {
         const result = new SurveyEntry()
         this.setSalary(csvRow, result)
         this.setGender(csvRow, result)
         this.setYearsOfExpirience(csvRow, result)
+        this.setAbilities(csvRow, result)
         return result
     }
+    
+    protected setAbilities(csvRow: CsvRow, result: SurveyEntry): void {
+        if (this.ABILITIES_KEY instanceof String) {
+            const abilities = csvRow[this.ABILITIES_KEY as any]
+            if (abilities == null) {
+                return
+            }
+            abilities.split(';').forEach(abi => {
+                const newValue = (AbstractCsvRowMapper.abilities.get(abi) || 0) + 1
+                AbstractCsvRowMapper.abilities.set(abi, newValue)
+            })
+        } else {
+            const columnList = this.ABILITIES_KEY as ColumnList
+            const abilities = csvRow[columnList.initial]
+            const newValue = (AbstractCsvRowMapper.abilities.get(abilities) || 0) + 1
+            AbstractCsvRowMapper.abilities.set(abilities, newValue)
+            if (abilities == null) {
+                return
+            }
+            for (let i = columnList.from; i <= columnList.to; i++) {
+                const abi = csvRow['columnIndex-' + i]
+                const newValue = (AbstractCsvRowMapper.abilities.get(abi) || 0) + 1
+                AbstractCsvRowMapper.abilities.set(abi, newValue)
+            }
+        }
+
+    }
+
     
     protected setYearsOfExpirience(csvRow: CsvRow, result: SurveyEntry): void {
         const yearsOfExpirience = csvRow[this.YEARS_OF_EXPIERIENCE]

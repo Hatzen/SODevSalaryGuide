@@ -8,16 +8,22 @@ import { CsvRowMapper2011 } from './CsvRowMapper2011'
 import { CsvRowMapper2019 } from './CsvRowMapper2019'
 import { CsvRowMapper2014 } from './CsvRowMapper2014'
 import { CsvRowMapper2017 } from './CsvRowMapper2017'
+import { CsvRowMapper2021 } from './CsvRowMapper2021'
+import { CsvRowMapper2012 } from './CsvRowMapper2012'
+import { CsvRowMapper2013 } from './CsvRowMapper2013'
 
 export class CsvRowMapper {
     static readonly INVALID_ENTRY = new SurveyEntry()
     private readonly MAPPER_2011 = new CsvRowMapper2011()
+    private readonly MAPPER_2012 = new CsvRowMapper2012()
+    private readonly MAPPER_2013 = new CsvRowMapper2013()
     private readonly MAPPER_2014 = new CsvRowMapper2014()
     private readonly MAPPER_2015 = new CsvRowMapper2015()
     private readonly MAPPER_2016 = new CsvRowMapper2016()
     private readonly MAPPER_2017 = new CsvRowMapper2017()
     private readonly MAPPER_2018 = new CsvRowMapper2018()
     private readonly MAPPER_2019 = new CsvRowMapper2019()
+    private readonly MAPPER_2021 = new CsvRowMapper2021()
 
     private year: number
 
@@ -31,9 +37,13 @@ export class CsvRowMapper {
         let mapper: AbstractCsvRowMapper
         switch (this.year) {
         case 2011:
-        case 2012:
-        case 2013:
             mapper = this.MAPPER_2011
+            break
+        case 2012:
+            mapper = this.MAPPER_2012
+            break
+        case 2013:
+            mapper = this.MAPPER_2013
             break
         case 2014:
             mapper = this.MAPPER_2014
@@ -52,8 +62,10 @@ export class CsvRowMapper {
             break
         case 2019:
         case 2020:
-        case 2021:
             mapper = this.MAPPER_2019
+            break
+        case 2021:
+            mapper = this.MAPPER_2021
             break
         default:
             // TODO: This can not happen?
