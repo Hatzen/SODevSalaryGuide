@@ -32,7 +32,7 @@ export default class SurveyEntry {
     // 2017: HaveWorkedLanguage => ;
     // 2018 - 2020: LanguageWorkedWith => ;
     // 2021: LanguageHaveWorkedWith => ;
-    abilities?: Abilities
+    abilities?: string[] // Abilities
 
 
 

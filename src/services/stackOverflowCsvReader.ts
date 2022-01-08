@@ -6,6 +6,8 @@ import ResultSetForYear from '../model/resultSetForYear'
 
 export default class StackOverflowCsvReader {
 
+    static readonly UNNAMED_COLUMN_PREFIX =  'columnIndex-'
+
     static readonly BASIC_CONFIG ={
         download: true,
         worker: false, // TODO: When setting to true, all years are parsed successfully. But not all are downloaded. When setting to false all are downloaded but not all parsed..
@@ -14,7 +16,7 @@ export default class StackOverflowCsvReader {
         header: true,
         transformHeader: (header: string, index: number): string => {
             if (header == null || header === '') {
-                return 'columnIndex-' + index
+                return this.UNNAMED_COLUMN_PREFIX + index
             }
             return header
         }

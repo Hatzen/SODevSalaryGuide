@@ -1,8 +1,10 @@
 import React, { ChangeEvent } from 'react'
-import { Checkbox, FormGroup, FormControl, FormControlLabel, Grid, Slider, FormLabel, Box } from '@material-ui/core'
+import { Checkbox, FormGroup, FormControl, FormControlLabel, Grid, Slider, FormLabel, Box, TextField } from '@material-ui/core'
 import { inject, observer } from 'mobx-react'
 import { Abilities, Gender } from '../model/config'
 import { StoreProps } from './app'
+import Autocomplete from '@mui/material/Autocomplete'
+import { AbstractCsvRowMapper } from '../mapper/AbstractCsvRowMapper'
 
 class ControlPane extends React.Component<StoreProps> {
     private key = 0
@@ -56,8 +58,33 @@ class ControlPane extends React.Component<StoreProps> {
     }
     
     get abilities(): any {
-        const values = this.props.entryStore!.currentConfig.languages
-        return this.getCheckboxesForValues(values, Abilities, 'Languages')
+        const filterdValues =
+            [...AbstractCsvRowMapper.abilities]
+                .filter(([k, v]) => v > 10 )
+                .map(([k, v]) => k as string +  ' (' + v + ')')
+        // debugger
+        return (<Autocomplete
+            multiple
+            id="checkboxes-tags-demo"
+            options={filterdValues}
+            disableCloseOnSelect
+            // getOptionLabel={([k, v]) => k as string +  ' (' + v + ')'}
+            renderOption={(props, option, { selected }) => (
+                <li {...props}>
+                    <Checkbox
+                        // icon={icon}
+                        // checkedIcon={checkedIcon}
+                        style={{ marginRight: 8 }}
+                        checked={selected}
+                    />
+                    {option}
+                </li>
+            )}
+            style={{ width: 250 }}
+            renderInput={(params) => (
+                <TextField {...params} label="Tools and Technologies" placeholder="SQL, Java, etc." />
+            )}
+        />)
     }
 
     get slider(): any {

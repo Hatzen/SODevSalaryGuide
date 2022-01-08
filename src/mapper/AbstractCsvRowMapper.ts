@@ -1,6 +1,7 @@
 import { Gender } from '../model/config'
 import CsvRow from '../model/csvRow'
 import SurveyEntry, { Currency } from '../model/surveyEntry'
+import StackOverflowCsvReader from '../services/stackOverflowCsvReader'
 
 type ColumnList = { initial: string, from: number, to: number}
 
@@ -35,30 +36,48 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
     }
     
     protected setAbilities(csvRow: CsvRow, result: SurveyEntry): void {
-        if (this.ABILITIES_KEY instanceof String) {
-            const abilities = csvRow[this.ABILITIES_KEY as any]
-            if (abilities == null) {
-                return
-            }
-            abilities.split(';').forEach(abi => {
-                const newValue = (AbstractCsvRowMapper.abilities.get(abi) || 0) + 1
-                AbstractCsvRowMapper.abilities.set(abi, newValue)
+        const abilities = (result.abilities || [])
+        // If single column abilities are seperated with semicolon.
+        if (typeof this.ABILITIES_KEY === 'string') {
+            const abilitiesSeperatedBySemicolon = csvRow[this.ABILITIES_KEY]
+            abilitiesSeperatedBySemicolon?.split(';').forEach(abi => {
+                this.addKeyAndupdateKeyCount(abi, abilities)
             })
         } else {
+            // if multiple columns the columns after inital are unnamed.
             const columnList = this.ABILITIES_KEY as ColumnList
-            const abilities = csvRow[columnList.initial]
-            const newValue = (AbstractCsvRowMapper.abilities.get(abilities) || 0) + 1
-            AbstractCsvRowMapper.abilities.set(abilities, newValue)
+            let ability = csvRow[columnList.initial]
+            this.addKeyAndupdateKeyCount(ability, abilities)
             if (abilities == null) {
                 return
             }
             for (let i = columnList.from; i <= columnList.to; i++) {
-                const abi = csvRow['columnIndex-' + i]
-                const newValue = (AbstractCsvRowMapper.abilities.get(abi) || 0) + 1
-                AbstractCsvRowMapper.abilities.set(abi, newValue)
+                ability = csvRow[StackOverflowCsvReader.UNNAMED_COLUMN_PREFIX + i]
+                this.addKeyAndupdateKeyCount(ability, abilities)
             }
         }
+        result.abilities = abilities
+    }
 
+    private addKeyAndupdateKeyCount(key: string, targetList: string[]): void {
+        if (key == null) {
+            return
+        }
+        const id = this.valueAsId(key)
+        const invalidValues = ['response', '', 'none', 'other', 'others']
+        if (invalidValues.indexOf(id) !== -1) {
+            return
+        }
+
+        const newValue = (AbstractCsvRowMapper.abilities.get(id) || 0) + 1
+        AbstractCsvRowMapper.abilities.set(id, newValue)
+        targetList.push(id)
+    }
+
+    protected valueAsId(dirtyString: string): string {
+        // Keep only alphabetical chars.
+        // TODO: This is wrong for C++, C# etc. 
+        return dirtyString.replace(/[^a-z0-9]/gi,'').toLowerCase()
     }
 
     
