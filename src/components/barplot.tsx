@@ -1,7 +1,7 @@
 import React from 'react'
 import Plot from 'react-plotly.js'
 import { inject, observer } from 'mobx-react'
-import { injectClause, StoreProps } from './app'
+import { injectClause, StoreProps } from '../stores/storeHelper'
 
 class BarPlot extends React.Component<StoreProps> {
 

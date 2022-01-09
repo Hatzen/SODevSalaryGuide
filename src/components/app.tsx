@@ -1,5 +1,5 @@
 import React from 'react'
-import entryStore, { EntryStore } from '../stores/entryStore'
+import entryStore from '../stores/entryStore'
 import BoxPlot from './boxplot'
 import BarPlot from './barplot'
 import { Allotment, AllotmentHandle } from 'allotment'
@@ -8,9 +8,10 @@ import ControlPane from './controlPane'
 import DisclaimerModal from './disclaimerModal'
 import MenuAppBar from './appBar'
 import { Provider } from 'mobx-react'
-import controlStore, { ControlStore } from '../stores/controlStore'
+import controlStore from '../stores/controlStore'
 import { Tab, Tabs } from '@material-ui/core'
 import { UiStore } from '../stores/uiStore'
+import { StoreProps } from '../stores/storeHelper'
 
 interface AppState {
     components: number[],
@@ -105,12 +106,3 @@ class App extends React.Component<any, AppState> {
 }
 
 export default App
-
-export interface StoreProps {  // TODO: Making it optional is bad i guess..
-    entryStore?: EntryStore
-    controlStore?: ControlStore
-    uiStore?: UiStore
-}
-
-// Must be the same as listed StoreProps props. Cannot be initalized as it is not
-export const injectClause = ['entryStore', 'controlStore', 'uiStore']

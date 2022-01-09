@@ -2,7 +2,7 @@ import React, { ChangeEvent } from 'react'
 import { Checkbox, FormGroup, FormControl, FormControlLabel, Grid, Slider, FormLabel, Box, TextField } from '@material-ui/core'
 import { inject, observer } from 'mobx-react'
 import { Gender } from '../model/config'
-import { injectClause, StoreProps } from './app'
+import { injectClause, StoreProps } from '../stores/storeHelper'
 import Autocomplete from '@mui/material/Autocomplete'
 import { AbstractCsvRowMapper } from '../mapper/AbstractCsvRowMapper'
 

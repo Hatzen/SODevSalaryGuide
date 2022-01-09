@@ -3,7 +3,7 @@ import Plot from 'react-plotly.js'
 import Loader from 'react-loader-spinner'
 import { inject, observer } from 'mobx-react'
 import SurveyEntry from '../model/surveyEntry'
-import { injectClause, StoreProps } from './app'
+import { injectClause, StoreProps } from '../stores/storeHelper'
 
 class BoxPlot extends React.Component<StoreProps> {
 
