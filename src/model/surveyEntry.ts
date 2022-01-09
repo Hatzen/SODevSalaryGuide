@@ -1,4 +1,4 @@
-import { Abilities, Gender } from './config'
+import { Gender } from './config'
 
 export default class SurveyEntry {
     _salary!: number
@@ -13,7 +13,10 @@ export default class SurveyEntry {
     // 2019: YearsCode,Age1stCode,YearsCodePro
     // 2020: YearsCode,YearsCodePro
     // 2021: YearsCode,YearsCodePro
-    expirienceInYears?: number
+    expirienceInYears?: {
+        min: number,
+        max: number
+    }
     // 2011 - 2013: ???
     // 2014: Gender
     // ...
@@ -21,15 +24,15 @@ export default class SurveyEntry {
     gender?: Gender
     // 2011: What type of project are you developing? => #30 - #43
     // 2012: What type of project are you developing? #22
-    // Which languages are you proficient in? => #23 - #37
-    // 2013: Which of the following languages or technologies have you used significantly in the past year? => x - x + 13
+    //    // Which languages are you proficient in? => #23 - #37
+    // 2013: Which of the following languages or technologies have you used significantly in the past year? => 57 - 70
     // 2014: Which of the following languages or technologies have you used significantly in the past year? => 43 - 54
     // 2015: ??
     // 2016: tech_do => With ; seperated
     // 2017: HaveWorkedLanguage => ;
     // 2018 - 2020: LanguageWorkedWith => ;
     // 2021: LanguageHaveWorkedWith => ;
-    abilities?: Abilities
+    abilities?: string[] // Abilities
 
 
 
@@ -44,6 +47,8 @@ export default class SurveyEntry {
     // 2019: EdLevel
     highestDegree?: string
 
+
+    country?: string
 
     get salary(): number {
         return this._salary
