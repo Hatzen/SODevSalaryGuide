@@ -5,11 +5,11 @@ import SurveyEntry from '../model/surveyEntry'
 // https://devlinduldulao.pro/mobx-in-a-nutshell/
 export class ControlStore {
     
-    controlState: ControlState
+    controlState: ControlState = new ControlState({})
 
     constructor() {
         makeAutoObservable(this)
-        this.controlState = new ControlState({
+        this.setControlState(new ControlState({
             selectedYears: {
                 2011: true
             },
@@ -19,7 +19,7 @@ export class ControlStore {
             },
             genders: [Gender.MALE, Gender.FEMALE, Gender.OTHER],
             abilities: []
-        })
+        }))
     }
 
     /**
@@ -27,7 +27,7 @@ export class ControlStore {
      */
 
     setControlState (controlState: ControlState): void {
-        this.controlState = controlState
+        Object.assign(this.controlState, controlState)
     }
     
     setControlStateValue(property: string, newValue: any): void {
@@ -49,10 +49,11 @@ export class ControlState {
     }
 
     filterByState(entry: SurveyEntry): boolean {
-        
-        return this.filterByGender(entry) &&
-            this.filterByExpierience(entry) &&
-            this.filterByAbilities(entry)
+        // debugger
+        return this.filterByExpierience(entry)
+            // this.filterByGender(entry) &&
+            //&&
+            //this.filterByAbilities(entry)
     }
 
     private filterByAbilities(entry: SurveyEntry): boolean {

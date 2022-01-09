@@ -4,6 +4,7 @@ import Loader from 'react-loader-spinner'
 import { inject, observer } from 'mobx-react'
 import SurveyEntry from '../model/surveyEntry'
 import { injectClause, StoreProps } from '../stores/storeHelper'
+import { Layout } from 'plotly.js'
 
 class BoxPlot extends React.Component<StoreProps> {
 
@@ -16,38 +17,41 @@ class BoxPlot extends React.Component<StoreProps> {
     }
 
     render(): JSX.Element {
-        return (
-            <div style={{background: 'rgba(52, 52, 52, 0.8)', zIndex:1000, padding: 'auto',
-                position: 'absolute', top: 0, left: 0, right:0, bottom: 0}}>
+        /*
+
                 <div>
                     {this.getLoader()}
                 </div>
-                <div style={{position: 'absolute', top: 0, bottom: 0, left:0, right: 0, overflow: 'auto'}}>
-                    <Plot
-                        data={this.data}
-                        layout={ {width: this.width, height: this.height, title: '', showlegend: false} }
-                    // TODO: Check Layout.template
-                    // TODO: Check Config.static for temporary disable?
-                    />
-                </div>
+        */
+        return (
+            <div style={{position: 'absolute', top: 0, bottom: 0, left:0, right: 0, overflow: 'auto'}}>
+                <Plot
+                    data={this.data}
+                    layout={this.layout}
+                // TODO: Check Layout.template
+                // TODO: Check Config.static for temporary disable?
+                />
             </div>
         )
     }
 
     getLoader(): JSX.Element {
         return (
-            <div style={{position: 'relative',
-                top: 'calc(50% - 75px)',
-                bottom: 'calc(50% - 75px)',
-                left: 'calc(50% - 75px)',
-                right: 'calc(50% - 75px)'
-            }}>
-                <Loader
-                    type="Audio"
-                    color="#993300"
-                    height={150}
-                    width={150}
-                    secondaryColor="#000000" />
+            <div style={{background: 'rgba(52, 52, 52, 0.8)', zIndex:1000, padding: 'auto',
+                position: 'absolute', top: 0, left: 0, right:0, bottom: 0}}>
+                <div style={{position: 'relative',
+                    top: 'calc(50% - 75px)',
+                    bottom: 'calc(50% - 75px)',
+                    left: 'calc(50% - 75px)',
+                    right: 'calc(50% - 75px)'
+                }}>
+                    <Loader
+                        type="Audio"
+                        color="#993300"
+                        height={150}
+                        width={150}
+                        secondaryColor="#000000" />
+                </div>
             </div>
         )
     }
@@ -76,6 +80,20 @@ class BoxPlot extends React.Component<StoreProps> {
                 ...this.defaultBoxConfig
             }
             ])
+    }
+
+    get layout(): Partial<Layout> {
+        return {
+            autosize: false,
+            width: this.width,
+            height: this.height,
+            title: '',
+            showlegend: false,
+            yaxis: {fixedrange: true},
+            xaxis : {fixedrange: true},
+            paper_bgcolor: '#FF000000',
+            plot_bgcolor: '#FF000000'
+        }
     }
 
     get width(): number {

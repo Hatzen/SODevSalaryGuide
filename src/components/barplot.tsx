@@ -7,16 +7,13 @@ class BarPlot extends React.Component<StoreProps> {
 
     render(): JSX.Element {
         return (
-            <div style={{background: 'rgba(52, 52, 52, 0.8)', zIndex:1000, padding: 'auto',
-                position: 'absolute', top: 0, left: 0, right:0, bottom: 0}}>
-                <div style={{position: 'absolute', top: 0, bottom: 0, left:0, right: 0, overflow: 'auto'}}>
-                    <Plot
-                        data={this.data}
-                        layout={ {barmode: 'group', width: this.width, height: this.height, title: '', showlegend: false} }
-                    // TODO: Check Layout.template
-                    // TODO: Check Config.static for temporary disable?
-                    />
-                </div>
+            <div style={{position: 'absolute', top: 0, bottom: 0, left:0, right: 0, overflow: 'auto'}}>
+                <Plot
+                    data={this.data}
+                    layout={ {barmode: 'group', width: this.width, height: this.height, title: '', showlegend: false} }
+                // TODO: Check Layout.template
+                // TODO: Check Config.static for temporary disable?
+                />
             </div>
         )
     }
