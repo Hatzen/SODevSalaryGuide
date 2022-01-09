@@ -3,7 +3,7 @@ import Plot from 'react-plotly.js'
 import Loader from 'react-loader-spinner'
 import { inject, observer } from 'mobx-react'
 import SurveyEntry from '../model/surveyEntry'
-import { StoreProps } from './app'
+import { injectClause, StoreProps } from './app'
 
 class BoxPlot extends React.Component<StoreProps> {
 
@@ -53,7 +53,7 @@ class BoxPlot extends React.Component<StoreProps> {
     }
 
     private get data(): any { // TODO: Plotty Data
-        const resultList = this.props.entryStore!.parsedDataByYear
+        const resultList = this.props.uiStore!.filteredData
         const allData = this.props.entryStore!.parsedData
 
         const displayYears = this.props.controlStore?.controlState.selectedYears
@@ -64,7 +64,7 @@ class BoxPlot extends React.Component<StoreProps> {
                 return {
                     x: key,
                     name: key,
-                    y: resultList[key as any].resultSet.map((entry: SurveyEntry)  => entry.salary),
+                    y: resultList[key as any].map((entry: SurveyEntry)  => entry.salary),
                     ...this.defaultBoxConfig
                 }
             })
@@ -87,4 +87,4 @@ class BoxPlot extends React.Component<StoreProps> {
     }
 }
 
-export default inject('entryStore', 'controlStore')(observer(BoxPlot))
+export default inject(...injectClause)(observer(BoxPlot))

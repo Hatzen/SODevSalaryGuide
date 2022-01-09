@@ -1,8 +1,8 @@
 import React, { ChangeEvent } from 'react'
 import { Checkbox, FormGroup, FormControl, FormControlLabel, Grid, Slider, FormLabel, Box, TextField } from '@material-ui/core'
 import { inject, observer } from 'mobx-react'
-import { Abilities, Gender } from '../model/config'
-import { StoreProps } from './app'
+import { Gender } from '../model/config'
+import { injectClause, StoreProps } from './app'
 import Autocomplete from '@mui/material/Autocomplete'
 import { AbstractCsvRowMapper } from '../mapper/AbstractCsvRowMapper'
 
@@ -155,4 +155,4 @@ class ControlPane extends React.Component<StoreProps> {
 
 }
 
-export default inject('entryStore', 'controlStore')(observer(ControlPane))
+export default inject(...injectClause)(observer(ControlPane))

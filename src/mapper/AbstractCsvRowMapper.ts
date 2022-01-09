@@ -76,7 +76,7 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
 
     protected valueAsId(dirtyString: string): string {
         // Keep only alphabetical chars.
-        // TODO: This is wrong for C++, C# etc. 
+        // TODO: This is wrong for C++, C# etc.
         return dirtyString.replace(/[^a-z0-9]/gi,'').toLowerCase()
     }
 

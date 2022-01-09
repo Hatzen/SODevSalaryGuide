@@ -1,4 +1,4 @@
-import { Abilities, Gender } from './config'
+import { Gender } from './config'
 
 export default class SurveyEntry {
     _salary!: number
