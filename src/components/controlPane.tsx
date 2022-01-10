@@ -8,15 +8,13 @@ import { AbstractCsvRowMapper } from '../mapper/AbstractCsvRowMapper'
 
 class ControlPane extends React.Component<StoreProps> {
     private key = 0
-    state = {
-        range: [3, 6]
-    }
 
     render(): JSX.Element {
+        // Focused false as otherwise the labels change their color unintentionally.
         return (
             <div style={{padding: 50, overflow: 'hidden', position: 'relative', top: 0, left: 0, right: 0, bottom: 0}}>
                 <Box sx={{ display: 'flex' }}>
-                    <FormControl component="fieldset" variant="standard">
+                    <FormControl focused={false} component="fieldset" variant="standard">
                         <FormLabel component="legend">Include Data from years</FormLabel>
                         <FormGroup key={1}>
                             {this.years}
@@ -38,7 +36,9 @@ class ControlPane extends React.Component<StoreProps> {
         }
         const yearOption = selectableYears.map((year: string) => {
             const yearSelected = config.controlState.selectedYears[parseInt(year)]
-            return <FormControlLabel key={this.key++} control={<Checkbox name={year} defaultChecked={yearSelected} onChange={this.handleChanges.bind(this)}/>} label={year} />
+            return <FormControlLabel key={this.key++} control={
+                <Checkbox name={year} defaultChecked={yearSelected} onChange={this.handleChanges.bind(this)}/>
+            } label={year} />
         })
         return (
             <Grid container
@@ -93,7 +93,7 @@ class ControlPane extends React.Component<StoreProps> {
                 <FormLabel component="legend">Years of Expirience</FormLabel>
                 <Slider
                     style={{ width: '90%', minWidth: '200px' }}
-                    value={this.state.range}
+                    value={this.valuesForExp}
                     min={0}
                     step={1}
                     max={40}
@@ -106,6 +106,11 @@ class ControlPane extends React.Component<StoreProps> {
                 />
             </div>
         )
+    }
+
+    get valuesForExp(): number[] {
+        debugger
+        return Object.values(this.props.controlStore!.controlState.expirienceInYears)
     }
     
     get gender(): any {
@@ -144,7 +149,7 @@ class ControlPane extends React.Component<StoreProps> {
     }
 
     handleChange(event: ChangeEvent<any>, value: number | number[]): void {
-        this.setState({range: value as number[]})
+        this.props.controlStore!.setExp(value as number[])
     }
 
     // https://stackoverflow.com/a/43746799/8524651

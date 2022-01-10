@@ -71,7 +71,7 @@ export class UiStore {
     udpateFilteredData (): void {
         //debugger // TODO: this.dataChanged only changes when applying observer.. Which is failing in constructor as objects are not initialized???
         if (this.dataChanged === true) {
-            debugger
+            // debugger
             this.dataChanged = false
             Object.keys(this.entryStore.parsedDataByYear).forEach((year: any) => {
                 const parsedData = this.entryStore.parsedDataByYear[year]
