@@ -4,62 +4,92 @@ import SurveyEntry from '../model/surveyEntry'
 
 // https://devlinduldulao.pro/mobx-in-a-nutshell/
 export class ControlStore {
+    selectedYears: { [year: number]: boolean } = {
+        2011: true
+    }
+    expirienceInYears: [min: number, max:number] = [4, 20]
+    genders: Gender[] = [Gender.MALE, Gender.FEMALE, Gender.OTHER]
+    abilities: string[] = []
     
-    controlState: ControlState = new ControlState({})
-
     constructor() {
         makeAutoObservable(this)
-        this.setControlState(new ControlState({
-            selectedYears: {
-                2011: true
-            },
-            expirienceInYears: {
-                min: 0,
-                max: 40
-            },
-            genders: [Gender.MALE, Gender.FEMALE, Gender.OTHER],
-            abilities: []
-        }))
+    }
+
+    /**
+     * Computed
+     */
+
+    get controlState(): ControlState {
+        const selectedYears = this.selectedYears
+        const expirienceInYears = this.expirienceInYears
+        const genders = this.genders
+        const abilities = this.abilities
+        return new ControlState({
+            selectedYears,
+            expirienceInYears,
+            genders,
+            abilities
+        } as ControlState)
     }
 
     /**
      * Actions
      */
 
-    setControlState (controlState: ControlState): void {
-        Object.assign(this.controlState, controlState)
+    setYears(selectedYears: { [year: number]: boolean }): void {
+        this.selectedYears = selectedYears
     }
-    
-    setControlStateValue(property: string, newValue: any): void {
-        this.controlState.selectedYears[property as any] = newValue
+
+    setExp(values: number[]): void {
+        this.expirienceInYears = [values[0], values[1]]
     }
+
+    setGenders(value: Gender[]): void {
+        this.genders = value
+    }
+
+    setAbilities(abilities: string[]): void {
+        debugger
+        this.abilities = abilities
+    }
+}
+
+export enum ControlStateProperties {
+    PROPERTY_NAME_SELECTED_YEARS = 'selectedYears',
+    PROPERTY_NAME_EXPIRIENCE_IN_YEARS = 'expirienceInYears',
+    PROPERTY_NAME_GENDERS = 'genders',
+    PROPERTY_NAME_ABILITIES = 'abilities'
 }
 
 export class ControlState {
     selectedYears!: { [year: number]: boolean }
-    expirienceInYears!: {
-        min: number,
-        max: number
-    }
+    expirienceInYears!: [min: number, max:number]
     genders!: Gender[]
     abilities!: string[]
 
-    constructor (partial: Partial<ControlState>) {
+    constructor (partial: ControlState) {
         Object.assign(this, partial)
     }
 
     filterByState(entry: SurveyEntry): boolean {
         // debugger
         return this.filterByExpierience(entry)
-            // this.filterByGender(entry) &&
-            //&&
-            //this.filterByAbilities(entry)
+            && this.filterByAbilities(entry)
+        // this.filterByGender(entry) &&
     }
 
     private filterByAbilities(entry: SurveyEntry): boolean {
-        return this.abilities.some(
-            (ability) => entry.abilities?.indexOf(ability) !== -1
-        )
+        const match = this.abilities.some(
+            (ability) => entry.abilities?.indexOf(ability) !== -1)
+        if (this.abilities.length > 0 && entry.abilities != null) {
+            console.error("Test:")
+            console.error(this.abilities)
+            console.error(entry.abilities)
+        }
+        if (match) {
+            debugger
+        }
+        return match
     }
 
     private filterByGender(entry: SurveyEntry): boolean {
@@ -69,8 +99,10 @@ export class ControlState {
     private filterByExpierience(entry: SurveyEntry): boolean {
         const expirienceInYears = entry.expirienceInYears
         if (expirienceInYears != null) {
-            if (expirienceInYears.max <= this.expirienceInYears.max
-                || expirienceInYears.min >= this.expirienceInYears.min) {
+            const max = this.expirienceInYears[1]
+            const min = this.expirienceInYears[0]
+            if (expirienceInYears.max <= max
+                || expirienceInYears.min >= min) {
                 return true
             }
         }

@@ -19,6 +19,7 @@ export class EntryStore {
 
     constructor() {
         makeAutoObservable(this)
+        debugger
         this.loadData()
     }
 

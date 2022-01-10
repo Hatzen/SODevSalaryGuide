@@ -8,15 +8,13 @@ import { AbstractCsvRowMapper } from '../mapper/AbstractCsvRowMapper'
 
 class ControlPane extends React.Component<StoreProps> {
     private key = 0
-    state = {
-        range: [3, 6]
-    }
 
     render(): JSX.Element {
+        // Focused false as otherwise the labels change their color unintentionally.
         return (
             <div style={{padding: 50, overflow: 'hidden', position: 'relative', top: 0, left: 0, right: 0, bottom: 0}}>
                 <Box sx={{ display: 'flex' }}>
-                    <FormControl component="fieldset" variant="standard">
+                    <FormControl focused={false} component="fieldset" variant="standard">
                         <FormLabel component="legend">Include Data from years</FormLabel>
                         <FormGroup key={1}>
                             {this.years}
@@ -38,7 +36,9 @@ class ControlPane extends React.Component<StoreProps> {
         }
         const yearOption = selectableYears.map((year: string) => {
             const yearSelected = config.controlState.selectedYears[parseInt(year)]
-            return <FormControlLabel key={this.key++} control={<Checkbox name={year} defaultChecked={yearSelected} onChange={this.handleChanges.bind(this)}/>} label={year} />
+            return <FormControlLabel key={this.key++} control={
+                <Checkbox name={year} defaultChecked={yearSelected} onChange={this.handleChanges.bind(this)}/>
+            } label={year} />
         })
         return (
             <Grid container
@@ -61,13 +61,15 @@ class ControlPane extends React.Component<StoreProps> {
         const filterdValues =
             [...AbstractCsvRowMapper.abilities]
                 .filter(([k, v]) => v > 10 )
-                .map(([k, v]) => k as string +  ' (' + v + ')')
+                .map(([k, v]) => k as string)
+                // .map(([k, v]) => k as string +  ' (' + v + ')')
         // debugger
         return (<Autocomplete
             multiple
             id="checkboxes-tags-demo"
             options={filterdValues}
             disableCloseOnSelect
+            onChange={this.handleChangesForAbilities.bind(this)}
             // getOptionLabel={([k, v]) => k as string +  ' (' + v + ')'}
             renderOption={(props, option, { selected }) => (
                 <li {...props}>
@@ -93,7 +95,7 @@ class ControlPane extends React.Component<StoreProps> {
                 <FormLabel component="legend">Years of Expirience</FormLabel>
                 <Slider
                     style={{ width: '90%', minWidth: '200px' }}
-                    value={this.state.range}
+                    value={this.valuesForExp}
                     min={0}
                     step={1}
                     max={40}
@@ -107,14 +109,18 @@ class ControlPane extends React.Component<StoreProps> {
             </div>
         )
     }
+
+    get valuesForExp(): number[] {
+        return this.props.controlStore!.expirienceInYears
+    }
     
     get gender(): any {
-        const values = this.props.entryStore!.currentConfig.gender
+        const values = this.props.controlStore!.genders
         return this.getCheckboxesForValues(values, Gender, 'Gender')
     }
 
     getGenderForValue(gender: Gender): any {
-        const selectedGenders = this.props.entryStore!.currentConfig.gender
+        const selectedGenders = this.props.controlStore!.genders
         return (
             <FormControlLabel control={<Checkbox defaultChecked={selectedGenders.find(selected => selected === gender) != null} />} label={gender} />
         )
@@ -143,14 +149,19 @@ class ControlPane extends React.Component<StoreProps> {
         )
     }
 
+    handleChangesForAbilities(event: ChangeEvent<any>, value: string[]): void {
+        this.props.controlStore!.setAbilities(value)
+    }
+
     handleChange(event: ChangeEvent<any>, value: number | number[]): void {
-        this.setState({range: value as number[]})
+        this.props.controlStore!.setExp(value as number[])
     }
 
     // https://stackoverflow.com/a/43746799/8524651
     private handleChanges(event: any, newValue: any): void {
         event.persist() // allow native event access (see: https://facebook.github.io/react/docs/events.html)
-        this.props.controlStore!.setControlStateValue(event.target.name, newValue)
+        const year = event.target.name
+        this.props.controlStore!.selectedYears[year] = newValue
     }
 
 }
