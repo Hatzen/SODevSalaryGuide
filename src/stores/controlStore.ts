@@ -1,72 +1,56 @@
-import { action, makeAutoObservable, makeObservable, observable } from 'mobx'
+import { makeAutoObservable } from 'mobx'
 import { Gender } from '../model/config'
 import SurveyEntry from '../model/surveyEntry'
 
 // https://devlinduldulao.pro/mobx-in-a-nutshell/
 export class ControlStore {
+    selectedYears: { [year: number]: boolean } = {
+        2011: true
+    }
+    expirienceInYears: [min: number, max:number] = [4, 20]
+    genders: Gender[] = [Gender.MALE, Gender.FEMALE, Gender.OTHER]
+    abilities: string[] = []
     
-    controlState: ControlState = new ControlState({
-        selectedYears: {
-            2011: true
-        },
-        expirienceInYears: {
-            min: 4,
-            max: 20
-        },
-        genders: [Gender.MALE, Gender.FEMALE, Gender.OTHER],
-        abilities: []
-    })
-
     constructor() {
-        // makeAutoObservable(this)
+        makeAutoObservable(this)
+    }
 
-        
-        makeObservable(this, {
-            controlState: observable,
-            setExp: action,
-        })
-        /*
-        this.setControlState(new ControlState({
-            selectedYears: {
-                2011: true
-            },
-            expirienceInYears: {
-                min: 4,
-                max: 20
-            },
-            genders: [Gender.MALE, Gender.FEMALE, Gender.OTHER],
-            abilities: []
-        }))*/
+    /**
+     * Computed
+     */
+
+    get controlState(): ControlState {
+        const selectedYears = this.selectedYears
+        const expirienceInYears = this.expirienceInYears
+        const genders = this.genders
+        const abilities = this.abilities
+        return new ControlState({
+            selectedYears,
+            expirienceInYears,
+            genders,
+            abilities
+        } as ControlState)
     }
 
     /**
      * Actions
      */
 
-    setControlState (controlState: ControlState): void {
-        Object.assign(this.controlState, controlState)
-    }
-    
-    setControlStateValue(property: string, newValue: any): void {
-        this.controlState.selectedYears[property as any] = newValue
+    setYears(selectedYears: { [year: number]: boolean }): void {
+        this.selectedYears = selectedYears
     }
 
     setExp(values: number[]): void {
-        console.log('setExp')
-        console.log(values)
-        this.controlState.expirienceInYears.min = values[0]
-        this.controlState.expirienceInYears.max = values[1]
-        console.log(this.controlState)
-        /*
-        this.controlState.expirienceInYears = {
-            min: values[0],
-            max: values[1]
-        }
-        */
+        this.expirienceInYears = [values[0], values[1]]
     }
 
     setGenders(value: Gender[]): void {
-        this.controlState.genders = value
+        this.genders = value
+    }
+
+    setAbilities(abilities: string[]): void {
+        debugger
+        this.abilities = abilities
     }
 }
 
@@ -79,29 +63,33 @@ export enum ControlStateProperties {
 
 export class ControlState {
     selectedYears!: { [year: number]: boolean }
-    expirienceInYears!: {
-        min: number,
-        max: number
-    }
+    expirienceInYears!: [min: number, max:number]
     genders!: Gender[]
     abilities!: string[]
 
-    constructor (partial: Partial<ControlState>) {
+    constructor (partial: ControlState) {
         Object.assign(this, partial)
     }
 
     filterByState(entry: SurveyEntry): boolean {
         // debugger
         return this.filterByExpierience(entry)
-            // this.filterByGender(entry) &&
-            //&&
-            //this.filterByAbilities(entry)
+            && this.filterByAbilities(entry)
+        // this.filterByGender(entry) &&
     }
 
     private filterByAbilities(entry: SurveyEntry): boolean {
-        return this.abilities.some(
-            (ability) => entry.abilities?.indexOf(ability) !== -1
-        )
+        const match = this.abilities.some(
+            (ability) => entry.abilities?.indexOf(ability) !== -1)
+        if (this.abilities.length > 0 && entry.abilities != null) {
+            console.error("Test:")
+            console.error(this.abilities)
+            console.error(entry.abilities)
+        }
+        if (match) {
+            debugger
+        }
+        return match
     }
 
     private filterByGender(entry: SurveyEntry): boolean {
@@ -111,8 +99,10 @@ export class ControlState {
     private filterByExpierience(entry: SurveyEntry): boolean {
         const expirienceInYears = entry.expirienceInYears
         if (expirienceInYears != null) {
-            if (expirienceInYears.max <= this.expirienceInYears.max
-                || expirienceInYears.min >= this.expirienceInYears.min) {
+            const max = this.expirienceInYears[1]
+            const min = this.expirienceInYears[0]
+            if (expirienceInYears.max <= max
+                || expirienceInYears.min >= min) {
                 return true
             }
         }

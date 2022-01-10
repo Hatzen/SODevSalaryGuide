@@ -61,13 +61,15 @@ class ControlPane extends React.Component<StoreProps> {
         const filterdValues =
             [...AbstractCsvRowMapper.abilities]
                 .filter(([k, v]) => v > 10 )
-                .map(([k, v]) => k as string +  ' (' + v + ')')
+                .map(([k, v]) => k as string)
+                // .map(([k, v]) => k as string +  ' (' + v + ')')
         // debugger
         return (<Autocomplete
             multiple
             id="checkboxes-tags-demo"
             options={filterdValues}
             disableCloseOnSelect
+            onChange={this.handleChangesForAbilities.bind(this)}
             // getOptionLabel={([k, v]) => k as string +  ' (' + v + ')'}
             renderOption={(props, option, { selected }) => (
                 <li {...props}>
@@ -109,17 +111,16 @@ class ControlPane extends React.Component<StoreProps> {
     }
 
     get valuesForExp(): number[] {
-        debugger
-        return Object.values(this.props.controlStore!.controlState.expirienceInYears)
+        return this.props.controlStore!.expirienceInYears
     }
     
     get gender(): any {
-        const values = this.props.entryStore!.currentConfig.gender
+        const values = this.props.controlStore!.genders
         return this.getCheckboxesForValues(values, Gender, 'Gender')
     }
 
     getGenderForValue(gender: Gender): any {
-        const selectedGenders = this.props.entryStore!.currentConfig.gender
+        const selectedGenders = this.props.controlStore!.genders
         return (
             <FormControlLabel control={<Checkbox defaultChecked={selectedGenders.find(selected => selected === gender) != null} />} label={gender} />
         )
@@ -148,6 +149,10 @@ class ControlPane extends React.Component<StoreProps> {
         )
     }
 
+    handleChangesForAbilities(event: ChangeEvent<any>, value: string[]): void {
+        this.props.controlStore!.setAbilities(value)
+    }
+
     handleChange(event: ChangeEvent<any>, value: number | number[]): void {
         this.props.controlStore!.setExp(value as number[])
     }
@@ -155,7 +160,8 @@ class ControlPane extends React.Component<StoreProps> {
     // https://stackoverflow.com/a/43746799/8524651
     private handleChanges(event: any, newValue: any): void {
         event.persist() // allow native event access (see: https://facebook.github.io/react/docs/events.html)
-        this.props.controlStore!.setControlStateValue(event.target.name, newValue)
+        const year = event.target.name
+        this.props.controlStore!.selectedYears[year] = newValue
     }
 
 }
