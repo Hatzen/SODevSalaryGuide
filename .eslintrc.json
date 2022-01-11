@@ -25,10 +25,6 @@
             "error",
             4
         ],
-        "linebreak-style": [
-            "error",
-            "unix"
-        ],
         "quotes": [
             "error",
             "single"
@@ -53,6 +49,7 @@
         "@typescript-eslint/prefer-namespace-keyword": "error",
         "@typescript-eslint/no-namespace": "error",
         "@typescript-eslint/no-useless-constructor": "error",
+        "@typescript-eslint/no-non-null-assertion": "off",
         "@typescript-eslint/explicit-function-return-type": [
         "error",
         { "allowExpressions": true }

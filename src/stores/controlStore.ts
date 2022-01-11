@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx'
-import { Gender } from '../model/config'
-import SurveyEntry from '../model/surveyEntry'
+import ControlState from '../model/controlState'
+import { Gender } from '../model/gender'
 
 // https://devlinduldulao.pro/mobx-in-a-nutshell/
 export class ControlStore {
@@ -10,6 +10,10 @@ export class ControlStore {
     expirienceInYears: [min: number, max:number] = [4, 20]
     genders: Gender[] = [Gender.MALE, Gender.FEMALE, Gender.OTHER]
     abilities: string[] = []
+    
+    gendersFilterActive = false
+    abilitiesFilterActive = false
+    expirienceFilterActive = false
     
     constructor() {
         makeAutoObservable(this)
@@ -24,11 +28,17 @@ export class ControlStore {
         const expirienceInYears = this.expirienceInYears
         const genders = this.genders
         const abilities = this.abilities
+        const gendersFilterActive = this.gendersFilterActive
+        const abilitiesFilterActive = this.abilitiesFilterActive
+        const expirienceFilterActive= this.expirienceFilterActive
         return new ControlState({
             selectedYears,
             expirienceInYears,
             genders,
-            abilities
+            abilities,
+            gendersFilterActive,
+            abilitiesFilterActive,
+            expirienceFilterActive
         } as ControlState)
     }
 
@@ -47,66 +57,21 @@ export class ControlStore {
     setGenders(value: Gender[]): void {
         this.genders = value
     }
-
+    
     setAbilities(abilities: string[]): void {
-        debugger
         this.abilities = abilities
     }
-}
 
-export enum ControlStateProperties {
-    PROPERTY_NAME_SELECTED_YEARS = 'selectedYears',
-    PROPERTY_NAME_EXPIRIENCE_IN_YEARS = 'expirienceInYears',
-    PROPERTY_NAME_GENDERS = 'genders',
-    PROPERTY_NAME_ABILITIES = 'abilities'
-}
-
-export class ControlState {
-    selectedYears!: { [year: number]: boolean }
-    expirienceInYears!: [min: number, max:number]
-    genders!: Gender[]
-    abilities!: string[]
-
-    constructor (partial: ControlState) {
-        Object.assign(this, partial)
+    setGendersFilterActive(gendersFilterActive: boolean): void {
+        this.gendersFilterActive = gendersFilterActive
     }
 
-    filterByState(entry: SurveyEntry): boolean {
-        // debugger
-        return this.filterByExpierience(entry)
-            && this.filterByAbilities(entry)
-        // this.filterByGender(entry) &&
+    setAbilitiesFilterActive(abilitiesFilterActive: boolean): void {
+        this.abilitiesFilterActive = abilitiesFilterActive
     }
-
-    private filterByAbilities(entry: SurveyEntry): boolean {
-        const match = this.abilities.some(
-            (ability) => entry.abilities?.indexOf(ability) !== -1)
-        if (this.abilities.length > 0 && entry.abilities != null) {
-            console.error("Test:")
-            console.error(this.abilities)
-            console.error(entry.abilities)
-        }
-        if (match) {
-            debugger
-        }
-        return match
-    }
-
-    private filterByGender(entry: SurveyEntry): boolean {
-        return this.genders.indexOf(entry.gender!) !== -1
-    }
-
-    private filterByExpierience(entry: SurveyEntry): boolean {
-        const expirienceInYears = entry.expirienceInYears
-        if (expirienceInYears != null) {
-            const max = this.expirienceInYears[1]
-            const min = this.expirienceInYears[0]
-            if (expirienceInYears.max <= max
-                || expirienceInYears.min >= min) {
-                return true
-            }
-        }
-        return false
+    
+    setExpirienceFilterActive(expirienceFilterActive: boolean): void {
+        this.expirienceFilterActive = expirienceFilterActive
     }
 }
 

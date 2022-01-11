@@ -1,10 +1,11 @@
 import React, { ChangeEvent } from 'react'
 import { Checkbox, FormGroup, FormControl, FormControlLabel, Grid, Slider, FormLabel, Box, TextField } from '@material-ui/core'
 import { inject, observer } from 'mobx-react'
-import { Gender } from '../model/config'
 import { injectClause, StoreProps } from '../stores/storeHelper'
 import Autocomplete from '@mui/material/Autocomplete'
 import { AbstractCsvRowMapper } from '../mapper/AbstractCsvRowMapper'
+import { Gender } from '../model/gender'
+import ControlComponentWrapper from './controlComponentWrapper'
 
 class ControlPane extends React.Component<StoreProps> {
     private key = 0
@@ -64,7 +65,7 @@ class ControlPane extends React.Component<StoreProps> {
                 .map(([k, v]) => k as string)
                 // .map(([k, v]) => k as string +  ' (' + v + ')')
         // debugger
-        return (<Autocomplete
+        const autoCompleteComponent = (<Autocomplete
             multiple
             id="checkboxes-tags-demo"
             options={filterdValues}
@@ -84,15 +85,20 @@ class ControlPane extends React.Component<StoreProps> {
             )}
             style={{ width: 250 }}
             renderInput={(params) => (
-                <TextField {...params} label="Tools and Technologies" placeholder="SQL, Java, etc." />
+                <TextField {...params} label="SQL, Java, etc." />
             )}
         />)
+        return (<ControlComponentWrapper
+            title='Tools and Technologies'
+            controlComponent={autoCompleteComponent}
+            isEnabled={this.props.controlStore!.abilitiesFilterActive}
+            enable={(event, value) => { this.props.controlStore!.setAbilitiesFilterActive(value)}}>
+        </ControlComponentWrapper>)
     }
 
     get slider(): any {
-        return (
-            <div>
-                <FormLabel component="legend">Years of Expirience</FormLabel>
+        const slider =
+            (
                 <Slider
                     style={{ width: '90%', minWidth: '200px' }}
                     value={this.valuesForExp}
@@ -106,8 +112,14 @@ class ControlPane extends React.Component<StoreProps> {
                     valueLabelDisplay="auto"
                     aria-labelledby="non-linear-slider"
                 />
-            </div>
-        )
+            )
+        
+        return (<ControlComponentWrapper
+            title='Years of Expirience'
+            controlComponent={slider}
+            isEnabled={this.props.controlStore!.expirienceFilterActive}
+            enable={(event, value) => { this.props.controlStore!.setExpirienceFilterActive(value)}}>
+        </ControlComponentWrapper>)
     }
 
     get valuesForExp(): number[] {
@@ -116,7 +128,14 @@ class ControlPane extends React.Component<StoreProps> {
     
     get gender(): any {
         const values = this.props.controlStore!.genders
-        return this.getCheckboxesForValues(values, Gender, 'Gender')
+        const checkboxes = this.getCheckboxesForValues(values, Gender, 'Gender')
+        
+        return (<ControlComponentWrapper
+            title='Years of Expirience'
+            controlComponent={checkboxes}
+            isEnabled={this.props.controlStore!.gendersFilterActive}
+            enable={(event, value) => { this.props.controlStore!.setGendersFilterActive(value)}}>
+        </ControlComponentWrapper>)
     }
 
     getGenderForValue(gender: Gender): any {

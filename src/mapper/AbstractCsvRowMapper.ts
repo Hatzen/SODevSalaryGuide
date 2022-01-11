@@ -1,5 +1,5 @@
-import { Gender } from '../model/config'
 import CsvRow from '../model/csvRow'
+import { Gender } from '../model/gender'
 import SurveyEntry, { Currency } from '../model/surveyEntry'
 import StackOverflowCsvReader from '../services/stackOverflowCsvReader'
 
@@ -64,7 +64,7 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
             return
         }
         const id = this.valueAsId(key)
-        const invalidValues = ['response', '', 'none', 'other', 'others']
+        const invalidValues = ['response', '', 'none', 'other', 'others', 'otherpleasespecify']
         if (invalidValues.indexOf(id) !== -1) {
             return
         }

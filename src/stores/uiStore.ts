@@ -1,4 +1,4 @@
-import { action, makeAutoObservable, makeObservable, observable, observe, reaction } from 'mobx'
+import { action, makeObservable, observable, observe } from 'mobx'
 import SurveyEntry from '../model/surveyEntry'
 import { ControlStore } from './controlStore'
 import {  EntryStore } from './entryStore'
@@ -70,16 +70,16 @@ export class UiStore {
     // TODO: Maybe do in worker? https://medium.com/launch-school/what-are-web-workers-4a0e1ded7a67
     udpateFilteredData (): void {
         //debugger // TODO: this.dataChanged only changes when applying observer.. Which is failing in constructor as objects are not initialized???
-        if (this.dataChanged === true) {
-            // debugger
-            this.dataChanged = false
-            Object.keys(this.entryStore.parsedDataByYear).forEach((year: any) => {
-                const parsedData = this.entryStore.parsedDataByYear[year]
-                const controlState = this.controlStore.controlState
-                this.filteredData[year] = parsedData.resultSet
-                    .filter(controlState.filterByState.bind(controlState))
-            })
-        }
+        // For better performance only render every 3 seconds (to avoid rendering every 20ms and freeze ui) and only when anything changed.
+        //if (this.dataChanged === true) {
+        this.dataChanged = false
+        Object.keys(this.entryStore.parsedDataByYear).forEach((year: any) => {
+            const parsedData = this.entryStore.parsedDataByYear[year]
+            const controlState = this.controlStore.controlState
+            this.filteredData[year] = parsedData.resultSet
+                .filter(controlState.filterByState.bind(controlState))
+        })
+        //}
     }
 
 }
