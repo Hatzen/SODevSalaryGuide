@@ -20,7 +20,8 @@ class BarPlot extends React.Component<StoreProps> {
 
     private get data(): any { // TODO: Plotty Data
         const resultList = this.props.entryStore!.parsedDataByYear
-        
+        const filteredList = this.props.uiStore!.filteredData
+
         const displayYears = this.props.controlStore?.controlState.selectedYears
 
         const invalidNumbers = Object.keys(resultList)
@@ -30,7 +31,10 @@ class BarPlot extends React.Component<StoreProps> {
         const overallNumbers = Object.keys(resultList)
             .filter(year => displayYears![year as any] === true)
             .map(key => resultList[key as any].overallEntryCount)
-
+            
+        const matchingFilterNumbers = Object.keys(filteredList)
+            .filter(year => displayYears![year as any] === true)
+            .map(key => filteredList[key as any].length)
 
         const trace1 = {
             x: displayYears,
@@ -45,8 +49,15 @@ class BarPlot extends React.Component<StoreProps> {
             name: 'considered invalid',
             type: 'bar'
         }
+        
+        const trace3 = {
+            x: displayYears,
+            y: matchingFilterNumbers,
+            name: 'matching filter',
+            type: 'bar'
+        }
       
-        return [trace1, trace2]
+        return [trace3, trace1, trace2]
     }
 
     get width(): number {

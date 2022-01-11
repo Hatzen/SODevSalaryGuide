@@ -20,6 +20,7 @@ interface AppState {
 
 class App extends React.Component<any, AppState> {
     private controlPane: React.RefObject<AllotmentHandle>
+    private uiStore: UiStore
     
     constructor(props: any) {
         super(props)
@@ -28,6 +29,8 @@ class App extends React.Component<any, AppState> {
             components: [0, 1],
             usePlot: 0
         }
+        // Store must be created only once.
+        this.uiStore = new UiStore(controlStore, entryStore)
     }
 
     render(): JSX.Element {
@@ -35,10 +38,10 @@ class App extends React.Component<any, AppState> {
         const stores: StoreProps = {
             entryStore,
             controlStore,
-            uiStore: new UiStore(controlStore, entryStore)
+            uiStore: this.uiStore
         }
 
-        const panes = (this.state as any).components
+        const panes = this.state.components
 
         return (
             <div style={fitAll}>

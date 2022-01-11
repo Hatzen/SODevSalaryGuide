@@ -1,5 +1,5 @@
-import { Gender } from '../model/config'
 import CsvRow from '../model/csvRow'
+import { Gender } from '../model/gender'
 import SurveyEntry, { Currency } from '../model/surveyEntry'
 import StackOverflowCsvReader from '../services/stackOverflowCsvReader'
 

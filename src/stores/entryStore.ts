@@ -1,6 +1,4 @@
-import Config from '../model/config'
 import FreeCurrency from '../model/currencyValues'
-import DefaultConfig from '../model/defaultConfig'
 import { makeAutoObservable } from 'mobx'
 import CurrencyService from '../services/currencyService'
 import StackOverflowCsvReader from '../services/stackOverflowCsvReader'
@@ -14,12 +12,10 @@ export class EntryStore {
     parsedData: ResultSetForYear = new ResultSetForYear()
     parsedDataByYear: EntriesByYearMap = {}
 
-    currentConfig: Config = new DefaultConfig()
     currencyValues!: FreeCurrency
 
     constructor() {
         makeAutoObservable(this)
-        debugger
         this.loadData()
     }
 
@@ -41,9 +37,11 @@ export class EntryStore {
         this.parsedDataByYear[entrySet.year] = entrySet
     }
 
+    static yearsWithData = ['2011'] // TODO: Keep centralized?
+
     initParser (): void {
         const reader = new StackOverflowCsvReader()
-        this.currentConfig.selectedYears.forEach(year => {
+        EntryStore.yearsWithData.forEach(year => {
             const resultsetForYear = new ResultSetForYear()
             resultsetForYear.year = parseInt(year)
             reader.startWorkerForYear(
