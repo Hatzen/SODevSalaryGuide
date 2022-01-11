@@ -70,7 +70,7 @@ export class UiStore {
     // TODO: Maybe do in worker? https://medium.com/launch-school/what-are-web-workers-4a0e1ded7a67
     udpateFilteredData (): void {
         //debugger // TODO: this.dataChanged only changes when applying observer.. Which is failing in constructor as objects are not initialized???
-        if (this.dataChanged === true) {
+        //if (this.dataChanged === true) {
             // debugger
             this.dataChanged = false
             Object.keys(this.entryStore.parsedDataByYear).forEach((year: any) => {
@@ -79,7 +79,7 @@ export class UiStore {
                 this.filteredData[year] = parsedData.resultSet
                     .filter(controlState.filterByState.bind(controlState))
             })
-        }
+        //}
     }
 
 }

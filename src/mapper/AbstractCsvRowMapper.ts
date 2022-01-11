@@ -64,7 +64,7 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
             return
         }
         const id = this.valueAsId(key)
-        const invalidValues = ['response', '', 'none', 'other', 'others']
+        const invalidValues = ['response', '', 'none', 'other', 'others', 'otherpleasespecify']
         if (invalidValues.indexOf(id) !== -1) {
             return
         }

@@ -49,7 +49,6 @@ export class ControlStore {
     }
 
     setAbilities(abilities: string[]): void {
-        debugger
         this.abilities = abilities
     }
 }
@@ -75,24 +74,32 @@ export class ControlState {
         // debugger
         return this.filterByExpierience(entry)
             && this.filterByAbilities(entry)
-        // this.filterByGender(entry) &&
+            && this.filterByGender(entry)
     }
 
     private filterByAbilities(entry: SurveyEntry): boolean {
+        if (this.abilities.length === 0) {
+            return true
+        }
         const match = this.abilities.some(
             (ability) => entry.abilities?.indexOf(ability) !== -1)
+        /*
         if (this.abilities.length > 0 && entry.abilities != null) {
             console.error("Test:")
             console.error(this.abilities)
             console.error(entry.abilities)
         }
+        */
         if (match) {
-            debugger
+            // debugger
         }
         return match
     }
 
     private filterByGender(entry: SurveyEntry): boolean {
+        if (this.genders.length === 0) {
+            return true
+        }
         return this.genders.indexOf(entry.gender!) !== -1
     }
 
