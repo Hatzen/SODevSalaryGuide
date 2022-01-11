@@ -7,6 +7,10 @@ export default class ControlState {
     genders!: Gender[]
     abilities!: string[]
 
+    gendersFilterActive = false
+    abilitiesFilterActive = false
+    expirienceFilterActive = false
+
     constructor (partial: ControlState) {
         Object.assign(this, partial)
     }
@@ -19,36 +23,24 @@ export default class ControlState {
     }
 
     private filterByAbilities(entry: SurveyEntry): boolean {
-        if (this.abilities.length === 0) {
+        if (this.abilities.length === 0 || this.abilitiesFilterActive === false) {
             return true
         }
-        const match = this.abilities.some(
+        return this.abilities.some(
             (ability) => entry.abilities?.indexOf(ability) !== -1)
-        /*
-        if (this.abilities.length > 0 && entry.abilities != null) {
-            console.error("Test:")
-            console.error(this.abilities)
-            console.error(entry.abilities)
-        }
-        */
-        if (match) {
-            // debugger
-        }
-        return match
     }
 
     private filterByGender(entry: SurveyEntry): boolean {
-        if (this.genders.length === 0) {
+        if (this.genders.length === 0 || this.gendersFilterActive === false) {
             return true
         }
         return this.genders.indexOf(entry.gender!) !== -1
     }
 
     private filterByExpierience(entry: SurveyEntry): boolean {
-        if (true) {
+        if (this.expirienceFilterActive === false) {
             return true
         }
-        /*
         const expirienceInYears = entry.expirienceInYears
         if (expirienceInYears != null) {
             const max = this.expirienceInYears[1]
@@ -58,6 +50,6 @@ export default class ControlState {
                 return true
             }
         }
-        return false*/
+        return false
     }
 }

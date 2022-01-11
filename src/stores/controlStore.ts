@@ -11,6 +11,10 @@ export class ControlStore {
     genders: Gender[] = [Gender.MALE, Gender.FEMALE, Gender.OTHER]
     abilities: string[] = []
     
+    gendersFilterActive = false
+    abilitiesFilterActive = false
+    expirienceFilterActive = false
+    
     constructor() {
         makeAutoObservable(this)
     }
@@ -24,11 +28,17 @@ export class ControlStore {
         const expirienceInYears = this.expirienceInYears
         const genders = this.genders
         const abilities = this.abilities
+        const gendersFilterActive = this.gendersFilterActive
+        const abilitiesFilterActive = this.abilitiesFilterActive
+        const expirienceFilterActive= this.expirienceFilterActive
         return new ControlState({
             selectedYears,
             expirienceInYears,
             genders,
-            abilities
+            abilities,
+            gendersFilterActive,
+            abilitiesFilterActive,
+            expirienceFilterActive
         } as ControlState)
     }
 
@@ -47,9 +57,21 @@ export class ControlStore {
     setGenders(value: Gender[]): void {
         this.genders = value
     }
-
+    
     setAbilities(abilities: string[]): void {
         this.abilities = abilities
+    }
+
+    setGendersFilterActive(gendersFilterActive: boolean): void {
+        this.gendersFilterActive = gendersFilterActive
+    }
+
+    setAbilitiesFilterActive(abilitiesFilterActive: boolean): void {
+        this.abilitiesFilterActive = abilitiesFilterActive
+    }
+    
+    setExpirienceFilterActive(expirienceFilterActive: boolean): void {
+        this.expirienceFilterActive = expirienceFilterActive
     }
 }
 

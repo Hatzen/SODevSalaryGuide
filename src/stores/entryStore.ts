@@ -37,7 +37,7 @@ export class EntryStore {
         this.parsedDataByYear[entrySet.year] = entrySet
     }
 
-    static yearsWithData = ['2011'] // TODO: Keep centralized?
+    static yearsWithData = ['2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021'] // TODO: Keep centralized?
 
     initParser (): void {
         const reader = new StackOverflowCsvReader()
