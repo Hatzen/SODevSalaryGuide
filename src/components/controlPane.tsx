@@ -85,7 +85,7 @@ class ControlPane extends React.Component<StoreProps> {
             )}
             style={{ width: 250 }}
             renderInput={(params) => (
-                <TextField {...params} label="SQL, Java, etc." />
+                <TextField style={{ padding: '10px' }} {...params} label="SQL, Java, etc." />
             )}
         />)
         return (<ControlComponentWrapper
@@ -128,10 +128,10 @@ class ControlPane extends React.Component<StoreProps> {
     
     get gender(): any {
         const values = this.props.controlStore!.genders
-        const checkboxes = this.getCheckboxesForValues(values, Gender, 'Gender')
+        const checkboxes = this.getCheckboxesForValues(values, Gender)
         
         return (<ControlComponentWrapper
-            title='Years of Expirience'
+            title='Gender'
             controlComponent={checkboxes}
             isEnabled={this.props.controlStore!.gendersFilterActive}
             enable={(event, value) => { this.props.controlStore!.setGendersFilterActive(value)}}>
@@ -148,7 +148,7 @@ class ControlPane extends React.Component<StoreProps> {
     // TODO: Get General generator for checkbox, slider, dropdown (company size)
     // Add generic header for: collapsible, active, weight
     // TODO: Replace any with Enum.class
-    getCheckboxesForValues<T>(selectedValues: T[], enumClass: any, title: string): any {
+    getCheckboxesForValues<T>(selectedValues: T[], enumClass: any): any {
         // Get enum values of typescript: https://stackoverflow.com/a/48768775/8524651
         const values = Object.keys(enumClass).filter((item) => {
             return isNaN(Number(item))
@@ -162,7 +162,6 @@ class ControlPane extends React.Component<StoreProps> {
         })
         return (
             <div>
-                <FormLabel component="legend">{title}</FormLabel>
                 {checkboxes}
             </div>
         )

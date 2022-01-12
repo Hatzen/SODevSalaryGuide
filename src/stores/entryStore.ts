@@ -5,6 +5,7 @@ import StackOverflowCsvReader from '../services/stackOverflowCsvReader'
 import { ParseStepResult } from 'papaparse'
 import CsvRow from '../model/csvRow'
 import ResultSetForYear from '../model/resultSetForYear'
+import { AVAILABLE_YEARS } from '../model/constantMetaData'
 
 // https://devlinduldulao.pro/mobx-in-a-nutshell/
 export class EntryStore {
@@ -37,11 +38,9 @@ export class EntryStore {
         this.parsedDataByYear[entrySet.year] = entrySet
     }
 
-    static yearsWithData = ['2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021'] // TODO: Keep centralized?
-
     initParser (): void {
         const reader = new StackOverflowCsvReader()
-        EntryStore.yearsWithData.forEach(year => {
+        AVAILABLE_YEARS.forEach(year => {
             const resultsetForYear = new ResultSetForYear()
             resultsetForYear.year = parseInt(year)
             reader.startWorkerForYear(

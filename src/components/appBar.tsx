@@ -1,19 +1,21 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import IconButton from '@material-ui/core/IconButton'
 import MenuIcon from '@material-ui/icons/Menu'
 import { Typography } from '@material-ui/core'
+import { CHUNK_COUNT_PER_YEAR } from '../model/constantMetaData'
+import { injectClause, StoreProps } from '../stores/storeHelper'
+import { inject, observer } from 'mobx-react'
 
-export interface MenuAppBarProps {
+export interface MenuAppBarProps extends StoreProps {
   menuClicked: () => void
 }
 // https://medium.com/@vivekjoy/usenetwork-create-a-custom-react-hook-to-detect-online-and-offline-network-status-and-get-network-4a2e12c7e58b
 // https://v1.mui.com/demos/app-bar/
-export default class MenuAppBar extends React.Component<MenuAppBarProps> {
+class MenuAppBar extends React.Component<MenuAppBarProps> {
     
-    /*
-    constructor(props: any) {
+    constructor(props: MenuAppBarProps) {
         super(props)
         /*const [state, setState] = useState(() => {
             return {
@@ -21,13 +23,25 @@ export default class MenuAppBar extends React.Component<MenuAppBarProps> {
                 online: navigator.onLine,
                 ...this.getNetworkConnectionInfo(),
             }
-        })
-    }*/
+        })*/
+        const info = this.getNetworkConnectionInfo()
+        debugger
+    }
     
 
     render(): JSX.Element {
-    // TODO: Info Button explain all relevant aspects to consider the salary.
-    //   CompanyBranch (Banks, Resellers), How old the company is (Backup money), etc.
+        const maxChunks = Object.values(CHUNK_COUNT_PER_YEAR)
+            .reduce((previousValue: number, currentValue: number) => {
+                return 0 + previousValue + currentValue
+            })
+        debugger
+        const chunksDownloaded = Object.values(this.props.entryStore!.parsedDataByYear)
+            .map((resultSetForYear) =>  resultSetForYear.chunksParsed)
+            .reduce((previousValue: number, currentValue: number) => {
+                return 0 + previousValue + currentValue
+            }, 0)
+        // TODO: Info Button explain all relevant aspects to consider the salary which are not matched by the survey..
+        //   CompanyBranch (Banks, Resellers), How old the company is (Backup money), etc.
         return (
             <div>
                 <AppBar position='static'>
@@ -36,24 +50,25 @@ export default class MenuAppBar extends React.Component<MenuAppBarProps> {
                             <MenuIcon />
                         </IconButton>
                         <Typography variant='h5'>
-              Stackoverflow Developer Salary Guide
-                        </Typography>
-
-                        <Typography variant='h5'>
                             Stackoverflow Developer Salary Guide
                         </Typography>
-                        NetworkInformation.downlink
+                        <Typography variant='body1'>
+                            <div style={{position: 'absolute', right: '25px'}}>
+                                {chunksDownloaded} / {maxChunks}
+                            </div>
+                        </Typography>
                     </Toolbar>
                 </AppBar>
             </div>
         )
     }
-    /*
+
     getNetworkConnectionInfo(): any {
         const connection = this.getNetworkConnection()
         if (!connection) {
             return {}
         }
+        debugger
         return {
             rtt: connection.rtt,
             type: connection.type,
@@ -83,7 +98,7 @@ export default class MenuAppBar extends React.Component<MenuAppBarProps> {
             }
             const handleOffline = (): any => {
                 setState(
-                    (prevState): any => (
+                    (prevState: any): any => (
                         {
                             ...prevState,
                             online: false,
@@ -92,7 +107,7 @@ export default class MenuAppBar extends React.Component<MenuAppBarProps> {
                 )
             }
             const handleConnectionChange = (): any => {
-                setState((prevState) => ({
+                setState((prevState: any) => ({
                     ...prevState,
                     ...this.getNetworkConnectionInfo(),
                 }))
@@ -110,7 +125,7 @@ export default class MenuAppBar extends React.Component<MenuAppBarProps> {
         return state
     }
 
-    getNetworkConnection(): any {
+    getNetworkConnection(): NetworkInformation & any {
         return (
             navigator.connection
             // ||
@@ -118,23 +133,8 @@ export default class MenuAppBar extends React.Component<MenuAppBarProps> {
             // navigator.webkitConnection ||
             // null
         )
-    }*/
-
-    /*
-    getNetworkConnectionInfo() {
-        const connection = getNetworkConnection();
-      if (!connection) {
-          return {};
-        }
-      return {
-          rtt: connection.rtt,
-          type: connection.type,
-          saveData: connection.saveData,
-          downLink: connection.downLink,
-          downLinkMax: connection.downLinkMax,
-          effectiveType: connection.effectiveType,
-        };
-      }*/
-
+    }
 
 }
+
+export default inject(...injectClause)(observer(MenuAppBar))

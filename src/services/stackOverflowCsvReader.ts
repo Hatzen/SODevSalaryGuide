@@ -1,6 +1,7 @@
 import Papa, { ParseStepResult } from 'papaparse'
 import { AbstractCsvRowMapper } from '../mapper/AbstractCsvRowMapper'
 import { CsvRowMapper } from '../mapper/CsvRowMapper'
+import { CHUNK_COUNT_PER_YEAR } from '../model/constantMetaData'
 import CsvRow from '../model/csvRow'
 import ResultSetForYear from '../model/resultSetForYear'
 
@@ -22,20 +23,6 @@ export default class StackOverflowCsvReader {
         }
     }
 
-    private readonly chunkCount: { [year: string]: number } = {
-        '2011': 1,
-        '2012': 1,
-        '2013': 1,
-        '2014': 1,
-        '2015': 3,
-        '2016': 8,
-        '2017': 10,
-        '2018': 20,
-        '2019': 20,
-        '2020': 10,
-        '2021': 9
-    }
-
     startWorkerForYear (resultsetForYear: ResultSetForYear, consumer: (row: Papa.ParseStepResult<CsvRow>) => void, completed: () => void): void {
         const config = {
             ...StackOverflowCsvReader.BASIC_CONFIG,
@@ -49,7 +36,7 @@ export default class StackOverflowCsvReader {
             }
         }
         const year = resultsetForYear.year.toString()
-        const chunkCountForYear = this.chunkCount[year]
+        const chunkCountForYear = CHUNK_COUNT_PER_YEAR[year]
         resultsetForYear.chunksParsed = 0
         resultsetForYear.chunksAvailable = chunkCountForYear
         
