@@ -25,7 +25,7 @@ class MenuAppBar extends React.Component<MenuAppBarProps> {
             }
         })*/
         const info = this.getNetworkConnectionInfo()
-        debugger
+        // 
     }
     
 
@@ -34,7 +34,7 @@ class MenuAppBar extends React.Component<MenuAppBarProps> {
             .reduce((previousValue: number, currentValue: number) => {
                 return 0 + previousValue + currentValue
             })
-        debugger
+        // 
         const chunksDownloaded = Object.values(this.props.entryStore!.parsedDataByYear)
             .map((resultSetForYear) =>  resultSetForYear.chunksParsed)
             .reduce((previousValue: number, currentValue: number) => {
@@ -68,7 +68,7 @@ class MenuAppBar extends React.Component<MenuAppBarProps> {
         if (!connection) {
             return {}
         }
-        debugger
+        // 
         return {
             rtt: connection.rtt,
             type: connection.type,

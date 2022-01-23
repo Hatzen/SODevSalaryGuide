@@ -64,7 +64,7 @@ class ControlPane extends React.Component<StoreProps> {
                 .filter(([k, v]) => v > 10 )
                 .map(([k, v]) => k as string)
                 // .map(([k, v]) => k as string +  ' (' + v + ')')
-        // debugger
+        // 
         const autoCompleteComponent = (<Autocomplete
             multiple
             id="checkboxes-tags-demo"
@@ -153,11 +153,14 @@ class ControlPane extends React.Component<StoreProps> {
         const values = Object.keys(enumClass).filter((item) => {
             return isNaN(Number(item))
         })
+        
         const checkboxes = values.map(value => {
             // TODO: How to get values
             const check = selectedValues.find(selected => (selected as any).toString() === value) != null
             return (
-                <FormControlLabel key={this.key++} control={<Checkbox defaultChecked={check} />} label={value} />
+                <FormControlLabel key={this.key++} control={<Checkbox onChange={(event, selected) => {
+                    this.props.controlStore!.setGenders(value as any)
+                }} defaultChecked={check} />} label={value} />
             )
         })
         return (

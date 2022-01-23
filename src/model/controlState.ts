@@ -16,7 +16,7 @@ export default class ControlState {
     }
 
     filterByState(entry: SurveyEntry): boolean {
-        // debugger
+        // 
         return this.filterByExpierience(entry)
             && this.filterByAbilities(entry)
             && this.filterByGender(entry)

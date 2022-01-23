@@ -57,7 +57,7 @@ export class UiStore {
     }
 
     private handleChanges(): void {
-        // debugger
+        // 
         this.dataChanged = true
         this.resetRenderSchedule()
     }
@@ -69,7 +69,7 @@ export class UiStore {
 
     // TODO: Maybe do in worker? https://medium.com/launch-school/what-are-web-workers-4a0e1ded7a67
     udpateFilteredData (): void {
-        //debugger // TODO: this.dataChanged only changes when applying observer.. Which is failing in constructor as objects are not initialized???
+        // // TODO: this.dataChanged only changes when applying observer.. Which is failing in constructor as objects are not initialized???
         // For better performance only render every 3 seconds (to avoid rendering every 20ms and freeze ui) and only when anything changed.
         //if (this.dataChanged === true) {
         this.dataChanged = false

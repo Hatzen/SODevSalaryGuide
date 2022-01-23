@@ -54,8 +54,14 @@ export class ControlStore {
         this.expirienceInYears = [values[0], values[1]]
     }
 
-    setGenders(value: Gender[]): void {
-        this.genders = value
+    setGenders(value: Gender): void {
+        
+        const index = this.genders.indexOf(value)
+        if (index !== -1) {
+            this.genders.splice(index, 1)
+        } else {
+            this.genders.push(value)
+        }
     }
     
     setAbilities(abilities: string[]): void {

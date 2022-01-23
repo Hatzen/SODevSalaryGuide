@@ -10,4 +10,7 @@ export class CsvRowMapper2011 extends AbstractCsvRowMapper {
         from: 30,
         to: 43
     }
+    readonly DEGREE = AbstractCsvRowMapper.COLUMN_DONT_EXIST
+    readonly COMPANY_SIZE = 'Which best describes the size of your company?'
+    readonly COUNTRY = 'What Country or Region do you live in?'
 }
