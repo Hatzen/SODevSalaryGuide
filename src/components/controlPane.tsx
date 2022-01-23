@@ -13,7 +13,7 @@ class ControlPane extends React.Component<StoreProps> {
     render(): JSX.Element {
         // Focused false as otherwise the labels change their color unintentionally.
         return (
-            <div style={{padding: 50, overflow: 'hidden', position: 'relative', top: 0, left: 0, right: 0, bottom: 0}}>
+            <div style={{padding: 50, overflow: 'scroll', position: 'relative', top: 0, left: 0, right: 0, maxHeight: 'calc(100% - 100px)'}}>
                 <Box sx={{ display: 'flex' }}>
                     <FormControl focused={false} component="fieldset" variant="standard">
                         <FormLabel component="legend">Include Data from years</FormLabel>
@@ -22,6 +22,9 @@ class ControlPane extends React.Component<StoreProps> {
                             {this.slider}
                             {this.gender}
                             {this.abilities}
+                            {this.sliderForCompanySize}
+                            {this.countries}
+                            {this.degrees}
                         </FormGroup>
                     </FormControl>
                 </Box>
@@ -121,6 +124,80 @@ class ControlPane extends React.Component<StoreProps> {
             enable={(event, value) => { this.props.controlStore!.setExpirienceFilterActive(value)}}>
         </ControlComponentWrapper>)
     }
+    
+    get countries(): any {
+        const filterdValues =
+            [...AbstractCsvRowMapper.countries]
+                .filter(([k, v]) => v > 10 )
+                .map(([k, v]) => k as string)
+                // .map(([k, v]) => k as string +  ' (' + v + ')')
+        const autoCompleteComponent = (<Autocomplete
+            multiple
+            id="checkboxes-tags-demo"
+            options={filterdValues}
+            disableCloseOnSelect
+            onChange={this.handleChangesForCountries.bind(this)}
+            // getOptionLabel={([k, v]) => k as string +  ' (' + v + ')'}
+            renderOption={(props, option, { selected }) => (
+                <li {...props}>
+                    <Checkbox
+                        // icon={icon}
+                        // checkedIcon={checkedIcon}
+                        style={{ marginRight: 8 }}
+                        checked={selected}
+                    />
+                    {option}
+                </li>
+            )}
+            style={{ width: 250 }}
+            renderInput={(params) => (
+                <TextField style={{ padding: '10px' }} {...params} label="USA, Japan, Germany etc." />
+            )}
+        />)
+        return (<ControlComponentWrapper
+            title='Countries'
+            controlComponent={autoCompleteComponent}
+            isEnabled={this.props.controlStore!.countriesFilterActive}
+            enable={(event, value) => { this.props.controlStore!.setCountriesFilterActive(value)}}>
+        </ControlComponentWrapper>)
+    }
+    
+    get degrees(): any {
+        const filterdValues =
+            [...AbstractCsvRowMapper.educations]
+                .filter(([k, v]) => v > 10 )
+                .map(([k, v]) => k as string)
+                // .map(([k, v]) => k as string +  ' (' + v + ')')
+        const autoCompleteComponent = (<Autocomplete
+            multiple
+            id="checkboxes-tags-demo"
+            options={filterdValues}
+            disableCloseOnSelect
+            onChange={this.handleChangesForDegree.bind(this)}
+            // getOptionLabel={([k, v]) => k as string +  ' (' + v + ')'}
+            renderOption={(props, option, { selected }) => (
+                <li {...props}>
+                    <Checkbox
+                        // icon={icon}
+                        // checkedIcon={checkedIcon}
+                        style={{ marginRight: 8 }}
+                        checked={selected}
+                    />
+                    {option}
+                </li>
+            )}
+            style={{ width: 250 }}
+            renderInput={(params) => (
+                <TextField style={{ padding: '10px' }} {...params} label="Bachelor, Master, etc." />
+            )}
+        />)
+        return (<ControlComponentWrapper
+            title='Highest Degree'
+            controlComponent={autoCompleteComponent}
+            isEnabled={this.props.controlStore!.degreeFilterActive}
+            enable={(event, value) => { this.props.controlStore!.setDegreeFilterActive(value)}}>
+        </ControlComponentWrapper>)
+    }
 
     get valuesForExp(): number[] {
         return this.props.controlStore!.expirienceInYears
@@ -169,6 +246,42 @@ class ControlPane extends React.Component<StoreProps> {
             </div>
         )
     }
+    
+    get sliderForCompanySize(): any {
+        const values = this.props.controlStore!.companySizeValues
+        const slider =
+            (
+                <Slider
+                    style={{ width: '90%', minWidth: '200px' }}
+                    value={this.props!.controlStore?.companySize}
+                    min={values.min}
+                    step={values.steps}
+                    max={values.max}
+                    // valueLabelFormat={numFormatter}
+                    // marks={followersMarks}
+                    // scale={scaleValues}
+                    onChange={this.handleChangeForCompanySize.bind(this)}
+                    valueLabelDisplay="auto"
+                    aria-labelledby="non-linear-slider"
+                />
+            )
+        
+        return (<ControlComponentWrapper
+            title='Company Size'
+            controlComponent={slider}
+            isEnabled={this.props.controlStore!.companySizeFilterActive}
+            enable={(event, value) => { this.props.controlStore!.setCompanySizeFilterActive(value)}}>
+        </ControlComponentWrapper>)
+    }
+
+    
+    handleChangesForCountries(event: ChangeEvent<any>, value: string[]): void {
+        this.props.controlStore!.setCountries(value)
+    }
+
+    handleChangesForDegree(event: ChangeEvent<any>, value: string[]): void {
+        this.props.controlStore!.setDegrees(value)
+    }
 
     handleChangesForAbilities(event: ChangeEvent<any>, value: string[]): void {
         this.props.controlStore!.setAbilities(value)
@@ -176,6 +289,10 @@ class ControlPane extends React.Component<StoreProps> {
 
     handleChange(event: ChangeEvent<any>, value: number | number[]): void {
         this.props.controlStore!.setExp(value as number[])
+    }
+    
+    handleChangeForCompanySize(event: ChangeEvent<any>, value: number | number[]): void {
+        this.props.controlStore!.setCompanySize(value as number[])
     }
 
     // https://stackoverflow.com/a/43746799/8524651
