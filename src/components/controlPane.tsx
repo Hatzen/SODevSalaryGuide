@@ -67,7 +67,7 @@ class ControlPane extends React.Component<StoreProps> {
                 .filter(([k, v]) => v > 10 )
                 .map(([k, v]) => k as string)
                 // .map(([k, v]) => k as string +  ' (' + v + ')')
-        // 
+        //
         const autoCompleteComponent = (<Autocomplete
             multiple
             id="checkboxes-tags-demo"

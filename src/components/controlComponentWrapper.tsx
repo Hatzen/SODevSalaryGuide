@@ -1,4 +1,4 @@
-import { Checkbox, FormControlLabel, FormLabel } from '@material-ui/core'
+import { Checkbox, FormControlLabel } from '@material-ui/core'
 import React, { ChangeEvent } from 'react'
 
 interface ControlComponentWrapperProps {

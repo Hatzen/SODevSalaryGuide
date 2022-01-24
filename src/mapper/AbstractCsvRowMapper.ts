@@ -276,7 +276,7 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
     }
 
     protected getSalaryValue (value: string): number {
-        // 
+        //
         // console.warn("Hurray found salary" + value)
         // E.g. $60,000 - $80,000 or <20000wqe
         if (typeof value === 'string') {
@@ -295,7 +295,7 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
             if (isNaN(result)) {
                 return -1
             }
-            // 
+            //
             // TODO: Make these manipulation readable for the user.
             // If the value is greater 500k and it is "even" consider it as wrong decimal input
             if (result > 500000 && (result % 10000 === 0)) {

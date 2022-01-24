@@ -11,7 +11,19 @@ import { AVAILABLE_YEARS } from '../model/constantMetaData'
 export class EntryStore {
     
     parsedData: ResultSetForYear = new ResultSetForYear()
-    parsedDataByYear: EntriesByYearMap = {}
+    parsedDataByYear: EntriesByYearMap = {
+        2011: new ResultSetForYear(),
+        2012: new ResultSetForYear(),
+        2013: new ResultSetForYear(),
+        2014: new ResultSetForYear(),
+        2015: new ResultSetForYear(),
+        2016: new ResultSetForYear(),
+        2017: new ResultSetForYear(),
+        2018: new ResultSetForYear(),
+        2019: new ResultSetForYear(),
+        2020: new ResultSetForYear(),
+        2021: new ResultSetForYear()
+    }
 
     currencyValues!: FreeCurrency
 

@@ -57,7 +57,7 @@ export class UiStore {
     }
 
     private handleChanges(): void {
-        // 
+        //
         this.dataChanged = true
         this.resetRenderSchedule()
     }

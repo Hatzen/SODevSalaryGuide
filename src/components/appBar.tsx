@@ -7,6 +7,7 @@ import { Typography } from '@material-ui/core'
 import { CHUNK_COUNT_PER_YEAR } from '../model/constantMetaData'
 import { injectClause, StoreProps } from '../stores/storeHelper'
 import { inject, observer } from 'mobx-react'
+import Loader from 'react-loader-spinner'
 
 export interface MenuAppBarProps extends StoreProps {
   menuClicked: () => void
@@ -15,6 +16,7 @@ export interface MenuAppBarProps extends StoreProps {
 // https://v1.mui.com/demos/app-bar/
 class MenuAppBar extends React.Component<MenuAppBarProps> {
     
+    /*
     constructor(props: MenuAppBarProps) {
         super(props)
         /*const [state, setState] = useState(() => {
@@ -23,23 +25,14 @@ class MenuAppBar extends React.Component<MenuAppBarProps> {
                 online: navigator.onLine,
                 ...this.getNetworkConnectionInfo(),
             }
-        })*/
-        const info = this.getNetworkConnectionInfo()
-        // 
+        })
+        // const info = this.getNetworkConnectionInfo()
+        //
     }
+    */
     
 
     render(): JSX.Element {
-        const maxChunks = Object.values(CHUNK_COUNT_PER_YEAR)
-            .reduce((previousValue: number, currentValue: number) => {
-                return 0 + previousValue + currentValue
-            })
-        // 
-        const chunksDownloaded = Object.values(this.props.entryStore!.parsedDataByYear)
-            .map((resultSetForYear) =>  resultSetForYear.chunksParsed)
-            .reduce((previousValue: number, currentValue: number) => {
-                return 0 + previousValue + currentValue
-            }, 0)
         // TODO: Info Button explain all relevant aspects to consider the salary which are not matched by the survey..
         //   CompanyBranch (Banks, Resellers), How old the company is (Backup money), etc.
         return (
@@ -52,13 +45,39 @@ class MenuAppBar extends React.Component<MenuAppBarProps> {
                         <Typography variant='h5'>
                             Stackoverflow Developer Salary Guide
                         </Typography>
-                        <Typography variant='body1'>
-                            <div style={{position: 'absolute', right: '25px'}}>
-                                {chunksDownloaded} / {maxChunks}
-                            </div>
-                        </Typography>
+                        {this.getLoader}
                     </Toolbar>
                 </AppBar>
+            </div>
+        )
+    }
+
+    getLoader(): JSX.Element {
+        const maxChunks = Object.values(CHUNK_COUNT_PER_YEAR)
+            .reduce((previousValue: number, currentValue: number) => {
+                return 0 + previousValue + currentValue
+            })
+        //
+        const chunksDownloaded = Object.values(this.props.entryStore!.parsedDataByYear)
+            .map((resultSetForYear) =>  resultSetForYear.chunksParsed)
+            .reduce((previousValue: number, currentValue: number) => {
+                return 0 + previousValue + currentValue
+            }, 0)
+        const loadingPercentage = chunksDownloaded / maxChunks
+        return (
+            <div style={{padding: 'auto', position: 'absolute', right: '25px'}}>
+                
+                <Typography variant='body1'>
+                    <div style={{}}>
+                        {loadingPercentage} %
+                    </div>
+                </Typography>
+                <Loader
+                    type="Audio"
+                    color="#993300"
+                    height={45}
+                    width={45}
+                    secondaryColor="#000000" />
             </div>
         )
     }
@@ -68,7 +87,7 @@ class MenuAppBar extends React.Component<MenuAppBarProps> {
         if (!connection) {
             return {}
         }
-        // 
+        //
         return {
             rtt: connection.rtt,
             type: connection.type,

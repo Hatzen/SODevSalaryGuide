@@ -1,6 +1,5 @@
 import React from 'react'
 import Plot from 'react-plotly.js'
-import Loader from 'react-loader-spinner'
 import { inject, observer } from 'mobx-react'
 import SurveyEntry from '../model/surveyEntry'
 import { injectClause, StoreProps } from '../stores/storeHelper'
@@ -31,27 +30,6 @@ class BoxPlot extends React.Component<StoreProps> {
                 // TODO: Check Layout.template
                 // TODO: Check Config.static for temporary disable?
                 />
-            </div>
-        )
-    }
-
-    getLoader(): JSX.Element {
-        return (
-            <div style={{background: 'rgba(52, 52, 52, 0.8)', zIndex:1000, padding: 'auto',
-                position: 'absolute', top: 0, left: 0, right:0, bottom: 0}}>
-                <div style={{position: 'relative',
-                    top: 'calc(50% - 75px)',
-                    bottom: 'calc(50% - 75px)',
-                    left: 'calc(50% - 75px)',
-                    right: 'calc(50% - 75px)'
-                }}>
-                    <Loader
-                        type="Audio"
-                        color="#993300"
-                        height={150}
-                        width={150}
-                        secondaryColor="#000000" />
-                </div>
             </div>
         )
     }
