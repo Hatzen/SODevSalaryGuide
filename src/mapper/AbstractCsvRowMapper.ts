@@ -11,11 +11,20 @@ interface ICsvRowMapper {
     readonly GENDER_KEY: string
     readonly YEARS_OF_EXPIERIENCE: string
     readonly ABILITIES_KEY: string | ColumnList
+    readonly DEGREE: string
+    readonly COMPANY_SIZE: string
+    readonly COUNTRY: string
 }
 
+// TODO: Currently only the first chunk of data will produce a result as we only have the header there..
+// TODO: We need to fix these chunked data first..
+// TODO: Espacially 2015 header wont be set for all chunks as "salary" was added manually
 export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
     static COLUMN_DONT_EXIST = 'COLUMN_DONT_EXIST'
 
+    // Sets to distinct values and map to filter values with single response.
+    static educations: Map<any, number> = new Map()
+    static countries: Map<any, number> = new Map()
     static genders: Set<any> = new Set()
     static years: Set<any> = new Set()
     static abilities: Map<any, number> = new Map()
@@ -24,7 +33,10 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
     abstract readonly CURRENCY_KEY: string
     abstract readonly GENDER_KEY: string
     abstract readonly YEARS_OF_EXPIERIENCE: string
-    abstract readonly ABILITIES_KEY: string | { initial: string, from: number, to: number}
+    abstract readonly ABILITIES_KEY: string | ColumnList
+    abstract readonly DEGREE: string
+    abstract readonly COMPANY_SIZE: string
+    abstract readonly COUNTRY: string
 
     map (csvRow: CsvRow): SurveyEntry {
         const result = new SurveyEntry()
@@ -32,6 +44,9 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
         this.setGender(csvRow, result)
         this.setYearsOfExpirience(csvRow, result)
         this.setAbilities(csvRow, result)
+        this.setCompanySize(csvRow, result)
+        this.setCountry(csvRow, result)
+        this.setDegree(csvRow, result)
         return result
     }
     
@@ -76,11 +91,48 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
 
     protected valueAsId(dirtyString: string): string {
         // Keep only alphabetical chars.
-        // TODO: This is wrong for C++, C# etc.
+        // TODO: This is wrong for C++, C#, VB++ etc.
         return dirtyString.replace(/[^a-z0-9]/gi,'').toLowerCase()
     }
 
-    
+    protected setDegree(csvRow: CsvRow, result: SurveyEntry): void {
+        const degree = csvRow[this.DEGREE]
+        
+        if (degree == null) {
+            return
+        }
+        const id = this.valueAsId(degree)
+        // TODO: Proper filter invalid values.
+        const invalidValues = ['response', '', 'none', 'other', 'others', 'otherpleasespecify']
+        if (invalidValues.indexOf(id) !== -1) {
+            return
+        }
+
+        const newValue = (AbstractCsvRowMapper.educations.get(id) ?? 0) + 1
+        AbstractCsvRowMapper.educations.set(id, newValue)
+
+        result.highestDegree = id
+    }
+
+    protected setCountry(csvRow: CsvRow, result: SurveyEntry): void {
+        const country = csvRow[this.COUNTRY]
+        
+        if (country == null) {
+            return
+        }
+        const id = this.valueAsId(country)
+        // TODO: Proper filter invalid values.
+        const invalidValues = ['response', '', 'none', 'other', 'others', 'otherpleasespecify']
+        if (invalidValues.indexOf(id) !== -1) {
+            return
+        }
+
+        const newValue = (AbstractCsvRowMapper.countries.get(id) ?? 0) + 1
+        AbstractCsvRowMapper.countries.set(id, newValue)
+
+        result.country = id
+    }
+
     protected setYearsOfExpirience(csvRow: CsvRow, result: SurveyEntry): void {
         const yearsOfExpirience = csvRow[this.YEARS_OF_EXPIERIENCE]
         
@@ -94,7 +146,7 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
         let mappedResult
         // https://stackoverflow.com/questions/10003683/how-can-i-extract-a-number-from-a-string-in-javascript
         // thenum = "foo3bar5".match(/\d+/)[0] // "3"
-        if (yearsOfExpirience.indexOf('-') || yearsOfExpirience.indexOf('to')) {
+        if (yearsOfExpirience.indexOf('-') !== -1 || yearsOfExpirience.indexOf('to') !== -1) {
             const match = yearsOfExpirience.match(/\d+/)
             if (match === null) {
                 return
@@ -119,6 +171,43 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
         
         result.expirienceInYears = mappedResult
         
+    }
+
+    protected setCompanySize(csvRow: CsvRow, result: SurveyEntry): void {
+        const companySize = csvRow[this.COMPANY_SIZE]
+        
+        if (companySize == null) {
+            // When column is not defined it is null.
+            return
+        }
+
+        let mappedResult
+        // https://stackoverflow.com/questions/10003683/how-can-i-extract-a-number-from-a-string-in-javascript
+        // thenum = "foo3bar5".match(/\d+/)[0] // "3"
+        if (companySize.indexOf('-') !== -1 || companySize.indexOf('to') !== -1) {
+            const match = companySize.match(/\d+/)
+            if (match === null) {
+                return
+            }
+            const min = parseInt(match[0])
+            const max = parseInt(match[1])
+            mappedResult = {
+                min,
+                max
+            }
+        } else {
+            const match = companySize.match(/\d+/)
+            if (match === null) {
+                return
+            }
+            const min = parseInt(match[0])
+            mappedResult = {
+                min,
+                max: min
+            }
+        }
+        
+        result.companySize = mappedResult
     }
 
     protected setGender(csvRow: CsvRow, result: SurveyEntry): void {
@@ -187,7 +276,7 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
     }
 
     protected getSalaryValue (value: string): number {
-        // debugger
+        //
         // console.warn("Hurray found salary" + value)
         // E.g. $60,000 - $80,000 or <20000wqe
         if (typeof value === 'string') {
@@ -206,7 +295,7 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
             if (isNaN(result)) {
                 return -1
             }
-            // debugger
+            //
             // TODO: Make these manipulation readable for the user.
             // If the value is greater 500k and it is "even" consider it as wrong decimal input
             if (result > 500000 && (result % 10000 === 0)) {

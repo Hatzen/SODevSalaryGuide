@@ -38,15 +38,44 @@ export default class SurveyEntry {
     age?: number
 
     // 2011: Which best describes the size of your company?
-    // TODO: ....
+    // 2012: Which best describes the size of your company?
+    // 2013: How many people work for your company
+    // 2014: How many developers are employed at your company
+    // 2015: ???
+    // 2016: company_size_range
+    // 2017: CompanySize
+    // 2018: CompanySize
+    // 2019: OrgSize
     // 2020: OrgSize
-    companySize?: number
+    // 2021: OrgSize
+    companySize?: {
+        min: number,
+        max: number
+    }
 
+    // 2011: ??
+    // ??
     // TODO: Possible?
+    // 2015: 101
+    // 2016: education
+    // 2017: FormalEducation
+    // 2018: FormalEducation
     // 2019: EdLevel
+    // 2020: EdLevel
+    // 2021: EdLevel
     highestDegree?: string
 
-
+    // 2011: What Country or Region do you live in?
+    // 2012: What Country or Region do you live in?
+    // 2013: What Country or Region do you live in?
+    // 2014: What Country do you live in?
+    // 2015: 0 / 1
+    // 2016: country
+    // 2017: Country
+    // 2018: Country
+    // 2019: Country
+    // 2020: Country
+    // 2021: Country
     country?: string
 
     get salary(): number {

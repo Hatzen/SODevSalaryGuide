@@ -6,4 +6,7 @@ export class CsvRowMapper2021 extends AbstractCsvRowMapper {
     readonly GENDER_KEY = 'Gender'
     readonly YEARS_OF_EXPIERIENCE = 'YearsCode'
     readonly ABILITIES_KEY = 'LanguageHaveWorkedWith'
+    readonly DEGREE = 'EdLevel'
+    readonly COMPANY_SIZE = 'OrgSize'
+    readonly COUNTRY = 'Country'
 }

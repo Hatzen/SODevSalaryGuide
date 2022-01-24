@@ -10,10 +10,18 @@ export class ControlStore {
     expirienceInYears: [min: number, max:number] = [4, 20]
     genders: Gender[] = [Gender.MALE, Gender.FEMALE, Gender.OTHER]
     abilities: string[] = []
+
+    companySize: [min: number, max:number] = [1, 100000]
+    countries: string[] = []
+    degrees: string[] = []
     
     gendersFilterActive = false
     abilitiesFilterActive = false
     expirienceFilterActive = false
+    
+    companySizeFilterActive = false
+    degreeFilterActive = false
+    countriesFilterActive = false
     
     constructor() {
         makeAutoObservable(this)
@@ -28,18 +36,43 @@ export class ControlStore {
         const expirienceInYears = this.expirienceInYears
         const genders = this.genders
         const abilities = this.abilities
+
+        const degrees = this.degrees
+        const companySize = this.companySize
+        const countries = this.countries
+
         const gendersFilterActive = this.gendersFilterActive
         const abilitiesFilterActive = this.abilitiesFilterActive
         const expirienceFilterActive= this.expirienceFilterActive
+
+        const companySizeFilterActive = this.companySizeFilterActive
+        const degreeFilterActive = this.degreeFilterActive
+        const countriesFilterActive = this.countriesFilterActive
+
         return new ControlState({
             selectedYears,
             expirienceInYears,
             genders,
             abilities,
+            degrees,
+            companySize,
+            countries,
             gendersFilterActive,
             abilitiesFilterActive,
-            expirienceFilterActive
+            expirienceFilterActive,
+            companySizeFilterActive,
+            degreeFilterActive,
+            countriesFilterActive
         } as ControlState)
+    }
+
+    get companySizeValues (): { min: number, max: number, steps: number } {
+        // TODO: Inject entry store and calcualte resonable values
+        return {
+            min: 1,
+            max: 100000,
+            steps: 10
+        }
     }
 
     /**
@@ -54,12 +87,30 @@ export class ControlStore {
         this.expirienceInYears = [values[0], values[1]]
     }
 
-    setGenders(value: Gender[]): void {
-        this.genders = value
+    setGenders(value: Gender): void {
+        
+        const index = this.genders.indexOf(value)
+        if (index !== -1) {
+            this.genders.splice(index, 1)
+        } else {
+            this.genders.push(value)
+        }
     }
     
     setAbilities(abilities: string[]): void {
         this.abilities = abilities
+    }
+    
+    setCompanySize(values: number[]): void {
+        this.companySize = [values[0], values[1]]
+    }
+
+    setCountries(countries: string[]): void {
+        this.countries = countries
+    }
+
+    setDegrees(degrees: string[]): void {
+        this.degrees = degrees
     }
 
     setGendersFilterActive(gendersFilterActive: boolean): void {
@@ -72,6 +123,18 @@ export class ControlStore {
     
     setExpirienceFilterActive(expirienceFilterActive: boolean): void {
         this.expirienceFilterActive = expirienceFilterActive
+    }
+
+    setCompanySizeFilterActive(companySizeFilterActive: boolean): void {
+        this.companySizeFilterActive = companySizeFilterActive
+    }
+
+    setDegreeFilterActive(degreeFilterActive: boolean): void {
+        this.degreeFilterActive = degreeFilterActive
+    }
+    
+    setCountriesFilterActive(countriesFilterActive: boolean): void {
+        this.countriesFilterActive = countriesFilterActive
     }
 }
 
