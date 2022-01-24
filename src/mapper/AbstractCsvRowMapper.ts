@@ -111,7 +111,7 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
         const newValue = (AbstractCsvRowMapper.educations.get(id) ?? 0) + 1
         AbstractCsvRowMapper.educations.set(id, newValue)
 
-        result.highestDegree = degree
+        result.highestDegree = id
     }
 
     protected setCountry(csvRow: CsvRow, result: SurveyEntry): void {
@@ -130,7 +130,7 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
         const newValue = (AbstractCsvRowMapper.countries.get(id) ?? 0) + 1
         AbstractCsvRowMapper.countries.set(id, newValue)
 
-        result.country = country
+        result.country = id
     }
 
     protected setYearsOfExpirience(csvRow: CsvRow, result: SurveyEntry): void {

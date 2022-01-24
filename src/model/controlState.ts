@@ -44,16 +44,14 @@ export default class ControlState {
         if (this.countries.length === 0 || this.countriesFilterActive === false) {
             return true
         }
-        return this.countries.some(
-            (country) => entry.country?.indexOf(country) !== -1)
+        return this.countries.indexOf(entry.country!) !== -1
     }
     
     private filterByDegree(entry: SurveyEntry): boolean {
         if (this.degrees.length === 0 || this.degreeFilterActive === false) {
             return true
         }
-        return this.degrees.some(
-            (degree) => entry.highestDegree?.indexOf(degree) !== -1)
+        return this.degrees.indexOf(entry.highestDegree!) !== -1
     }
 
     private filterByGender(entry: SurveyEntry): boolean {
