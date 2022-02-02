@@ -75,11 +75,13 @@ class BoxPlot extends React.Component<StoreProps> {
     }
 
     get width(): number {
-        return window.innerWidth * 0.8
+        return window.innerWidth * 0.8 - 50
     }
     
     get height(): number {
-        return window.document.documentElement.clientHeight
+        const appBarHeight = 100
+        const diagramSelectionHeight = 50
+        return window.document.documentElement.clientHeight - (appBarHeight + diagramSelectionHeight)
     }
 }
 
