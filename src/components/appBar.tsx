@@ -45,14 +45,14 @@ class MenuAppBar extends React.Component<MenuAppBarProps> {
                         <Typography variant='h5'>
                             Stackoverflow Developer Salary Guide
                         </Typography>
-                        {this.getLoader}
+                        {this.loader}
                     </Toolbar>
                 </AppBar>
             </div>
         )
     }
 
-    getLoader(): JSX.Element {
+    get loader(): JSX.Element {
         const maxChunks = Object.values(CHUNK_COUNT_PER_YEAR)
             .reduce((previousValue: number, currentValue: number) => {
                 return 0 + previousValue + currentValue
@@ -63,10 +63,12 @@ class MenuAppBar extends React.Component<MenuAppBarProps> {
             .reduce((previousValue: number, currentValue: number) => {
                 return 0 + previousValue + currentValue
             }, 0)
-        const loadingPercentage = chunksDownloaded / maxChunks
+        const loadingPercentage = Math.round(chunksDownloaded / maxChunks * 100)
+        if (loadingPercentage > 99) {
+            return <div></div>
+        }
         return (
             <div style={{padding: 'auto', position: 'absolute', right: '25px'}}>
-                
                 <Typography variant='body1'>
                     <div style={{}}>
                         {loadingPercentage} %
@@ -74,7 +76,7 @@ class MenuAppBar extends React.Component<MenuAppBarProps> {
                 </Typography>
                 <Loader
                     type="Audio"
-                    color="#993300"
+                    color="#F48024"
                     height={45}
                     width={45}
                     secondaryColor="#000000" />

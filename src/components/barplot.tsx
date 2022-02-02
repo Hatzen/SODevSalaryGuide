@@ -61,11 +61,13 @@ class BarPlot extends React.Component<StoreProps> {
     }
 
     get width(): number {
-        return window.innerWidth * 0.8
+        return window.innerWidth * 0.8  - 50
     }
     
     get height(): number {
-        return window.document.documentElement.clientHeight
+        const appBarHeight = 50
+        const diagramSelectionHeight = 30
+        return window.document.documentElement.clientHeight - (appBarHeight + diagramSelectionHeight)
     }
 }
 
