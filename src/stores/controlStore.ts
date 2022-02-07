@@ -88,12 +88,14 @@ export class ControlStore {
     }
 
     setGenders(value: Gender): void {
-        
-        const index = this.genders.indexOf(value)
+        // let convertedValue = value.toLowerCase()
+        //convertedValue = convertedValue.charAt(0).toUpperCase() + convertedValue.slice(1)
+        const convertedValue: Gender = (Gender as any)[value as any]
+        const index = this.genders.indexOf(convertedValue)
         if (index !== -1) {
             this.genders.splice(index, 1)
         } else {
-            this.genders.push(value)
+            this.genders.push(convertedValue)
         }
     }
     

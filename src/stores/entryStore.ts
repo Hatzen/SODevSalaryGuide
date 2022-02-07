@@ -48,6 +48,9 @@ export class EntryStore {
 
     setDataForYear (entrySet: ResultSetForYear): void {
         this.parsedDataByYear[entrySet.year] = entrySet
+        
+        // TODO: This might lead to a race condition?
+        this.parsedData.resultSet = this.parsedData.resultSet.concat(entrySet.resultSet)
     }
 
     initParser (): void {

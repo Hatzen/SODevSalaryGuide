@@ -1,6 +1,8 @@
 import { AbstractCsvRowMapper } from './AbstractCsvRowMapper'
 
 export class CsvRowMapper2015 extends AbstractCsvRowMapper {
+    readonly MAPPER_FOR_YEAR = 2015
+    
     readonly SALARY_KEY = 'Salary' // 2015
     readonly CURRENCY_KEY = AbstractCsvRowMapper.COLUMN_DONT_EXIST
     readonly GENDER_KEY = 'Gender'

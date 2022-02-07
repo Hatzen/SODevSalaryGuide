@@ -1,4 +1,4 @@
-import { Currency } from './surveyEntry'
+import { Currency } from './currency'
 
 export default class CurrencyValues {
     query!: {

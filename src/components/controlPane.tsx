@@ -215,13 +215,6 @@ class ControlPane extends React.Component<StoreProps> {
         </ControlComponentWrapper>)
     }
 
-    getGenderForValue(gender: Gender): any {
-        const selectedGenders = this.props.controlStore!.genders
-        return (
-            <FormControlLabel control={<Checkbox defaultChecked={selectedGenders.find(selected => selected === gender) != null} />} label={gender} />
-        )
-    }
-
     // TODO: Get General generator for checkbox, slider, dropdown (company size)
     // Add generic header for: collapsible, active, weight
     // TODO: Replace any with Enum.class

@@ -12,6 +12,7 @@ import controlStore from '../stores/controlStore'
 import { Tab, Tabs } from '@material-ui/core'
 import { UiStore } from '../stores/uiStore'
 import { StoreProps } from '../stores/storeHelper'
+import SurveyEntry from '../model/surveyEntry'
 
 interface AppState {
     components: number[],
@@ -31,6 +32,7 @@ class App extends React.Component<any, AppState> {
         }
         // Store must be created only once.
         this.uiStore = new UiStore(controlStore, entryStore)
+        SurveyEntry.entryStore = entryStore
     }
 
     render(): JSX.Element {

@@ -1,7 +1,12 @@
+import { EntryStore } from '../stores/entryStore'
+import { Currency } from './currency'
 import { Gender } from './gender'
 
 export default class SurveyEntry {
+    static entryStore: EntryStore | null = null
+
     _salary!: number
+    isSalaryAlreadyConverted = false
     currency: Currency = Currency.USD
 
     // 2011-2014: How many years of IT/Programming experience do you have?
@@ -79,22 +84,15 @@ export default class SurveyEntry {
     country?: string
 
     get salary(): number {
+        const entryStore = SurveyEntry.entryStore
+        if (this.isSalaryAlreadyConverted !== false && entryStore != null) {
+            // TODO: Especially this is incorrect when using converted salary is not it?
+            // TODO: Why this will only work on 2018 and lead to very strange results...
+            return this._salary / entryStore.currencyValues.getRatioByCode(this.currency)
+        }
         return this._salary
-        // TODO: Especially this is incorrect when using converted salary is not it?
-        // TODO: Why this will only work on 2018 and lead to very strange results...
-        // return this._salary / Store.currencyValues.getRatioByCode(this.currency)
     }
     get isValid(): boolean {
         return this._salary > 0
     }
-}
-
-// https://bankenverband.de/service/waehrungsrechner-bdb-link/wahrungen-und-abkurzungen/
-export enum Currency {
-    USD = 'USD',
-    EUR = 'EUR',
-    JPY = 'JPY',
-    MXN = 'MXN',
-    GBP = 'GBP'
-    // TODO: Complete..
 }
