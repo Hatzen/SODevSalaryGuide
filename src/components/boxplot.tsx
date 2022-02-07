@@ -52,8 +52,8 @@ class BoxPlot extends React.Component<StoreProps> {
             })
             // TODO: xAxis is not set properly and would lead to problems only one point is shown..
             .concat([{
-                x: '>2011',
-                name: '2009',
+                x: 2009 as any, // TODO: Somehow label correctly as overall values..
+                name: 2009 as any,
                 y: allData.resultSet.map((entry: SurveyEntry) => entry.salary),
                 ...this.defaultBoxConfig
             }

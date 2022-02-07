@@ -1,6 +1,7 @@
 import CsvRow from '../model/csvRow'
+import { Currency } from '../model/currency'
 import { Gender } from '../model/gender'
-import SurveyEntry, { Currency } from '../model/surveyEntry'
+import SurveyEntry from '../model/surveyEntry'
 import StackOverflowCsvReader from '../services/stackOverflowCsvReader'
 
 type ColumnList = { initial: string, from: number, to: number}
@@ -37,6 +38,8 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
     abstract readonly DEGREE: string
     abstract readonly COMPANY_SIZE: string
     abstract readonly COUNTRY: string
+
+    abstract readonly MAPPER_FOR_YEAR: number
 
     map (csvRow: CsvRow): SurveyEntry {
         const result = new SurveyEntry()
@@ -101,12 +104,15 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
         if (degree == null) {
             return
         }
-        const id = this.valueAsId(degree)
+        let id = this.valueAsId(degree)
         // TODO: Proper filter invalid values.
-        const invalidValues = ['response', '', 'none', 'other', 'others', 'otherpleasespecify']
+        const invalidValues = ['response', '', 'none', 'other', 'others', 'otherpleasespecify', 'na']
         if (invalidValues.indexOf(id) !== -1) {
             return
         }
+        id = id.indexOf('selftaught') !== -1 ? 'selftaught' : id
+        id = id.indexOf('onthejob') !== -1 ? 'onthejob' : id
+
 
         const newValue = (AbstractCsvRowMapper.educations.get(id) ?? 0) + 1
         AbstractCsvRowMapper.educations.set(id, newValue)
@@ -237,7 +243,11 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
     protected setSalary(csvRow: CsvRow, result: SurveyEntry): void {
         const salary = csvRow[this.SALARY_KEY]
         if (salary != null) {
-            result._salary = this.getSalaryValue(salary)
+            const salaryValue = this.getSalaryValue(salary)
+            if (salaryValue < 10000) {
+                return
+            }
+            result._salary = salaryValue
         }
 
         const currency = csvRow[this.CURRENCY_KEY]
@@ -245,8 +255,9 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
             result.currency = this.getCurrency(currency)
         }
         
-        if (result._salary > 150000) {
+        if (result.salary > 250000) {
             // console.error('Bad ratio: ' + currency + ' with value ' + result._salary)
+            result._salary = -1
         }
     }
 
