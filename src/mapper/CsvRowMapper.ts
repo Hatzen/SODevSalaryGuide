@@ -9,6 +9,7 @@ import { CsvRowMapper2019 } from './CsvRowMapper2019'
 import { CsvRowMapper2014 } from './CsvRowMapper2014'
 import { CsvRowMapper2017 } from './CsvRowMapper2017'
 import { CsvRowMapper2021 } from './CsvRowMapper2021'
+import { CsvRowMapper2022 } from './CsvRowMapper2022'
 import { CsvRowMapper2012 } from './CsvRowMapper2012'
 import { CsvRowMapper2013 } from './CsvRowMapper2013'
 
@@ -24,6 +25,7 @@ export class CsvRowMapper {
     private readonly MAPPER_2018 = new CsvRowMapper2018()
     private readonly MAPPER_2019 = new CsvRowMapper2019()
     private readonly MAPPER_2021 = new CsvRowMapper2021()
+    private readonly MAPPER_2022 = new CsvRowMapper2022()
 
     private year: number
 
@@ -66,6 +68,9 @@ export class CsvRowMapper {
             break
         case 2021:
             mapper = this.MAPPER_2021
+            break
+        case 2022:
+            mapper = this.MAPPER_2022
             break
         default:
             // TODO: This can not happen?
