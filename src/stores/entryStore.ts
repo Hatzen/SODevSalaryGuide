@@ -22,7 +22,8 @@ export class EntryStore {
         2018: new ResultSetForYear(),
         2019: new ResultSetForYear(),
         2020: new ResultSetForYear(),
-        2021: new ResultSetForYear()
+        2021: new ResultSetForYear(),
+        2022: new ResultSetForYear()
     }
 
     currencyValues!: FreeCurrency
