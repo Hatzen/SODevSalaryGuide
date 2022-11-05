@@ -35,7 +35,7 @@ class ControlPane extends React.Component<StoreProps> {
     get years(): JSX.Element {
         const config = this.props.controlStore!
         const selectableYears = []
-        for (let i = 2011; i < 2022; i++) {
+        for (let i = 2011; i < 2023; i++) {
             selectableYears.push(i.toString())
         }
         const yearOption = selectableYears.map((year: string) => {
