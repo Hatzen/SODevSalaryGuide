@@ -6,6 +6,7 @@ import Autocomplete from '@mui/material/Autocomplete'
 import { AbstractCsvRowMapper } from '../mapper/AbstractCsvRowMapper'
 import { Gender } from '../model/gender'
 import ControlComponentWrapper from './controlComponentWrapper'
+import CoolSelect from './CoolSelect'
 
 class ControlPane extends React.Component<StoreProps> {
     private key = 0
@@ -34,31 +35,37 @@ class ControlPane extends React.Component<StoreProps> {
 
     get years(): JSX.Element {
         const config = this.props.controlStore!
-        const selectableYears = []
+        const yearsOptions = []
         for (let i = 2011; i < 2023; i++) {
-            selectableYears.push(i.toString())
+            yearsOptions.push({ value: i, label: i.toString() })
         }
-        const yearOption = selectableYears.map((year: string) => {
-            const yearSelected = config.controlState.selectedYears[parseInt(year)]
-            return <FormControlLabel key={this.key++} control={
-                <Checkbox name={year} defaultChecked={yearSelected} onChange={this.handleChanges.bind(this)}/>
-            } label={year} />
-        })
+        
+        // Find currently selected year (assuming only one is selected)
+        let selectedYear: number | null = null
+        for (const [year, isSelected] of Object.entries(config.controlState.selectedYears)) {
+            if (isSelected) {
+                selectedYear = parseInt(year)
+                break
+            }
+        }
+        
         return (
-            <Grid container
-                key={1}
-                direction="row"
-                justifyContent="center"
-                alignItems="center"
-                style={{width: '100%'}}
-            >
-                <Grid item
-                    style={{width: '100%'}}>
-                    {yearOption}
-                </Grid>
-                <br></br>
-            </Grid>
+            <div style={{width: '100%'}}>
+                <CoolSelect
+                    label="Include Data from years"
+                    options={yearsOptions}
+                    value={selectedYear}
+                    onChange={this.handleYearChange.bind(this)}
+                    helperText="Select a year"
+                />
+            </div>
         )
+    }
+    
+    handleYearChange(year: number | null): void {
+        if (year !== null) {
+            this.props.controlStore!.setSelectedYear(year)
+        }
     }
     
     get abilities(): any {

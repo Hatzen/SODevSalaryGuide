@@ -83,6 +83,14 @@ export class ControlStore {
         this.selectedYears = selectedYears
     }
 
+    setSelectedYear(year: number): void {
+        const yearsObj: { [y: number]: boolean } = {};
+        for (let y = 2011; y < 2023; y++) {
+            yearsObj[y] = (y === year);
+        }
+        this.selectedYears = yearsObj;
+    }
+
     setExp(values: number[]): void {
         this.expirienceInYears = [values[0], values[1]]
     }
