@@ -7,6 +7,7 @@ import { AbstractCsvRowMapper } from '../mapper/AbstractCsvRowMapper'
 import { Gender, GenderRecord } from '../model/gender'
 import ControlComponentWrapper from './controlComponentWrapper'
 import CoolSelect from './CoolSelect'
+import { AVAILABLE_YEARS } from '../model/constantMetaData'
 
 class ControlPane extends React.Component<StoreProps> {
     private key = 0
@@ -35,11 +36,7 @@ class ControlPane extends React.Component<StoreProps> {
 
     get years(): JSX.Element {
         const config = this.props.controlStore!
-        const yearsOptions = []
-        for (let i = 2011; i < 2023; i++) {
-            yearsOptions.push({ value: i, label: i.toString() })
-        }
-        
+
         // Find currently selected year (assuming only one is selected)
         let selectedYear: number | null = null
         for (const [year, isSelected] of Object.entries(config.controlState.selectedYears)) {
@@ -48,18 +45,31 @@ class ControlPane extends React.Component<StoreProps> {
                 break
             }
         }
+
+        const filterdValues = AVAILABLE_YEARS
+        const autoCompleteComponent = (<Autocomplete
+            options={filterdValues}
+            value={selectedYear}
+            onChange={this.handleYearChange.bind(this)}
+            // getOptionLabel={([k, v]) => k as string +  ' (' + v + ')'}
+            renderOption={(props, option, { selected }) => (
+                <li {...props}>
+                    <Checkbox
+                        // icon={icon}
+                        // checkedIcon={checkedIcon}
+                        style={{ marginRight: 8 }}
+                        checked={selected}
+                    />
+                    {option}
+                </li>
+            )}
+            style={{ width: 250 }}
+            renderInput={(params) => (
+                <TextField style={{ padding: '10px' }} {...params} label="Show data for year" />
+            )}
+        />)
         
-        return (
-            <div style={{width: '100%'}}>
-                <CoolSelect
-                    label="Include Data from years"
-                    options={yearsOptions}
-                    value={selectedYear}
-                    onChange={this.handleYearChange.bind(this)}
-                    helperText="Select a year"
-                />
-            </div>
-        )
+        return autoCompleteComponent
     }
     
     handleYearChange(year: number | null): void {

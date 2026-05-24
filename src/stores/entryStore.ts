@@ -30,6 +30,7 @@ export class EntryStore {
     }
 
     currencyValues!: FreeCurrency
+    reader!: StackOverflowCsvReader
 
     constructor() {
         makeAutoObservable(this)
@@ -41,9 +42,10 @@ export class EntryStore {
      */
     
     loadData (): void {
+        const currentYear = AVAILABLE_YEARS[-1]
         new CurrencyService().getCurrencies()
             .then(this.setCurrencyValues.bind(this))
-            .then(this.initParser.bind(this))
+            .then(() => this.initParser(currentYear))
     }
 
     setCurrencyValues(currencyValues: FreeCurrency): void {
@@ -57,27 +59,28 @@ export class EntryStore {
         this.parsedData.resultSet = this.parsedData.resultSet.concat(entrySet.resultSet)
     }
 
-    initParser (): void {
-        const reader = new StackOverflowCsvReader()
-        AVAILABLE_YEARS.findLast(year => {
-            const resultsetForYear = new ResultSetForYear()
-            resultsetForYear.year = parseInt(year)
-            reader.startWorkerForYear(
-                resultsetForYear,
-                this.addRow,
-                () => {
-                    const parsed = resultsetForYear.chunksParsed
-                    const available = resultsetForYear.chunksAvailable
-                    const invalidEntryCount = resultsetForYear.invalidEntryCount
-                    const overallEntryCount = resultsetForYear.overallEntryCount
-                    // eslint-disable-next-line no-console
-                    console.log('Finished parsing a chunk for year: ' + year + '\n'
-                         + '\t chunks parsed ' + parsed + ' chunks to go ' + available + '\n '
-                         + '\t entries parsed ' + overallEntryCount + ' invalid ones ' + invalidEntryCount + ' ')
-                    this.setDataForYear(resultsetForYear)
-                }
-            )
-        })
+    initParser (year: string): void {
+        // TODO: Implement
+        // this.reader.cancleCurrentloading
+
+        this.props.controlStore!.setSelectedYear(year)
+        const resultsetForYear = new ResultSetForYear()
+        resultsetForYear.year = parseInt(year)
+        this.reader.startWorkerForYear(
+            resultsetForYear,
+            this.addRow,
+            () => {
+                const parsed = resultsetForYear.chunksParsed
+                const available = resultsetForYear.chunksAvailable
+                const invalidEntryCount = resultsetForYear.invalidEntryCount
+                const overallEntryCount = resultsetForYear.overallEntryCount
+                // eslint-disable-next-line no-console
+                console.log('Finished parsing a chunk for year: ' + year + '\n'
+                        + '\t chunks parsed ' + parsed + ' chunks to go ' + available + '\n '
+                        + '\t entries parsed ' + overallEntryCount + ' invalid ones ' + invalidEntryCount + ' ')
+                this.setDataForYear(resultsetForYear)
+            }
+        )
     }
 
     private addRow (csvRowRaw: ParseStepResult<CsvRow>): void  {
