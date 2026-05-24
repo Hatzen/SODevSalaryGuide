@@ -66,7 +66,9 @@ class App extends React.Component<Record<string, unknown>, AppState> {
                                                  </Tabs>
                                              </div>
                                              <div style={{position: 'relative', top: 0, left: 0, right: 0, height: 'calc(100% - 48px)', width: '100%'}}>
-                                                 {this.state.usePlot === 0 ? <BoxPlot style={{width: '100%', height: '100%'}}></BoxPlot> : <BarPlot style={{width: '100%', height: '100%'}}></BarPlot>}
+                                                 <div style={{width: '100%', height: '100%'}}>
+                                                     {this.state.usePlot === 0 ? <BoxPlot></BoxPlot> : <BarPlot></BarPlot>}
+                                                 </div>
                                              </div>
                                         </Allotment.Pane>
                                     )

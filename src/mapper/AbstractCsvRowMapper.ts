@@ -77,6 +77,14 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
         result.abilities = abilities
     }
 
+    static clearDistinctValues(): void {
+        AbstractCsvRowMapper.educations.clear()
+        AbstractCsvRowMapper.countries.clear()
+        AbstractCsvRowMapper.genders.clear()
+        AbstractCsvRowMapper.years.clear()
+        AbstractCsvRowMapper.abilities.clear()
+    }
+
     private addKeyAndupdateKeyCount(key: string, targetList: string[]): void {
         if (key == null) {
             return
@@ -293,13 +301,13 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
         if (typeof value === 'string') {
             if (value.indexOf('<') !== -1) {
                 return 10000 // <20k consider as 10k in average
-            } else if (value.indexOf('$') !== -1 && value.indexOf('-') !== -1) {
-                const firstValue = value
-                    .replaceAll('$', '')
-                    .replaceAll(',', '')
-                    .substring(0, value.indexOf('-'))
-                return parseInt(firstValue) + 10000 // 20-40k => average 30k
-            }
+        } else if (value.indexOf('$') !== -1 && value.indexOf('-') !== -1) {
+            const firstValue = value
+                .split('$').join('')
+                .split(',').join('')
+                .substring(0, value.indexOf('-'))
+            return parseInt(firstValue) + 10000 // 20-40k => average 30k
+        }
         }
         try {
             let result = parseInt(value)

@@ -42,10 +42,11 @@ export class EntryStore {
      */
     
     loadData (): void {
+        this.reader = new StackOverflowCsvReader()
         const currentYear = AVAILABLE_YEARS[-1]
         new CurrencyService().getCurrencies()
             .then(this.setCurrencyValues.bind(this))
-            .then(() => this.initParser(currentYear))
+        this.initParser(currentYear)
     }
 
     setCurrencyValues(currencyValues: FreeCurrency): void {

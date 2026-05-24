@@ -39,9 +39,9 @@ class ControlPane extends React.Component<StoreProps> {
         // Find currently selected year (assuming only one is selected)
         let selectedYear: string | null = config.controlState.selectedYear
 
-        const filterdValues = AVAILABLE_YEARS
+        const filteredValues = AVAILABLE_YEARS
         const autoCompleteComponent = (<Autocomplete
-            options={filterdValues}
+            options={filteredValues}
             value={selectedYear}
             onChange={this.handleYearChange.bind(this)}
             // getOptionLabel={([k, v]) => k as string +  ' (' + v + ')'}
@@ -61,20 +61,21 @@ class ControlPane extends React.Component<StoreProps> {
                 <TextField style={{ padding: '10px' }} {...params} label="Show data for year" />
             )}
         />)
-        
+         
         return autoCompleteComponent
     }
     
-    handleYearChange(year: string | null): void {
-        if (year !== null) {
-            this.props.controlStore!.setSelectedYear(year)
-            this.props.entryStore!.initParser(year)
+    handleYearChange = (event: React.SyntheticEvent<Element, Event>, value: string | null, reason: any, details: any) => {
+        if (value !== null) {
+            this.props.controlStore!.setSelectedYear(value)
+            // AbstractCsvRowMapper.clearDistinctValues()
+            this.props.entryStore!.initParser(value)
         }
     }
     
     get abilities(): JSX.Element {
         const filterdValues =
-            [...AbstractCsvRowMapper.abilities]
+            Array.from(AbstractCsvRowMapper.abilities)
                 .filter(([k, v]) => v > 10 )
                 .map(([k, v]) => k as string)
                 // .map(([k, v]) => k as string +  ' (' + v + ')')
@@ -86,13 +87,13 @@ class ControlPane extends React.Component<StoreProps> {
             disableCloseOnSelect
             onChange={this.handleChangesForAbilities.bind(this)}
             // getOptionLabel={([k, v]) => k as string +  ' (' + v + ')'}
-            renderOption={(props, option, { selected }) => (
+            renderOption={(props, option, state) => (
                 <li {...props}>
                     <Checkbox
                         // icon={icon}
                         // checkedIcon={checkedIcon}
                         style={{ marginRight: 8 }}
-                        checked={selected}
+                        checked={state.selected}
                     />
                     {option}
                 </li>
@@ -138,7 +139,7 @@ class ControlPane extends React.Component<StoreProps> {
     
     get countries(): JSX.Element {
         const filterdValues =
-            [...AbstractCsvRowMapper.countries]
+            Array.from(AbstractCsvRowMapper.countries)
                 .filter(([k, v]) => v > 10 )
                 .map(([k, v]) => k as string)
                 // .map(([k, v]) => k as string +  ' (' + v + ')')
@@ -149,13 +150,13 @@ class ControlPane extends React.Component<StoreProps> {
             disableCloseOnSelect
             onChange={this.handleChangesForCountries.bind(this)}
             // getOptionLabel={([k, v]) => k as string +  ' (' + v + ')'}
-            renderOption={(props, option, { selected }) => (
+            renderOption={(props, option, state) => (
                 <li {...props}>
                     <Checkbox
                         // icon={icon}
                         // checkedIcon={checkedIcon}
                         style={{ marginRight: 8 }}
-                        checked={selected}
+                        checked={state.selected}
                     />
                     {option}
                 </li>
@@ -175,7 +176,7 @@ class ControlPane extends React.Component<StoreProps> {
     
     get degrees(): JSX.Element {
         const filterdValues =
-            [...AbstractCsvRowMapper.educations]
+            Array.from(AbstractCsvRowMapper.educations)
                 .filter(([k, v]) => v > 10 )
                 .map(([k, v]) => k as string)
                 // .map(([k, v]) => k as string +  ' (' + v + ')')
@@ -186,13 +187,13 @@ class ControlPane extends React.Component<StoreProps> {
             disableCloseOnSelect
             onChange={this.handleChangesForDegree.bind(this)}
             // getOptionLabel={([k, v]) => k as string +  ' (' + v + ')'}
-            renderOption={(props, option, { selected }) => (
+            renderOption={(props, option, state) => (
                 <li {...props}>
                     <Checkbox
                         // icon={icon}
                         // checkedIcon={checkedIcon}
                         style={{ marginRight: 8 }}
-                        checked={selected}
+                        checked={state.selected}
                     />
                     {option}
                 </li>
@@ -232,12 +233,12 @@ class ControlPane extends React.Component<StoreProps> {
         const values = enumKeys.map(g => g.toString())
         
         const checkboxes = values.map(value => {
-            const check = selectedValues.includes((Gender as unknown as GenderRecord)[value])
+            const check = selectedValues.includes(Gender[value as keyof typeof Gender])
             return (
                 <FormControlLabel
                     key={this.key++}
                     control={<Checkbox
-                        onChange={() => { this.props.controlStore!.setGenders((Gender as unknown as GenderRecord)[value]) }}
+                        onChange={() => { this.props.controlStore!.setGenders(Gender[value as keyof typeof Gender]) }}
                         defaultChecked={check}
                     />}
                     label={value}

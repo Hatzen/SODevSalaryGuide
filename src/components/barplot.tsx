@@ -8,14 +8,11 @@ class BarPlot extends React.Component<StoreProps> {
     render(): JSX.Element {
         return (
             <div style={{position: 'absolute', top: 0, bottom: 0, left:0, right: 0, overflow: 'auto'}}>
-                <Plot
-                    data={this.data}
-                    layout={{barmode: 'group', title: '', showlegend: false}}
-                    style={{width: '100%', height: '100%'}}
-                    responsive={true}
-                // TODO: Check Layout.template
-                // TODO: Check Config.static for temporary disable?
-                />
+                 <Plot
+                     data={this.data}
+                     layout={{barmode: 'group', title: '', showlegend: false}}
+                     style={{width: '100%', height: '100%'}}
+                 />
             </div>
         )
     }

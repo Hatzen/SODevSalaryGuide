@@ -64,11 +64,11 @@ class MenuAppBar extends React.Component<MenuAppBarProps> {
         }
         return (
             <div style={{padding: 'auto', position: 'absolute', right: '25px'}}>
-                <Typography variant='body1'>
                     <div style={{}}>
-                        {loadingPercentage} %
+                        <Typography variant='body1'>
+                                {loadingPercentage} %
+                        </Typography>
                     </div>
-                </Typography>
                 <Loader
                     type="Audio"
                     color="#F48024"
