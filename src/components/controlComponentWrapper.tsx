@@ -1,11 +1,11 @@
 import { Checkbox, FormControlLabel } from '@material-ui/core'
-import React, { ChangeEvent } from 'react'
+import React from 'react'
 
 interface ControlComponentWrapperProps {
     controlComponent: JSX.Element
     title: string
     isEnabled: boolean
-    enable: (event: ChangeEvent<any>, isEnabled: boolean) => void
+    enable: (event: React.ChangeEvent<HTMLInputElement>, isEnabled: boolean) => void
 }
 
 export default class ControlComponentWrapper extends React.Component<ControlComponentWrapperProps> {

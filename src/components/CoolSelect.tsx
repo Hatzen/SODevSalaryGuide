@@ -5,6 +5,7 @@ import {
     Select,
     MenuItem,
     FormHelperText,
+    SelectChangeEvent,
 } from '@mui/material'
 import { styled } from '@mui/material/styles'
 
@@ -62,7 +63,7 @@ const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
     },
 }))
 
-const CoolSelect = <T extends string | number | boolean>({
+const CoolSelect = <T extends string | number>({
     label,
     options,
     value,
@@ -71,7 +72,7 @@ const CoolSelect = <T extends string | number | boolean>({
     error,
     disabled,
 }: CoolSelectProps<T>): JSX.Element => {
-    const handleChange = (event: React.ChangeEvent<{ value: unknown }>): void => {
+    const handleChange = (event: SelectChangeEvent<unknown>): void => {
         const newValue = event.target.value as T | null
         onChange(newValue)
     }

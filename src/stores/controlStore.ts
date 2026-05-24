@@ -84,11 +84,11 @@ export class ControlStore {
     }
 
     setSelectedYear(year: number): void {
-        const yearsObj: { [y: number]: boolean } = {};
+        const yearsObj: { [y: number]: boolean } = {}
         for (let y = 2011; y < 2023; y++) {
-            yearsObj[y] = (y === year);
+            yearsObj[y] = (y === year)
         }
-        this.selectedYears = yearsObj;
+        this.selectedYears = yearsObj
     }
 
     setExp(values: number[]): void {
@@ -98,7 +98,7 @@ export class ControlStore {
     setGenders(value: Gender): void {
         // let convertedValue = value.toLowerCase()
         //convertedValue = convertedValue.charAt(0).toUpperCase() + convertedValue.slice(1)
-        const convertedValue: Gender = (Gender as any)[value as any]
+        const convertedValue: Gender = Gender[value]
         const index = this.genders.indexOf(convertedValue)
         if (index !== -1) {
             this.genders.splice(index, 1)
