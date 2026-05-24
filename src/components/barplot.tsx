@@ -24,18 +24,18 @@ class BarPlot extends React.Component<StoreProps> {
         const resultList = this.props.entryStore!.parsedDataByYear
         const filteredList = this.props.uiStore!.filteredData
 
-        const displayYears = this.props.controlStore!.controlState.selectedYears
+        const displayYears = this.props.controlStore!.controlState.selectedYear
 
         const overallNumbers = Object.keys(resultList)
-            .filter(year => displayYears[parseInt(year, 10)] === true)
+            .filter(year => displayYears == year)
             .map(key => resultList[parseInt(key, 10)].overallEntryCount)
              
         const invalidNumbers = Object.keys(resultList)
-            .filter(year => displayYears[parseInt(year, 10)] === true)
+            .filter(year => displayYears == year)
             .map(key => resultList[parseInt(key, 10)].invalidEntryCount)
 
         const matchingFilterNumbers = Object.keys(filteredList)
-            .filter(year => displayYears[parseInt(year, 10)] === true)
+            .filter(year => displayYears == year)
             .map(key => filteredList[parseInt(key, 10)].length)
        
         const traces: Array<Record<string, unknown>> = [

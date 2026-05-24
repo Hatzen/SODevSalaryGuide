@@ -39,10 +39,10 @@ class BoxPlot extends React.Component<StoreProps> {
         const resultList = this.props.uiStore!.filteredData
         const allData = this.props.entryStore!.parsedData
 
-        const displayYears = this.props.controlStore!.controlState.selectedYears
+        const displayYears = this.props.controlStore!.controlState.selectedYear
 
         return Object.keys(resultList)
-            .filter(year => displayYears[parseInt(year, 10)] === true)
+            .filter(year => displayYears == year)
             .map(key => {
                 return {
                     ...this.defaultBoxConfig,

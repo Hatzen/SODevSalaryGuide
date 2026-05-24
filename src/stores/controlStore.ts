@@ -4,9 +4,7 @@ import { Gender } from '../model/gender'
 
 // https://devlinduldulao.pro/mobx-in-a-nutshell/
 export class ControlStore {
-    selectedYears: { [year: number]: boolean } = {
-        2011: true
-    }
+    selectedYear: string = '2025'
     expirienceInYears: [min: number, max:number] = [4, 20]
     genders: Gender[] = [Gender.MALE, Gender.FEMALE, Gender.OTHER]
     abilities: string[] = []
@@ -32,7 +30,7 @@ export class ControlStore {
      */
 
     get controlState(): ControlState {
-        const selectedYears = this.selectedYears
+        const selectedYear = this.selectedYear
         const expirienceInYears = this.expirienceInYears
         const genders = this.genders
         const abilities = this.abilities
@@ -50,7 +48,7 @@ export class ControlStore {
         const countriesFilterActive = this.countriesFilterActive
 
         return new ControlState({
-            selectedYears,
+            selectedYear,
             expirienceInYears,
             genders,
             abilities,
@@ -79,16 +77,8 @@ export class ControlStore {
      * Actions
      */
 
-    setYears(selectedYears: { [year: number]: boolean }): void {
-        this.selectedYears = selectedYears
-    }
-
-    setSelectedYear(year: number): void {
-        const yearsObj: { [y: number]: boolean } = {}
-        for (let y = 2011; y < 2023; y++) {
-            yearsObj[y] = (y === year)
-        }
-        this.selectedYears = yearsObj
+    setSelectedYear(year: string): void {
+        this.selectedYear = year
     }
 
     setExp(values: number[]): void {

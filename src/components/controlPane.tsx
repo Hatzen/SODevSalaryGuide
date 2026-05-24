@@ -6,7 +6,6 @@ import Autocomplete from '@mui/material/Autocomplete'
 import { AbstractCsvRowMapper } from '../mapper/AbstractCsvRowMapper'
 import { Gender, GenderRecord } from '../model/gender'
 import ControlComponentWrapper from './controlComponentWrapper'
-import CoolSelect from './CoolSelect'
 import { AVAILABLE_YEARS } from '../model/constantMetaData'
 
 class ControlPane extends React.Component<StoreProps> {
@@ -38,13 +37,7 @@ class ControlPane extends React.Component<StoreProps> {
         const config = this.props.controlStore!
 
         // Find currently selected year (assuming only one is selected)
-        let selectedYear: number | null = null
-        for (const [year, isSelected] of Object.entries(config.controlState.selectedYears)) {
-            if (isSelected) {
-                selectedYear = parseInt(year)
-                break
-            }
-        }
+        let selectedYear: string | null = config.controlState.selectedYear
 
         const filterdValues = AVAILABLE_YEARS
         const autoCompleteComponent = (<Autocomplete
@@ -72,9 +65,10 @@ class ControlPane extends React.Component<StoreProps> {
         return autoCompleteComponent
     }
     
-    handleYearChange(year: number | null): void {
+    handleYearChange(year: string | null): void {
         if (year !== null) {
             this.props.controlStore!.setSelectedYear(year)
+            this.props.entryStore!.initParser(year)
         }
     }
     
@@ -303,13 +297,6 @@ class ControlPane extends React.Component<StoreProps> {
     
     handleChangeForCompanySize(event: React.ChangeEvent<unknown>, value: number | number[]): void {
         this.props.controlStore!.setCompanySize(value as number[])
-    }
-
-    // https://stackoverflow.com/a/43746799/8524651
-    private handleChanges(event: React.SyntheticEvent<HTMLInputElement>, newValue: boolean): void {
-        event.persist() // allow native event access (see: https://facebook.github.io/react/docs/events.html)
-        const year = parseInt(event.currentTarget.name, 10)
-        this.props.controlStore!.selectedYears[year] = newValue
     }
 
 }

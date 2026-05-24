@@ -63,7 +63,6 @@ export class EntryStore {
         // TODO: Implement
         // this.reader.cancleCurrentloading
 
-        this.props.controlStore!.setSelectedYear(year)
         const resultsetForYear = new ResultSetForYear()
         resultsetForYear.year = parseInt(year)
         this.reader.startWorkerForYear(
