@@ -23,8 +23,8 @@ class App extends React.Component<Record<string, unknown>, AppState> {
     private controlPane: React.RefObject<AllotmentHandle>
     private uiStore: UiStore
     
-    constructor() {
-        super({})
+    constructor(props: Record<string, unknown>) {
+        super(props)
         this.controlPane = React.createRef<AllotmentHandle>()
         this.state ={
             components: [0, 1],

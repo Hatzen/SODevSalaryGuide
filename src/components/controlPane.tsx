@@ -68,7 +68,7 @@ class ControlPane extends React.Component<StoreProps> {
     handleYearChange = (event: React.SyntheticEvent<Element, Event>, value: string | null, reason: any, details: any) => {
         if (value !== null) {
             this.props.controlStore!.setSelectedYear(value)
-            // AbstractCsvRowMapper.clearDistinctValues()
+            AbstractCsvRowMapper.clearDistinctValues()
             this.props.entryStore!.initParser(value)
         }
     }

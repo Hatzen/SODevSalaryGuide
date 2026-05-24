@@ -49,26 +49,42 @@ class MenuAppBar extends React.Component<MenuAppBarProps> {
     }
 
     get loader(): JSX.Element {
-        const maxChunks = Object.values(CHUNK_COUNT_PER_YEAR)
-            .reduce((previousValue: number, currentValue: number) => {
-                return 0 + previousValue + currentValue
-            })
-        const chunksDownloaded = Object.values(this.props.entryStore!.parsedDataByYear)
-            .map((resultSetForYear) =>  resultSetForYear.chunksParsed)
-            .reduce((previousValue: number, currentValue: number) => {
-                return 0 + previousValue + currentValue
-            }, 0)
-        const loadingPercentage = Math.round(chunksDownloaded / maxChunks * 100)
-        if (loadingPercentage > 99) {
+        // If entryStore or controlStore is not available, show no loader
+        if (!this.props.entryStore || !this.props.controlStore) {
             return <div></div>
         }
+        
+        // Get the currently selected year
+        const selectedYearStr = this.props.controlStore.controlState.selectedYear;
+        if (!selectedYearStr) {
+            return <div></div>
+        }
+        
+        // Get max chunks for the selected year
+        const maxChunks = CHUNK_COUNT_PER_YEAR[selectedYearStr] || 0;
+        if (maxChunks === 0) {
+            return <div></div>
+        }
+        
+        // Get chunks parsed for the selected year
+        const yearData = this.props.entryStore.parsedDataByYear[parseInt(selectedYearStr, 10)];
+        const chunksDownloaded = yearData ? yearData.chunksParsed : 0;
+        
+        // Calculate loading percentage
+        const loadingPercentage = Math.round((chunksDownloaded / maxChunks) * 100);
+        
+        // Hide loader when loading is complete
+        if (loadingPercentage >= 100) {
+            return <div></div>
+        }
+        
         return (
             <div style={{padding: 'auto', position: 'absolute', right: '25px'}}>
-                    <div style={{}}>
-                        <Typography variant='body1'>
-                                {loadingPercentage} %
-                        </Typography>
-                    </div>
+                <div style={{}}>
+                    <Typography variant='body1'>
+                        {loadingPercentage} %
+                    </Typography>
+                </div>
                 <Loader
                     type="Audio"
                     color="#F48024"

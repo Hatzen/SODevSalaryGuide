@@ -48,7 +48,7 @@ class BoxPlot extends React.Component<StoreProps> {
             type: 'box',
             boxmean: 'sd',
             x: [selectedYearStr],
-            name: selectedYearStr,
+            name: 'Year' + selectedYearStr,
             y: yearData.map((entry: SurveyEntry)  => entry.salary),
         };
         return [trace];
