@@ -24,11 +24,11 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
     static COLUMN_DONT_EXIST = 'COLUMN_DONT_EXIST'
 
     // Sets to distinct values and map to filter values with single response.
-    static educations: Map<any, number> = new Map()
-    static countries: Map<any, number> = new Map()
-    static genders: Set<any> = new Set()
-    static years: Set<any> = new Set()
-    static abilities: Map<any, number> = new Map()
+    static educations: Map<string, number> = new Map()
+    static countries: Map<string, number> = new Map()
+    static genders: Set<string> = new Set()
+    static years: Set<string> = new Set()
+    static abilities: Map<string, number> = new Map()
 
     abstract readonly SALARY_KEY: string
     abstract readonly CURRENCY_KEY: string
@@ -283,7 +283,7 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
     }
 
     protected containsValue (value: string, find: string): boolean {
-        return value.toUpperCase().indexOf(value) !== -1
+        return value.toUpperCase().indexOf(find) !== -1
     }
 
     protected getSalaryValue (value: string): number {
