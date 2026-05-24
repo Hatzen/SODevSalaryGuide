@@ -87,9 +87,9 @@ class App extends React.Component<Record<string, unknown>, AppState> {
         )
     }
 
-    private changePlot(): void {
-        this.setState(prevState => ({usePlot: prevState.usePlot === 1 ? 0 : 1}));
-    }
+    private changePlot = (event: React.ChangeEvent<{}>, newValue: number | string) => {
+        this.setState({usePlot: Number(newValue)});
+    };
 
     private toggleControls(): void {
         if (this.state.components.length === 1) {

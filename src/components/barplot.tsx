@@ -18,29 +18,32 @@ class BarPlot extends React.Component<StoreProps> {
     }
 
     private get data(): Array<Record<string, unknown>> { // TODO: Plotty Data
-        const resultList = this.props.entryStore!.parsedDataByYear
-        const filteredList = this.props.uiStore!.filteredData
+        const selectedYearStr = this.props.controlStore!.controlState.selectedYear;
+        const selectedYearNum = parseInt(selectedYearStr, 10);
 
-        const displayYears = this.props.controlStore!.controlState.selectedYear
+        const resultList = this.props.entryStore!.parsedDataByYear;
+        const filteredList = this.props.uiStore!.filteredData;
 
-        const overallNumbers = Object.keys(resultList)
-            .filter(year => displayYears == year)
-            .map(key => resultList[parseInt(key, 10)].overallEntryCount)
-             
-        const invalidNumbers = Object.keys(resultList)
-            .filter(year => displayYears == year)
-            .map(key => resultList[parseInt(key, 10)].invalidEntryCount)
+        // Get the data for the selected year from entryStore.parsedDataByYear (by number key)
+        const yearEntrySet = resultList[selectedYearNum];
+        // Get the data for the selected year from uiStore.filteredData (by string key)
+        const filteredYearList = filteredList[selectedYearNum];
 
-        const matchingFilterNumbers = Object.keys(filteredList)
-            .filter(year => displayYears == year)
-            .map(key => filteredList[parseInt(key, 10)].length)
-       
+        // If we don't have data for the selected year, return empty traces?
+        if (!yearEntrySet || !filteredYearList) {
+            return [];
+        }
+
+        const overallNumbers = [yearEntrySet.overallEntryCount];
+        const invalidNumbers = [yearEntrySet.invalidEntryCount];
+        const matchingFilterNumbers = [filteredYearList.length];
+
         const traces: Array<Record<string, unknown>> = [
             { y: matchingFilterNumbers, name: 'matching filter', type: 'bar' },
             { y: overallNumbers, name: 'allParticipations', type: 'bar' },
             { y: invalidNumbers, name: 'considered invalid', type: 'bar' },
-        ]
-        return traces
+        ];
+        return traces;
     }
 }
 

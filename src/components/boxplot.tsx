@@ -34,28 +34,24 @@ class BoxPlot extends React.Component<StoreProps> {
 
     private get data(): Data[] { // TODO: Plotty Data
         const resultList = this.props.uiStore!.filteredData
-        const allData = this.props.entryStore!.parsedData
+        const selectedYearStr = this.props.controlStore!.controlState.selectedYear
+        const selectedYearNum = parseInt(selectedYearStr, 10)
 
-        const displayYears = this.props.controlStore!.controlState.selectedYear
+        // Get the data for the selected year
+        const yearData = resultList[selectedYearNum]
 
-        return Object.keys(resultList)
-            .filter(year => displayYears == year)
-            .map(key => {
-                return {
-                    ...this.defaultBoxConfig,
-                    x: [key],
-                    name: key,
-                    y: resultList[parseInt(key, 10)].map((entry: SurveyEntry)  => entry.salary),
-                }
-            })
-            // TODO: xAxis is not set properly and would lead to problems only one point is shown..
-            .concat([{
-                ...this.defaultBoxConfig,
-                x: ['2009'], // TODO: Somehow label correctly as overall values..
-                name: '2009',
-                y: allData.resultSet.map((entry: SurveyEntry) => entry.salary),
-            }
-            ])
+        if (!yearData) {
+            return []   // no data for the selected year
+        }
+
+        const trace: Data = {
+            type: 'box',
+            boxmean: 'sd',
+            x: [selectedYearStr],
+            name: selectedYearStr,
+            y: yearData.map((entry: SurveyEntry)  => entry.salary),
+        };
+        return [trace];
     }
 
     get layout(): Partial<Layout> {
