@@ -57,17 +57,17 @@ class App extends React.Component<Record<string, unknown>, AppState> {
                                 if (pane === 0) {
                                     return (
                                         <Allotment.Pane key={pane}>
-                                            <div style={{position: 'relative', top: 0, left: 0, right: 0}} >
-                                                <Tabs
-                                                    value={''}
-                                                    onChange={this.changePlot.bind(this)}>
-                                                    <Tab label="Salary" />
-                                                    <Tab label="Participation" />
-                                                </Tabs>
-                                            </div>
-                                            <div style={{position: 'relative', top: 0, left: 0, right: 0, height: 'calc(100% - 48px)'}}>
-                                                {this.state.usePlot === 0 ? <BoxPlot></BoxPlot> : <BarPlot></BarPlot>}
-                                            </div>
+                                             <div style={{position: 'relative', top: 0, left: 0, right: 0}} >
+                                                 <Tabs
+                                                     value={this.state.usePlot}
+                                                     onChange={this.changePlot}>
+                                                     <Tab label="Salary" />
+                                                     <Tab label="Participation" />
+                                                 </Tabs>
+                                             </div>
+                                             <div style={{position: 'relative', top: 0, left: 0, right: 0, height: 'calc(100% - 48px)', width: '100%'}}>
+                                                 {this.state.usePlot === 0 ? <BoxPlot style={{width: '100%', height: '100%'}}></BoxPlot> : <BarPlot style={{width: '100%', height: '100%'}}></BarPlot>}
+                                             </div>
                                         </Allotment.Pane>
                                     )
                                 } else {
@@ -86,13 +86,7 @@ class App extends React.Component<Record<string, unknown>, AppState> {
     }
 
     private changePlot(): void {
-        let showPlot: number
-        if (this.state.usePlot === 1) {
-            showPlot = 0
-        } else {
-            showPlot = 1
-        }
-        this.setState({usePlot: showPlot})
+        this.setState(prevState => ({usePlot: prevState.usePlot === 1 ? 0 : 1}));
     }
 
     private toggleControls(): void {

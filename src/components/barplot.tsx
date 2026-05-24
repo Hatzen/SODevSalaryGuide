@@ -10,7 +10,9 @@ class BarPlot extends React.Component<StoreProps> {
             <div style={{position: 'absolute', top: 0, bottom: 0, left:0, right: 0, overflow: 'auto'}}>
                 <Plot
                     data={this.data}
-                    layout={ {barmode: 'group', width: this.width, height: this.height, title: '', showlegend: false} }
+                    layout={{barmode: 'group', title: '', showlegend: false}}
+                    style={{width: '100%', height: '100%'}}
+                    responsive={true}
                 // TODO: Check Layout.template
                 // TODO: Check Config.static for temporary disable?
                 />
@@ -27,7 +29,7 @@ class BarPlot extends React.Component<StoreProps> {
         const overallNumbers = Object.keys(resultList)
             .filter(year => displayYears[parseInt(year, 10)] === true)
             .map(key => resultList[parseInt(key, 10)].overallEntryCount)
-            
+             
         const invalidNumbers = Object.keys(resultList)
             .filter(year => displayYears[parseInt(year, 10)] === true)
             .map(key => resultList[parseInt(key, 10)].invalidEntryCount)
@@ -35,23 +37,13 @@ class BarPlot extends React.Component<StoreProps> {
         const matchingFilterNumbers = Object.keys(filteredList)
             .filter(year => displayYears[parseInt(year, 10)] === true)
             .map(key => filteredList[parseInt(key, 10)].length)
-      
+       
         const traces: Array<Record<string, unknown>> = [
             { y: matchingFilterNumbers, name: 'matching filter', type: 'bar' },
             { y: overallNumbers, name: 'allParticipations', type: 'bar' },
             { y: invalidNumbers, name: 'considered invalid', type: 'bar' },
         ]
         return traces
-    }
-
-    get width(): number {
-        return window.innerWidth * 0.8  - 50
-    }
-     
-    get height(): number {
-        const appBarHeight = 50
-        const diagramSelectionHeight = 30
-        return window.document.documentElement.clientHeight - (appBarHeight + diagramSelectionHeight)
     }
 }
 

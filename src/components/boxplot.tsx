@@ -26,6 +26,8 @@ class BoxPlot extends React.Component<StoreProps> {
                 <Plot
                     data={this.data}
                     layout={this.layout}
+                    style={{width: '100%', height: '100%'}}
+                    responsive={true}
                 // TODO: Check Layout.template
                 // TODO: Check Config.static for temporary disable?
                 />
@@ -61,9 +63,7 @@ class BoxPlot extends React.Component<StoreProps> {
 
     get layout(): Partial<Layout> {
         return {
-            autosize: false,
-            width: this.width,
-            height: this.height,
+            autosize: true,
             title: '',
             showlegend: false,
             yaxis: {fixedrange: true},
@@ -71,16 +71,6 @@ class BoxPlot extends React.Component<StoreProps> {
             paper_bgcolor: '#FF000000',
             plot_bgcolor: '#FF000000'
         }
-    }
-
-    get width(): number {
-        return window.innerWidth * 0.8 - 50
-    }
-    
-    get height(): number {
-        const appBarHeight = 100
-        const diagramSelectionHeight = 50
-        return window.document.documentElement.clientHeight - (appBarHeight + diagramSelectionHeight)
     }
 }
 
