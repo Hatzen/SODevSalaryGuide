@@ -23,7 +23,10 @@ export class EntryStore {
         2019: new ResultSetForYear(),
         2020: new ResultSetForYear(),
         2021: new ResultSetForYear(),
-        2022: new ResultSetForYear()
+        2022: new ResultSetForYear(),
+        2023: new ResultSetForYear(),
+        2024: new ResultSetForYear(),
+        2025: new ResultSetForYear()
     }
 
     currencyValues!: FreeCurrency
@@ -56,7 +59,7 @@ export class EntryStore {
 
     initParser (): void {
         const reader = new StackOverflowCsvReader()
-        AVAILABLE_YEARS.forEach(year => {
+        AVAILABLE_YEARS.findLast(year => {
             const resultsetForYear = new ResultSetForYear()
             resultsetForYear.year = parseInt(year)
             reader.startWorkerForYear(
