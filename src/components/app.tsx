@@ -10,28 +10,28 @@ import MenuAppBar from './appBar'
 import { Provider } from 'mobx-react'
 import controlStore from '../stores/controlStore'
 import { Tab, Tabs } from '@material-ui/core'
-import { UiStore } from '../stores/uiStore'
 import { StoreProps } from '../stores/storeHelper'
 import SurveyEntry from '../model/surveyEntry'
+import RawDataTable from './rawDataTable'
+import ConsideredDataTable from './consideredDataTable'
+import { uiStore } from '../stores/uiStore'
 
 interface AppState {
     components: number[],
-    usePlot: number
+    tabIndex: number
 }
 
 class App extends React.Component<Record<string, unknown>, AppState> {
     private controlPane: React.RefObject<AllotmentHandle>
-    private uiStore: UiStore
     
     constructor(props: Record<string, unknown>) {
         super(props)
         this.controlPane = React.createRef<AllotmentHandle>()
         this.state ={
             components: [0, 1],
-            usePlot: 0
+            tabIndex: 0
         }
         // Store must be created only once.
-        this.uiStore = new UiStore(controlStore, entryStore)
         SurveyEntry.entryStore = entryStore
     }
 
@@ -40,7 +40,7 @@ class App extends React.Component<Record<string, unknown>, AppState> {
         const stores: StoreProps = {
             entryStore,
             controlStore,
-            uiStore: this.uiStore
+            uiStore: uiStore
         }
 
         const panes = this.state.components
@@ -59,15 +59,20 @@ class App extends React.Component<Record<string, unknown>, AppState> {
                                         <Allotment.Pane key={pane}>
                                              <div style={{position: 'relative', top: 0, left: 0, right: 0}} >
                                                  <Tabs
-                                                     value={this.state.usePlot}
-                                                     onChange={this.changePlot}>
+                                                     value={this.state.tabIndex}
+                                                     onChange={this.changeTab}>
                                                      <Tab label="Salary" />
                                                      <Tab label="Participation" />
+                                                     <Tab label="Raw Data" />
+                                                     <Tab label="Considered Data" />
                                                  </Tabs>
                                              </div>
                                              <div style={{position: 'relative', top: 0, left: 0, right: 0, height: 'calc(100% - 48px)', width: '100%'}}>
                                                  <div style={{width: '100%', height: '100%'}}>
-                                                     {this.state.usePlot === 0 ? <BoxPlot></BoxPlot> : <BarPlot></BarPlot>}
+                                                     {this.state.tabIndex === 0 ? <BoxPlot></BoxPlot> :
+                                                      this.state.tabIndex === 1 ? <BarPlot></BarPlot> :
+                                                      this.state.tabIndex === 2 ? <RawDataTable></RawDataTable> :
+                                                      <ConsideredDataTable></ConsideredDataTable>}
                                                  </div>
                                              </div>
                                         </Allotment.Pane>
@@ -87,8 +92,8 @@ class App extends React.Component<Record<string, unknown>, AppState> {
         )
     }
 
-    private changePlot = (event: React.ChangeEvent<{}>, newValue: number | string) => {
-        this.setState({usePlot: Number(newValue)});
+    private changeTab = (event: React.ChangeEvent<{}>, newValue: number | string) => {
+        this.setState({tabIndex: Number(newValue)});
     };
 
     private toggleControls(): void {
