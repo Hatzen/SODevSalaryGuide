@@ -79,17 +79,17 @@ const ConsideredDataTable = observer(() => {
     }));
 
     return (
-        <div style={{padding: '20px', height: '100%'}}>
+        <div style={{padding: '20px', height: '100%', display: 'flex', flexDirection: 'column'}}>
             <h2>Considered Data (Filtered)</h2>
-            <div style={{height: 'calc(100% - 48px)', width: '100%'}}>
-                <DataGrid
-                    rows={rowsWithId}
-                    columns={columns}
-                    pageSizeOptions={[10, 25, 50, 100]}
-                    pageSize={10}
-                    checkboxSelection
-                    disableSelectionOnClick
-                />
+            <div style={{flex: 1, minHeight: 0}}>
+<DataGrid
+                     rows={rowsWithId}
+                     columns={columns}
+                     pageSizeOptions={[10, 25, 50, 100]}
+                     pageSize={10}
+                     checkboxSelection
+                     disableSelectionOnClick
+                   />
             </div>
             <div style={{marginTop: '10px', fontSize: '0.9em', color: '#666'}}>
                 Showing {consideredData.length} considered entries
