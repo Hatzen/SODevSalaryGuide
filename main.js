@@ -405455,7 +405455,18 @@ class App extends react__WEBPACK_IMPORTED_MODULE_1__.Component {
         const panes = this.state.components;
         return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: fitAll, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(mobx_react__WEBPACK_IMPORTED_MODULE_10__.Provider, { ...stores, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_disclaimerModal__WEBPACK_IMPORTED_MODULE_8__["default"], { fullScreen: false }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_appBar__WEBPACK_IMPORTED_MODULE_9__["default"], { menuClicked: this.toggleControls.bind(this) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { position: 'absolute', top: 64, bottom: 0, left: 0, right: 0 }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(allotment__WEBPACK_IMPORTED_MODULE_5__.Allotment, { ref: this.controlPane, children: panes.map((pane) => {
                                 if (pane === 0) {
-                                    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(allotment__WEBPACK_IMPORTED_MODULE_5__.Allotment.Pane, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { position: 'relative', top: 0, left: 0, right: 0 }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material__WEBPACK_IMPORTED_MODULE_12__["default"], { value: this.state.tabIndex, onChange: this.changeTab, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_13__["default"], { label: "Salary" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_13__["default"], { label: "Participation" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_13__["default"], { label: "Raw Data" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_13__["default"], { label: "Considered Data" })] }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { position: 'relative', top: 0, left: 0, right: 0, height: 'calc(100% - 48px)', width: '100%' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { width: '100%', height: '100%' }, children: this.state.tabIndex === 0 ? (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_boxplot__WEBPACK_IMPORTED_MODULE_3__["default"], {}) :
+                                    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(allotment__WEBPACK_IMPORTED_MODULE_5__.Allotment.Pane, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { position: 'relative', top: 0, left: 0, right: 0 }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material__WEBPACK_IMPORTED_MODULE_12__["default"], { value: this.state.tabIndex, onChange: this.changeTab, sx: {
+                                                        '& .MuiTabs-indicator': {
+                                                            backgroundColor: '#F48024'
+                                                        },
+                                                        '& .MuiTab-root': {
+                                                            color: '#F48024',
+                                                            '&.Mui-selected': {
+                                                                color: '#F48024',
+                                                                fontWeight: 500
+                                                            }
+                                                        }
+                                                    }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_13__["default"], { label: "Salary" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_13__["default"], { label: "Participation" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_13__["default"], { label: "Raw Data" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_13__["default"], { label: "Considered Data" })] }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { position: 'relative', top: 0, left: 0, right: 0, height: 'calc(100% - 48px)', width: '100%' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { width: '100%', height: '100%' }, children: this.state.tabIndex === 0 ? (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_boxplot__WEBPACK_IMPORTED_MODULE_3__["default"], {}) :
                                                         this.state.tabIndex === 1 ? (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_barplot__WEBPACK_IMPORTED_MODULE_4__["default"], {}) :
                                                             this.state.tabIndex === 2 ? (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_rawDataTable__WEBPACK_IMPORTED_MODULE_15__["default"], {}) :
                                                                 (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_consideredDataTable__WEBPACK_IMPORTED_MODULE_16__["default"], {}) }) })] }, pane));
@@ -405765,6 +405776,41 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+// Helper function to format values for display
+const formatValueForDisplay = (value) => {
+    if (value === null || value === undefined) {
+        return '';
+    }
+    if (typeof value === 'object') {
+        if (value instanceof Date) {
+            return value.toLocaleDateString();
+        }
+        // Handle nested objects like expirienceInYears, companySize
+        if (value.min !== undefined && value.max !== undefined) {
+            return `${value.min}-${value.max === null ? '∞' : value.max}`;
+        }
+        // For arrays, join them
+        if (Array.isArray(value)) {
+            return value.join(', ');
+        }
+        // For other objects, try to show a meaningful representation
+        if (value.hasOwnProperty('name') && typeof value.name === 'string') {
+            return value.name;
+        }
+        // Fallback: show key-value pairs
+        try {
+            const entries = Object.entries(value);
+            if (entries.length <= 2) {
+                return entries.map(([k, v]) => `${k}: ${v}`).join(', ');
+            }
+        }
+        catch (e) {
+            // ignore
+        }
+        return '[Object]';
+    }
+    return String(value);
+};
 const ConsideredDataTable = (0,mobx_react__WEBPACK_IMPORTED_MODULE_1__.observer)(() => {
     const consideredData = Object.values(_stores_uiStore__WEBPACK_IMPORTED_MODULE_4__.uiStore.filteredData).flat();
     if (consideredData.length === 0) {
@@ -405782,8 +405828,13 @@ const ConsideredDataTable = (0,mobx_react__WEBPACK_IMPORTED_MODULE_1__.observer)
         headerName: key,
         flex: 1,
         minWidth: 100,
+        // Custom value formatter to handle complex objects
+        valueFormatter: (params) => {
+            const value = params.value;
+            return formatValueForDisplay(value);
+        }
     }));
-    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { padding: '20px', height: '100%' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("h2", { children: "Considered Data (Filtered)" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { height: 'calc(100% - 48px)', width: '100%' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_x_data_grid__WEBPACK_IMPORTED_MODULE_2__.DataGrid, { rows: rowsWithId, columns: columns, pageSizeOptions: [10, 25, 50, 100], pageSize: 10, checkboxSelection: true, disableSelectionOnClick: true }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { marginTop: '10px', fontSize: '0.9em', color: '#666' }, children: ["Showing ", consideredData.length, " considered entries"] })] }));
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { padding: '20px', height: '100%', display: 'flex', flexDirection: 'column' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("h2", { children: "Considered Data (Filtered)" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { flex: 1, minHeight: 0 }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_x_data_grid__WEBPACK_IMPORTED_MODULE_2__.DataGrid, { rows: rowsWithId, columns: columns, pageSizeOptions: [10, 25, 50, 100], pageSize: 10, checkboxSelection: true, disableSelectionOnClick: true }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { marginTop: '10px', fontSize: '0.9em', color: '#666' }, children: ["Showing ", consideredData.length, " considered entries"] })] }));
 });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ConsideredDataTable);
 
@@ -406064,6 +406115,41 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+// Helper function to format values for display
+const formatValueForDisplay = (value) => {
+    if (value === null || value === undefined) {
+        return '';
+    }
+    if (typeof value === 'object') {
+        if (value instanceof Date) {
+            return value.toLocaleDateString();
+        }
+        // Handle nested objects like expirienceInYears, companySize
+        if (value.min !== undefined && value.max !== undefined) {
+            return `${value.min}-${value.max === null ? '∞' : value.max}`;
+        }
+        // For arrays, join them
+        if (Array.isArray(value)) {
+            return value.join(', ');
+        }
+        // For other objects, try to show a meaningful representation
+        if (value.hasOwnProperty('name') && typeof value.name === 'string') {
+            return value.name;
+        }
+        // Fallback: show key-value pairs
+        try {
+            const entries = Object.entries(value);
+            if (entries.length <= 2) {
+                return entries.map(([k, v]) => `${k}: ${v}`).join(', ');
+            }
+        }
+        catch (e) {
+            // ignore
+        }
+        return '[Object]';
+    }
+    return String(value);
+};
 const RawDataTable = (0,mobx_react__WEBPACK_IMPORTED_MODULE_1__.observer)(() => {
     const rawData = _stores_entryStore__WEBPACK_IMPORTED_MODULE_4__["default"].parsedData.resultSet;
     if (rawData.length === 0) {
@@ -406081,8 +406167,13 @@ const RawDataTable = (0,mobx_react__WEBPACK_IMPORTED_MODULE_1__.observer)(() => 
         headerName: key,
         flex: 1,
         minWidth: 100,
+        // Custom value formatter to handle complex objects
+        valueFormatter: (params) => {
+            const value = params.value;
+            return formatValueForDisplay(value);
+        }
     }));
-    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { padding: '20px', height: '100%' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("h2", { children: "Raw Data from CSV" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { height: 'calc(100% - 48px)', width: '100%' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_x_data_grid__WEBPACK_IMPORTED_MODULE_2__.DataGrid, { rows: rowsWithId, columns: columns, pageSizeOptions: [10, 25, 50, 100], pageSize: 10, checkboxSelection: true, disableSelectionOnClick: true }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { marginTop: '10px', fontSize: '0.9em', color: '#666' }, children: ["Showing ", rawData.length, " raw entries"] })] }));
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { padding: '20px', height: '100%', display: 'flex', flexDirection: 'column' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("h2", { children: "Raw Data from CSV" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { flex: 1, minHeight: 0 }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_x_data_grid__WEBPACK_IMPORTED_MODULE_2__.DataGrid, { rows: rowsWithId, columns: columns, pageSizeOptions: [10, 25, 50, 100], pageSize: 10, checkboxSelection: true, disableSelectionOnClick: true }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { marginTop: '10px', fontSize: '0.9em', color: '#666' }, children: ["Showing ", rawData.length, " raw entries"] })] }));
 });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (RawDataTable);
 
