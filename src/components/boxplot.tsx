@@ -1,13 +1,13 @@
 import React from 'react'
 import Plot from 'react-plotly.js'
-import { Data, Layout } from 'plotly.js'
 import { inject, observer } from 'mobx-react'
 import SurveyEntry from '../model/surveyEntry'
 import { injectClause, StoreProps } from '../stores/storeHelper'
+import { Layout } from 'plotly.js'
 
 class BoxPlot extends React.Component<StoreProps> {
 
-    defaultBoxConfig: Partial<Data> = {
+    defaultBoxConfig: Partial<Plotly.Data> = {
         type: 'box',
         boxmean: 'sd',
         // boxpoints: 'all',
@@ -17,6 +17,7 @@ class BoxPlot extends React.Component<StoreProps> {
 
     render(): JSX.Element {
         /*
+
                 <div>
                     {this.getLoader()}
                 </div>
@@ -33,28 +34,28 @@ class BoxPlot extends React.Component<StoreProps> {
         )
     }
 
-    private get data(): Data[] { // TODO: Plotty Data
+    private get data(): any { // TODO: Plotty Data
         const resultList = this.props.uiStore!.filteredData
         const allData = this.props.entryStore!.parsedData
 
-        const displayYears = this.props.controlStore!.controlState.selectedYears
+        const displayYears = this.props.controlStore?.controlState.selectedYears
 
         return Object.keys(resultList)
-            .filter(year => displayYears[parseInt(year, 10)] === true)
-            .map(key => {
+            .filter(year => displayYears![year as any] === true)
+            .map(key =>{
                 return {
-                    ...this.defaultBoxConfig,
-                    x: [key],
+                    x: key,
                     name: key,
-                    y: resultList[parseInt(key, 10)].map((entry: SurveyEntry)  => entry.salary),
+                    y: resultList[key as any].map((entry: SurveyEntry)  => entry.salary),
+                    ...this.defaultBoxConfig
                 }
             })
             // TODO: xAxis is not set properly and would lead to problems only one point is shown..
             .concat([{
-                ...this.defaultBoxConfig,
-                x: ['2009'], // TODO: Somehow label correctly as overall values..
-                name: '2009',
+                x: 2009 as any, // TODO: Somehow label correctly as overall values..
+                name: 2009 as any,
                 y: allData.resultSet.map((entry: SurveyEntry) => entry.salary),
+                ...this.defaultBoxConfig
             }
             ])
     }

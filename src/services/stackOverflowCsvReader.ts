@@ -24,7 +24,6 @@ export default class StackOverflowCsvReader {
     }
 
     startWorkerForYear (resultsetForYear: ResultSetForYear, consumer: (row: Papa.ParseStepResult<CsvRow>) => void, completed: () => void): void {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const config = {
             ...StackOverflowCsvReader.BASIC_CONFIG,
             step: (row: Papa.ParseStepResult<CsvRow>) => {
@@ -35,7 +34,7 @@ export default class StackOverflowCsvReader {
                 this.handleNextChunk(resultsetForYear, config)
                 completed()
             }
-        } as Papa.ParseRemoteConfig<CsvRow>
+        }
         const year = resultsetForYear.year.toString()
         const chunkCountForYear = CHUNK_COUNT_PER_YEAR[year]
         resultsetForYear.chunksParsed = 0
@@ -55,7 +54,8 @@ export default class StackOverflowCsvReader {
         resultsetForYear.overallEntryCount++
     }
 
-    private handleNextChunk (resultsetForYear: ResultSetForYear, config: Papa.ParseRemoteConfig<CsvRow>): void {
+    // TODO: Typing for config: ParseRemoteConfig<CsvRow>
+    private handleNextChunk (resultsetForYear: ResultSetForYear, config: any): void {
         resultsetForYear.chunksParsed++
         if (resultsetForYear.chunksParsed > resultsetForYear.chunksAvailable) {
             /*

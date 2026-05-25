@@ -19,13 +19,13 @@ interface AppState {
     usePlot: number
 }
 
-class App extends React.Component<Record<string, unknown>, AppState> {
+class App extends React.Component<any, AppState> {
     private controlPane: React.RefObject<AllotmentHandle>
     private uiStore: UiStore
     
-    constructor() {
-        super({})
-        this.controlPane = React.createRef<AllotmentHandle>()
+    constructor(props: any) {
+        super(props)
+        this.controlPane = React.createRef()
         this.state ={
             components: [0, 1],
             usePlot: 0
@@ -36,7 +36,7 @@ class App extends React.Component<Record<string, unknown>, AppState> {
     }
 
     render(): JSX.Element {
-        const fitAll: React.CSSProperties = {position: 'absolute', top:0, left:0, bottom: 0, right:0}
+        const fitAll = {position: 'absolute' as any, top:0, left:0, bottom: 0, right:0}
         const stores: StoreProps = {
             entryStore,
             controlStore,
@@ -96,7 +96,7 @@ class App extends React.Component<Record<string, unknown>, AppState> {
     }
 
     private toggleControls(): void {
-        if (this.state.components.length === 1) {
+        if ((this.state as any).components.length === 1) {
             this.setState({
                 components: [0 ,1]
             })

@@ -18,36 +18,52 @@ class BarPlot extends React.Component<StoreProps> {
         )
     }
 
-    private get data(): Array<Record<string, unknown>> { // TODO: Plotty Data
+    private get data(): any { // TODO: Plotty Data
         const resultList = this.props.entryStore!.parsedDataByYear
         const filteredList = this.props.uiStore!.filteredData
 
-        const displayYears = this.props.controlStore!.controlState.selectedYears
+        const displayYears = this.props.controlStore?.controlState.selectedYears
+
+        const invalidNumbers = Object.keys(resultList)
+            .filter(year => displayYears![year as any] === true)
+            .map(key => resultList[key as any].invalidEntryCount)
 
         const overallNumbers = Object.keys(resultList)
-            .filter(year => displayYears[parseInt(year, 10)] === true)
-            .map(key => resultList[parseInt(key, 10)].overallEntryCount)
+            .filter(year => displayYears![year as any] === true)
+            .map(key => resultList[key as any].overallEntryCount)
             
-        const invalidNumbers = Object.keys(resultList)
-            .filter(year => displayYears[parseInt(year, 10)] === true)
-            .map(key => resultList[parseInt(key, 10)].invalidEntryCount)
-
         const matchingFilterNumbers = Object.keys(filteredList)
-            .filter(year => displayYears[parseInt(year, 10)] === true)
-            .map(key => filteredList[parseInt(key, 10)].length)
+            .filter(year => displayYears![year as any] === true)
+            .map(key => filteredList[key as any].length)
+
+        const trace1 = {
+            x: displayYears,
+            y: overallNumbers,
+            name: 'allParticipations',
+            type: 'bar'
+        }
       
-        const traces: Array<Record<string, unknown>> = [
-            { y: matchingFilterNumbers, name: 'matching filter', type: 'bar' },
-            { y: overallNumbers, name: 'allParticipations', type: 'bar' },
-            { y: invalidNumbers, name: 'considered invalid', type: 'bar' },
-        ]
-        return traces
+        const trace2 = {
+            x: displayYears,
+            y: invalidNumbers,
+            name: 'considered invalid',
+            type: 'bar'
+        }
+        
+        const trace3 = {
+            x: displayYears,
+            y: matchingFilterNumbers,
+            name: 'matching filter',
+            type: 'bar'
+        }
+      
+        return [trace3, trace1, trace2]
     }
 
     get width(): number {
         return window.innerWidth * 0.8  - 50
     }
-     
+    
     get height(): number {
         const appBarHeight = 50
         const diagramSelectionHeight = 30

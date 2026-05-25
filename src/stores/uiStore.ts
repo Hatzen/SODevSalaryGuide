@@ -73,8 +73,7 @@ export class UiStore {
         // For better performance only render every 3 seconds (to avoid rendering every 20ms and freeze ui) and only when anything changed.
         //if (this.dataChanged === true) {
         this.dataChanged = false
-        Object.keys(this.entryStore.parsedDataByYear).forEach((yearStr: string) => {
-            const year = parseInt(yearStr, 10)
+        Object.keys(this.entryStore.parsedDataByYear).forEach((year: any) => {
             const parsedData = this.entryStore.parsedDataByYear[year]
             const controlState = this.controlStore.controlState
             this.filteredData[year] = parsedData.resultSet

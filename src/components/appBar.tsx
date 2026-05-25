@@ -12,21 +12,25 @@ import Loader from 'react-loader-spinner'
 export interface MenuAppBarProps extends StoreProps {
   menuClicked: () => void
 }
-
-interface NetworkState {
-    since: string
-    online: boolean
-    rtt: number
-    type: string
-    saveData: boolean
-    downLink: number
-    downLinkMax: number
-    effectiveType: string
-}
-
 // https://medium.com/@vivekjoy/usenetwork-create-a-custom-react-hook-to-detect-online-and-offline-network-status-and-get-network-4a2e12c7e58b
 // https://v1.mui.com/demos/app-bar/
 class MenuAppBar extends React.Component<MenuAppBarProps> {
+    
+    /*
+    constructor(props: MenuAppBarProps) {
+        super(props)
+        /*const [state, setState] = useState(() => {
+            return {
+                since: undefined,
+                online: navigator.onLine,
+                ...this.getNetworkConnectionInfo(),
+            }
+        })
+        // const info = this.getNetworkConnectionInfo()
+        //
+    }
+    */
+    
 
     render(): JSX.Element {
         // TODO: Info Button explain all relevant aspects to consider the salary which are not matched by the survey..
@@ -53,6 +57,7 @@ class MenuAppBar extends React.Component<MenuAppBarProps> {
             .reduce((previousValue: number, currentValue: number) => {
                 return 0 + previousValue + currentValue
             })
+        //
         const chunksDownloaded = Object.values(this.props.entryStore!.parsedDataByYear)
             .map((resultSetForYear) =>  resultSetForYear.chunksParsed)
             .reduce((previousValue: number, currentValue: number) => {
@@ -79,21 +84,13 @@ class MenuAppBar extends React.Component<MenuAppBarProps> {
         )
     }
 
-    getNetworkConnectionInfo(): NetworkState {
-        const defaults: NetworkState = {
-            since: new Date().toString(),
-            online: false,
-            rtt: 0, type: '', saveData: false,
-            downLink: 0, downLinkMax: 0, effectiveType: '',
-        }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const connection: any = this.getNetworkConnection()
+    getNetworkConnectionInfo(): any {
+        const connection = this.getNetworkConnection()
         if (!connection) {
-            return defaults
+            return {}
         }
+        //
         return {
-            since: new Date().toString(),
-            online: navigator.onLine,
             rtt: connection.rtt,
             type: connection.type,
             saveData: connection.saveData,
@@ -102,27 +99,38 @@ class MenuAppBar extends React.Component<MenuAppBarProps> {
             effectiveType: connection.effectiveType,
         }
     }
-
-    useNetwork(): NetworkState {
-        const [state, setState] = useState(this.getNetworkConnectionInfo())
+    
+    useNetwork(): any {
+        const [state, setState] = useState(() => {
+            return {
+                since: undefined,
+                online: navigator.onLine,
+                ...this.getNetworkConnectionInfo(),
+            }
+        })
         useEffect(() => {
             const handleOnline = (): void => {
-                setState((prevState: NetworkState): NetworkState => ({
-                    ...prevState,
-                    online: true,
-                }))
+                setState(
+                    (prevState: any): any => ({
+                        ...prevState,
+                        online: true,
+                        since: new Date().toString(),
+                    }) as any)
             }
-            const handleOffline = (): void => {
-                setState((prevState: NetworkState): NetworkState => ({
-                    ...prevState,
-                    online: false,
-                }))
+            const handleOffline = (): any => {
+                setState(
+                    (prevState: any): any => (
+                        {
+                            ...prevState,
+                            online: false,
+                            since: new Date().toString(),
+                        })
+                )
             }
-            const handleConnectionChange = (_event: Event): void => {
-                const networkInfo = this.getNetworkConnectionInfo()
-                setState((prevState: NetworkState) => ({
+            const handleConnectionChange = (): any => {
+                setState((prevState: any) => ({
                     ...prevState,
-                    ...networkInfo,
+                    ...this.getNetworkConnectionInfo(),
                 }))
             }
             window.addEventListener('online', handleOnline)
@@ -138,8 +146,14 @@ class MenuAppBar extends React.Component<MenuAppBarProps> {
         return state
     }
 
-    getNetworkConnection(): EventTarget {
-        return navigator.connection!
+    getNetworkConnection(): NetworkInformation & any {
+        return (
+            navigator.connection
+            // ||
+            //navigator.mozConnection ||
+            // navigator.webkitConnection ||
+            // null
+        )
     }
 
 }
