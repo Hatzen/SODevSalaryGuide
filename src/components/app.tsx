@@ -58,14 +58,26 @@ class App extends React.Component<Record<string, unknown>, AppState> {
                                     return (
                                         <Allotment.Pane key={pane}>
                                              <div style={{position: 'relative', top: 0, left: 0, right: 0}} >
-                                                 <Tabs
-                                                     value={this.state.tabIndex}
-                                                     onChange={this.changeTab}>
-                                                     <Tab label="Salary" />
-                                                     <Tab label="Participation" />
-                                                     <Tab label="Raw Data" />
-                                                     <Tab label="Considered Data" />
-                                                 </Tabs>
+                                                  <Tabs
+                                                      value={this.state.tabIndex}
+                                                      onChange={this.changeTab}
+                                                      sx={{ 
+                                                        '& .MuiTabs-indicator': { 
+                                                          backgroundColor: '#F48024' 
+                                                        },
+                                                        '& .MuiTab-root': {
+                                                          color: '#F48024',
+                                                          '&.Mui-selected': {
+                                                            color: '#F48024',
+                                                            fontWeight: 500
+                                                          }
+                                                        }
+                                                      }}>
+                                                      <Tab label="Salary" />
+                                                      <Tab label="Participation" />
+                                                      <Tab label="Raw Data" />
+                                                      <Tab label="Considered Data" />
+                                                  </Tabs>
                                              </div>
                                              <div style={{position: 'relative', top: 0, left: 0, right: 0, height: 'calc(100% - 48px)', width: '100%'}}>
                                                  <div style={{width: '100%', height: '100%'}}>
