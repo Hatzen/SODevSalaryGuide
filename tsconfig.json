@@ -1,24 +1,28 @@
 {
-    "compilerOptions": {
-      "esModuleInterop": true,
-      "jsx": "react",
-      "module": "esnext",
-      "moduleResolution": "node",
-      "lib": [
-        "dom",
-        "esnext"
-      ],
-      "strict": true,
-      "sourceMap": true,
-      "target": "esnext",
-      // Additional:
-      // Allow mobx-react decoraters.
-      "experimentalDecorators": true,
-      // Avoid must have default values for class based observables
-      // https://mobx.js.org/installation.html#installation 
-      "useDefineForClassFields": true,
-    },
-    "exclude": [
-      "node_modules"
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "jsx": "react-jsx",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "lib": [
+      "dom",
+      "esnext"
+    ],
+    "strict": true,
+    "sourceMap": true,
+    "target": "esnext",
+    // Additional:
+    // Allow mobx-react decoraters.
+    "experimentalDecorators": true,
+    // Avoid must have default values for class based observables
+    // https://mobx.js.org/installation.html#installation 
+    "useDefineForClassFields": true,
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/types"
     ]
-  }
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}
