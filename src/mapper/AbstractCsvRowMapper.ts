@@ -24,11 +24,11 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
     static COLUMN_DONT_EXIST = 'COLUMN_DONT_EXIST'
 
     // Sets to distinct values and map to filter values with single response.
-    static educations: Map<any, number> = new Map()
-    static countries: Map<any, number> = new Map()
-    static genders: Set<any> = new Set()
-    static years: Set<any> = new Set()
-    static abilities: Map<any, number> = new Map()
+    static educations: Map<string, number> = new Map()
+    static countries: Map<string, number> = new Map()
+    static genders: Set<string> = new Set()
+    static years: Set<string> = new Set()
+    static abilities: Map<string, number> = new Map()
 
     abstract readonly SALARY_KEY: string
     abstract readonly CURRENCY_KEY: string
@@ -75,6 +75,14 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
             }
         }
         result.abilities = abilities
+    }
+
+    static clearDistinctValues(): void {
+        AbstractCsvRowMapper.educations.clear()
+        AbstractCsvRowMapper.countries.clear()
+        AbstractCsvRowMapper.genders.clear()
+        AbstractCsvRowMapper.years.clear()
+        AbstractCsvRowMapper.abilities.clear()
     }
 
     private addKeyAndupdateKeyCount(key: string, targetList: string[]): void {
@@ -283,7 +291,7 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
     }
 
     protected containsValue (value: string, find: string): boolean {
-        return value.toUpperCase().indexOf(value) !== -1
+        return value.toUpperCase().indexOf(find) !== -1
     }
 
     protected getSalaryValue (value: string): number {
@@ -293,13 +301,13 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
         if (typeof value === 'string') {
             if (value.indexOf('<') !== -1) {
                 return 10000 // <20k consider as 10k in average
-            } else if (value.indexOf('$') !== -1 && value.indexOf('-') !== -1) {
-                const firstValue = value
-                    .replaceAll('$', '')
-                    .replaceAll(',', '')
-                    .substring(0, value.indexOf('-'))
-                return parseInt(firstValue) + 10000 // 20-40k => average 30k
-            }
+        } else if (value.indexOf('$') !== -1 && value.indexOf('-') !== -1) {
+            const firstValue = value
+                .split('$').join('')
+                .split(',').join('')
+                .substring(0, value.indexOf('-'))
+            return parseInt(firstValue) + 10000 // 20-40k => average 30k
+        }
         }
         try {
             let result = parseInt(value)
