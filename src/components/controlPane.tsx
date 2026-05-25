@@ -1,11 +1,12 @@
-import React, { ChangeEvent } from 'react'
-import { Checkbox, FormGroup, FormControl, FormControlLabel, Grid, Slider, FormLabel, Box, TextField } from '@material-ui/core'
+import React from 'react'
+import { Checkbox, FormGroup, FormControl, FormControlLabel, Slider, FormLabel, Box, TextField } from '@material-ui/core'
 import { inject, observer } from 'mobx-react'
 import { injectClause, StoreProps } from '../stores/storeHelper'
 import Autocomplete from '@mui/material/Autocomplete'
 import { AbstractCsvRowMapper } from '../mapper/AbstractCsvRowMapper'
-import { Gender } from '../model/gender'
+import { Gender, GenderRecord } from '../model/gender'
 import ControlComponentWrapper from './controlComponentWrapper'
+import { AVAILABLE_YEARS } from '../model/constantMetaData'
 
 class ControlPane extends React.Component<StoreProps> {
     private key = 0
@@ -34,36 +35,47 @@ class ControlPane extends React.Component<StoreProps> {
 
     get years(): JSX.Element {
         const config = this.props.controlStore!
-        const selectableYears = []
-        for (let i = 2011; i < 2023; i++) {
-            selectableYears.push(i.toString())
-        }
-        const yearOption = selectableYears.map((year: string) => {
-            const yearSelected = config.controlState.selectedYears[parseInt(year)]
-            return <FormControlLabel key={this.key++} control={
-                <Checkbox name={year} defaultChecked={yearSelected} onChange={this.handleChanges.bind(this)}/>
-            } label={year} />
-        })
-        return (
-            <Grid container
-                key={1}
-                direction="row"
-                justifyContent="center"
-                alignItems="center"
-                style={{width: '100%'}}
-            >
-                <Grid item
-                    style={{width: '100%'}}>
-                    {yearOption}
-                </Grid>
-                <br></br>
-            </Grid>
-        )
+
+        // Find currently selected year (assuming only one is selected)
+        let selectedYear: string | null = config.controlState.selectedYear
+
+        const filteredValues = AVAILABLE_YEARS
+        const autoCompleteComponent = (<Autocomplete
+            options={filteredValues}
+            value={selectedYear}
+            onChange={this.handleYearChange.bind(this)}
+            // getOptionLabel={([k, v]) => k as string +  ' (' + v + ')'}
+            renderOption={(props, option, { selected }) => (
+                <li {...props}>
+                    <Checkbox
+                        // icon={icon}
+                        // checkedIcon={checkedIcon}
+                        style={{ marginRight: 8 }}
+                        checked={selected}
+                    />
+                    {option}
+                </li>
+            )}
+            style={{ width: 250 }}
+            renderInput={(params) => (
+                <TextField style={{ padding: '10px' }} {...params} label="Show data for year" />
+            )}
+        />)
+         
+        return autoCompleteComponent
     }
     
-    get abilities(): any {
+    handleYearChange = (event: React.SyntheticEvent<Element, Event>, value: string | null, reason: any, details: any) => {
+        if (value !== null) {
+            this.props.controlStore!.setSelectedYear(value)
+            AbstractCsvRowMapper.clearDistinctValues()
+            this.props.entryStore!.initParser(value)
+        }
+    }
+    
+    get abilities(): JSX.Element {
         const filterdValues =
-            [...AbstractCsvRowMapper.abilities]
+            Array.from(AbstractCsvRowMapper.abilities)
                 .filter(([k, v]) => v > 10 )
                 .map(([k, v]) => k as string)
                 // .map(([k, v]) => k as string +  ' (' + v + ')')
@@ -75,13 +87,13 @@ class ControlPane extends React.Component<StoreProps> {
             disableCloseOnSelect
             onChange={this.handleChangesForAbilities.bind(this)}
             // getOptionLabel={([k, v]) => k as string +  ' (' + v + ')'}
-            renderOption={(props, option, { selected }) => (
+            renderOption={(props, option, state) => (
                 <li {...props}>
                     <Checkbox
                         // icon={icon}
                         // checkedIcon={checkedIcon}
                         style={{ marginRight: 8 }}
-                        checked={selected}
+                        checked={state.selected}
                     />
                     {option}
                 </li>
@@ -99,7 +111,7 @@ class ControlPane extends React.Component<StoreProps> {
         </ControlComponentWrapper>)
     }
 
-    get slider(): any {
+    get slider(): JSX.Element {
         const slider =
             (
                 <Slider
@@ -125,9 +137,9 @@ class ControlPane extends React.Component<StoreProps> {
         </ControlComponentWrapper>)
     }
     
-    get countries(): any {
+    get countries(): JSX.Element {
         const filterdValues =
-            [...AbstractCsvRowMapper.countries]
+            Array.from(AbstractCsvRowMapper.countries)
                 .filter(([k, v]) => v > 10 )
                 .map(([k, v]) => k as string)
                 // .map(([k, v]) => k as string +  ' (' + v + ')')
@@ -138,13 +150,13 @@ class ControlPane extends React.Component<StoreProps> {
             disableCloseOnSelect
             onChange={this.handleChangesForCountries.bind(this)}
             // getOptionLabel={([k, v]) => k as string +  ' (' + v + ')'}
-            renderOption={(props, option, { selected }) => (
+            renderOption={(props, option, state) => (
                 <li {...props}>
                     <Checkbox
                         // icon={icon}
                         // checkedIcon={checkedIcon}
                         style={{ marginRight: 8 }}
-                        checked={selected}
+                        checked={state.selected}
                     />
                     {option}
                 </li>
@@ -162,9 +174,9 @@ class ControlPane extends React.Component<StoreProps> {
         </ControlComponentWrapper>)
     }
     
-    get degrees(): any {
+    get degrees(): JSX.Element {
         const filterdValues =
-            [...AbstractCsvRowMapper.educations]
+            Array.from(AbstractCsvRowMapper.educations)
                 .filter(([k, v]) => v > 10 )
                 .map(([k, v]) => k as string)
                 // .map(([k, v]) => k as string +  ' (' + v + ')')
@@ -175,13 +187,13 @@ class ControlPane extends React.Component<StoreProps> {
             disableCloseOnSelect
             onChange={this.handleChangesForDegree.bind(this)}
             // getOptionLabel={([k, v]) => k as string +  ' (' + v + ')'}
-            renderOption={(props, option, { selected }) => (
+            renderOption={(props, option, state) => (
                 <li {...props}>
                     <Checkbox
                         // icon={icon}
                         // checkedIcon={checkedIcon}
                         style={{ marginRight: 8 }}
-                        checked={selected}
+                        checked={state.selected}
                     />
                     {option}
                 </li>
@@ -203,9 +215,9 @@ class ControlPane extends React.Component<StoreProps> {
         return this.props.controlStore!.expirienceInYears
     }
     
-    get gender(): any {
+    get gender(): JSX.Element {
         const values = this.props.controlStore!.genders
-        const checkboxes = this.getCheckboxesForValues(values, Gender)
+        const checkboxes = this.getCheckboxesForValues(values, Object.values(Gender).filter((v): v is Gender => typeof v === 'string'))
         
         return (<ControlComponentWrapper
             title='Gender'
@@ -217,20 +229,20 @@ class ControlPane extends React.Component<StoreProps> {
 
     // TODO: Get General generator for checkbox, slider, dropdown (company size)
     // Add generic header for: collapsible, active, weight
-    // TODO: Replace any with Enum.class
-    getCheckboxesForValues<T>(selectedValues: T[], enumClass: any): any {
-        // Get enum values of typescript: https://stackoverflow.com/a/48768775/8524651
-        const values = Object.keys(enumClass).filter((item) => {
-            return isNaN(Number(item))
-        })
+    getCheckboxesForValues(selectedValues: Gender[], enumKeys: Gender[]): JSX.Element {
+        const values = enumKeys.map(g => g.toString())
         
         const checkboxes = values.map(value => {
-            // TODO: How to get values
-            const check = selectedValues.find(selected => (selected as any).toString() === value) != null
+            const check = selectedValues.includes(Gender[value as keyof typeof Gender])
             return (
-                <FormControlLabel key={this.key++} control={<Checkbox onChange={(event, selected) => {
-                    this.props.controlStore!.setGenders(value as any)
-                }} defaultChecked={check} />} label={value} />
+                <FormControlLabel
+                    key={this.key++}
+                    control={<Checkbox
+                        onChange={() => { this.props.controlStore!.setGenders(Gender[value as keyof typeof Gender]) }}
+                        defaultChecked={check}
+                    />}
+                    label={value}
+                />
             )
         })
         return (
@@ -240,7 +252,7 @@ class ControlPane extends React.Component<StoreProps> {
         )
     }
     
-    get sliderForCompanySize(): any {
+    get sliderForCompanySize(): JSX.Element {
         const values = this.props.controlStore!.companySizeValues
         const slider =
             (
@@ -268,31 +280,24 @@ class ControlPane extends React.Component<StoreProps> {
     }
 
     
-    handleChangesForCountries(event: ChangeEvent<any>, value: string[]): void {
+    handleChangesForCountries(event: React.ChangeEvent<unknown>, value: string[]): void {
         this.props.controlStore!.setCountries(value)
     }
 
-    handleChangesForDegree(event: ChangeEvent<any>, value: string[]): void {
+    handleChangesForDegree(event: React.ChangeEvent<unknown>, value: string[]): void {
         this.props.controlStore!.setDegrees(value)
     }
 
-    handleChangesForAbilities(event: ChangeEvent<any>, value: string[]): void {
+    handleChangesForAbilities(event: React.ChangeEvent<unknown>, value: string[]): void {
         this.props.controlStore!.setAbilities(value)
     }
 
-    handleChange(event: ChangeEvent<any>, value: number | number[]): void {
+    handleChange(event: React.ChangeEvent<unknown>, value: number | number[]): void {
         this.props.controlStore!.setExp(value as number[])
     }
     
-    handleChangeForCompanySize(event: ChangeEvent<any>, value: number | number[]): void {
+    handleChangeForCompanySize(event: React.ChangeEvent<unknown>, value: number | number[]): void {
         this.props.controlStore!.setCompanySize(value as number[])
-    }
-
-    // https://stackoverflow.com/a/43746799/8524651
-    private handleChanges(event: any, newValue: any): void {
-        event.persist() // allow native event access (see: https://facebook.github.io/react/docs/events.html)
-        const year = event.target.name
-        this.props.controlStore!.selectedYears[year] = newValue
     }
 
 }

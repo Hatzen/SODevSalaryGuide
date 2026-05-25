@@ -12,6 +12,9 @@ import { CsvRowMapper2021 } from './CsvRowMapper2021'
 import { CsvRowMapper2022 } from './CsvRowMapper2022'
 import { CsvRowMapper2012 } from './CsvRowMapper2012'
 import { CsvRowMapper2013 } from './CsvRowMapper2013'
+import { CsvRowMapper2023 } from './CsvRowMapper2023'
+import { CsvRowMapper2024 } from './CsvRowMapper2024'
+import { CsvRowMapper2025 } from './CsvRowMapper2025'
 
 export class CsvRowMapper {
     static readonly INVALID_ENTRY = new SurveyEntry()
@@ -26,6 +29,9 @@ export class CsvRowMapper {
     private readonly MAPPER_2019 = new CsvRowMapper2019()
     private readonly MAPPER_2021 = new CsvRowMapper2021()
     private readonly MAPPER_2022 = new CsvRowMapper2022()
+    private readonly MAPPER_2023 = new CsvRowMapper2023()
+    private readonly MAPPER_2024 = new CsvRowMapper2024()
+    private readonly MAPPER_2025 = new CsvRowMapper2025()
 
     private year: number
 
@@ -71,6 +77,15 @@ export class CsvRowMapper {
             break
         case 2022:
             mapper = this.MAPPER_2022
+            break
+        case 2023:
+            mapper = this.MAPPER_2023
+            break
+        case 2024:
+            mapper = this.MAPPER_2024
+            break
+        case 2025:
+            mapper = this.MAPPER_2025
             break
         default:
             // TODO: This can not happen?

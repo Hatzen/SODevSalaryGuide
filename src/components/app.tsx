@@ -19,13 +19,13 @@ interface AppState {
     usePlot: number
 }
 
-class App extends React.Component<any, AppState> {
+class App extends React.Component<Record<string, unknown>, AppState> {
     private controlPane: React.RefObject<AllotmentHandle>
     private uiStore: UiStore
     
-    constructor(props: any) {
+    constructor(props: Record<string, unknown>) {
         super(props)
-        this.controlPane = React.createRef()
+        this.controlPane = React.createRef<AllotmentHandle>()
         this.state ={
             components: [0, 1],
             usePlot: 0
@@ -36,7 +36,7 @@ class App extends React.Component<any, AppState> {
     }
 
     render(): JSX.Element {
-        const fitAll = {position: 'absolute' as any, top:0, left:0, bottom: 0, right:0}
+        const fitAll: React.CSSProperties = {position: 'absolute', top:0, left:0, bottom: 0, right:0}
         const stores: StoreProps = {
             entryStore,
             controlStore,
@@ -57,17 +57,19 @@ class App extends React.Component<any, AppState> {
                                 if (pane === 0) {
                                     return (
                                         <Allotment.Pane key={pane}>
-                                            <div style={{position: 'relative', top: 0, left: 0, right: 0}} >
-                                                <Tabs
-                                                    value={''}
-                                                    onChange={this.changePlot.bind(this)}>
-                                                    <Tab label="Salary" />
-                                                    <Tab label="Participation" />
-                                                </Tabs>
-                                            </div>
-                                            <div style={{position: 'relative', top: 0, left: 0, right: 0, height: 'calc(100% - 48px)'}}>
-                                                {this.state.usePlot === 0 ? <BoxPlot></BoxPlot> : <BarPlot></BarPlot>}
-                                            </div>
+                                             <div style={{position: 'relative', top: 0, left: 0, right: 0}} >
+                                                 <Tabs
+                                                     value={this.state.usePlot}
+                                                     onChange={this.changePlot}>
+                                                     <Tab label="Salary" />
+                                                     <Tab label="Participation" />
+                                                 </Tabs>
+                                             </div>
+                                             <div style={{position: 'relative', top: 0, left: 0, right: 0, height: 'calc(100% - 48px)', width: '100%'}}>
+                                                 <div style={{width: '100%', height: '100%'}}>
+                                                     {this.state.usePlot === 0 ? <BoxPlot></BoxPlot> : <BarPlot></BarPlot>}
+                                                 </div>
+                                             </div>
                                         </Allotment.Pane>
                                     )
                                 } else {
@@ -85,18 +87,12 @@ class App extends React.Component<any, AppState> {
         )
     }
 
-    private changePlot(): void {
-        let showPlot: number
-        if (this.state.usePlot === 1) {
-            showPlot = 0
-        } else {
-            showPlot = 1
-        }
-        this.setState({usePlot: showPlot})
-    }
+    private changePlot = (event: React.ChangeEvent<{}>, newValue: number | string) => {
+        this.setState({usePlot: Number(newValue)});
+    };
 
     private toggleControls(): void {
-        if ((this.state as any).components.length === 1) {
+        if (this.state.components.length === 1) {
             this.setState({
                 components: [0 ,1]
             })

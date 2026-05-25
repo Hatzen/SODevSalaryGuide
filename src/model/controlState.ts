@@ -2,7 +2,7 @@ import { Gender } from './gender'
 import SurveyEntry from './surveyEntry'
 
 export default class ControlState {
-    selectedYears!: { [year: number]: boolean }
+    selectedYear!: string
     expirienceInYears!: [min: number, max:number]
     genders!: Gender[]
     abilities!: string[]

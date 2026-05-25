@@ -4,9 +4,7 @@ import { Gender } from '../model/gender'
 
 // https://devlinduldulao.pro/mobx-in-a-nutshell/
 export class ControlStore {
-    selectedYears: { [year: number]: boolean } = {
-        2011: true
-    }
+    selectedYear: string = '2025'
     expirienceInYears: [min: number, max:number] = [4, 20]
     genders: Gender[] = [Gender.MALE, Gender.FEMALE, Gender.OTHER]
     abilities: string[] = []
@@ -32,7 +30,7 @@ export class ControlStore {
      */
 
     get controlState(): ControlState {
-        const selectedYears = this.selectedYears
+        const selectedYear = this.selectedYear
         const expirienceInYears = this.expirienceInYears
         const genders = this.genders
         const abilities = this.abilities
@@ -50,7 +48,7 @@ export class ControlStore {
         const countriesFilterActive = this.countriesFilterActive
 
         return new ControlState({
-            selectedYears,
+            selectedYear,
             expirienceInYears,
             genders,
             abilities,
@@ -79,8 +77,8 @@ export class ControlStore {
      * Actions
      */
 
-    setYears(selectedYears: { [year: number]: boolean }): void {
-        this.selectedYears = selectedYears
+    setSelectedYear(year: string): void {
+        this.selectedYear = year
     }
 
     setExp(values: number[]): void {
@@ -90,7 +88,7 @@ export class ControlStore {
     setGenders(value: Gender): void {
         // let convertedValue = value.toLowerCase()
         //convertedValue = convertedValue.charAt(0).toUpperCase() + convertedValue.slice(1)
-        const convertedValue: Gender = (Gender as any)[value as any]
+        const convertedValue: Gender = Gender[value]
         const index = this.genders.indexOf(convertedValue)
         if (index !== -1) {
             this.genders.splice(index, 1)

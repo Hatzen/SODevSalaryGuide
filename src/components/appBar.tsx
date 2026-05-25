@@ -12,25 +12,21 @@ import Loader from 'react-loader-spinner'
 export interface MenuAppBarProps extends StoreProps {
   menuClicked: () => void
 }
+
+interface NetworkState {
+    since: string
+    online: boolean
+    rtt: number
+    type: string
+    saveData: boolean
+    downLink: number
+    downLinkMax: number
+    effectiveType: string
+}
+
 // https://medium.com/@vivekjoy/usenetwork-create-a-custom-react-hook-to-detect-online-and-offline-network-status-and-get-network-4a2e12c7e58b
 // https://v1.mui.com/demos/app-bar/
 class MenuAppBar extends React.Component<MenuAppBarProps> {
-    
-    /*
-    constructor(props: MenuAppBarProps) {
-        super(props)
-        /*const [state, setState] = useState(() => {
-            return {
-                since: undefined,
-                online: navigator.onLine,
-                ...this.getNetworkConnectionInfo(),
-            }
-        })
-        // const info = this.getNetworkConnectionInfo()
-        //
-    }
-    */
-    
 
     render(): JSX.Element {
         // TODO: Info Button explain all relevant aspects to consider the salary which are not matched by the survey..
@@ -53,27 +49,42 @@ class MenuAppBar extends React.Component<MenuAppBarProps> {
     }
 
     get loader(): JSX.Element {
-        const maxChunks = Object.values(CHUNK_COUNT_PER_YEAR)
-            .reduce((previousValue: number, currentValue: number) => {
-                return 0 + previousValue + currentValue
-            })
-        //
-        const chunksDownloaded = Object.values(this.props.entryStore!.parsedDataByYear)
-            .map((resultSetForYear) =>  resultSetForYear.chunksParsed)
-            .reduce((previousValue: number, currentValue: number) => {
-                return 0 + previousValue + currentValue
-            }, 0)
-        const loadingPercentage = Math.round(chunksDownloaded / maxChunks * 100)
-        if (loadingPercentage > 99) {
+        // If entryStore or controlStore is not available, show no loader
+        if (!this.props.entryStore || !this.props.controlStore) {
             return <div></div>
         }
+        
+        // Get the currently selected year
+        const selectedYearStr = this.props.controlStore.controlState.selectedYear;
+        if (!selectedYearStr) {
+            return <div></div>
+        }
+        
+        // Get max chunks for the selected year
+        const maxChunks = CHUNK_COUNT_PER_YEAR[selectedYearStr] || 0;
+        if (maxChunks === 0) {
+            return <div></div>
+        }
+        
+        // Get chunks parsed for the selected year
+        const yearData = this.props.entryStore.parsedDataByYear[parseInt(selectedYearStr, 10)];
+        const chunksDownloaded = yearData ? yearData.chunksParsed : 0;
+        
+        // Calculate loading percentage
+        const loadingPercentage = Math.round((chunksDownloaded / maxChunks) * 100);
+        
+        // Hide loader when loading is complete
+        if (loadingPercentage >= 100) {
+            return <div></div>
+        }
+        
         return (
             <div style={{padding: 'auto', position: 'absolute', right: '25px'}}>
-                <Typography variant='body1'>
-                    <div style={{}}>
+                <div style={{}}>
+                    <Typography variant='body1'>
                         {loadingPercentage} %
-                    </div>
-                </Typography>
+                    </Typography>
+                </div>
                 <Loader
                     type="Audio"
                     color="#F48024"
@@ -84,13 +95,21 @@ class MenuAppBar extends React.Component<MenuAppBarProps> {
         )
     }
 
-    getNetworkConnectionInfo(): any {
-        const connection = this.getNetworkConnection()
-        if (!connection) {
-            return {}
+    getNetworkConnectionInfo(): NetworkState {
+        const defaults: NetworkState = {
+            since: new Date().toString(),
+            online: false,
+            rtt: 0, type: '', saveData: false,
+            downLink: 0, downLinkMax: 0, effectiveType: '',
         }
-        //
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const connection: any = this.getNetworkConnection()
+        if (!connection) {
+            return defaults
+        }
         return {
+            since: new Date().toString(),
+            online: navigator.onLine,
             rtt: connection.rtt,
             type: connection.type,
             saveData: connection.saveData,
@@ -99,38 +118,27 @@ class MenuAppBar extends React.Component<MenuAppBarProps> {
             effectiveType: connection.effectiveType,
         }
     }
-    
-    useNetwork(): any {
-        const [state, setState] = useState(() => {
-            return {
-                since: undefined,
-                online: navigator.onLine,
-                ...this.getNetworkConnectionInfo(),
-            }
-        })
+
+    useNetwork(): NetworkState {
+        const [state, setState] = useState(this.getNetworkConnectionInfo())
         useEffect(() => {
             const handleOnline = (): void => {
-                setState(
-                    (prevState: any): any => ({
-                        ...prevState,
-                        online: true,
-                        since: new Date().toString(),
-                    }) as any)
-            }
-            const handleOffline = (): any => {
-                setState(
-                    (prevState: any): any => (
-                        {
-                            ...prevState,
-                            online: false,
-                            since: new Date().toString(),
-                        })
-                )
-            }
-            const handleConnectionChange = (): any => {
-                setState((prevState: any) => ({
+                setState((prevState: NetworkState): NetworkState => ({
                     ...prevState,
-                    ...this.getNetworkConnectionInfo(),
+                    online: true,
+                }))
+            }
+            const handleOffline = (): void => {
+                setState((prevState: NetworkState): NetworkState => ({
+                    ...prevState,
+                    online: false,
+                }))
+            }
+            const handleConnectionChange = (_event: Event): void => {
+                const networkInfo = this.getNetworkConnectionInfo()
+                setState((prevState: NetworkState) => ({
+                    ...prevState,
+                    ...networkInfo,
                 }))
             }
             window.addEventListener('online', handleOnline)
@@ -146,14 +154,8 @@ class MenuAppBar extends React.Component<MenuAppBarProps> {
         return state
     }
 
-    getNetworkConnection(): NetworkInformation & any {
-        return (
-            navigator.connection
-            // ||
-            //navigator.mozConnection ||
-            // navigator.webkitConnection ||
-            // null
-        )
+    getNetworkConnection(): EventTarget {
+        return null as unknown as EventTarget // navigator.connection!
     }
 
 }
