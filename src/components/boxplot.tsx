@@ -47,7 +47,6 @@ class BoxPlot extends React.Component<StoreProps> {
         const trace: Data = {
             type: 'box',
             boxmean: 'sd',
-            x: [selectedYearStr],
             name: 'Year' + selectedYearStr,
             y: yearData.map((entry: SurveyEntry)  => entry.salary),
         };
@@ -57,7 +56,6 @@ class BoxPlot extends React.Component<StoreProps> {
     get layout(): Partial<Layout> {
         return {
             autosize: true,
-            title: '',
             showlegend: false,
             yaxis: {fixedrange: true},
             xaxis : {fixedrange: true},

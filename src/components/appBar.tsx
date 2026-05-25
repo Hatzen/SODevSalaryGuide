@@ -155,7 +155,7 @@ class MenuAppBar extends React.Component<MenuAppBarProps> {
     }
 
     getNetworkConnection(): EventTarget {
-        return navigator.connection!
+        return null as unknown as EventTarget // navigator.connection!
     }
 
 }

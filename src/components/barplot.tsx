@@ -10,7 +10,7 @@ class BarPlot extends React.Component<StoreProps> {
             <div style={{position: 'absolute', top: 0, bottom: 0, left:0, right: 0, overflow: 'auto'}}>
                  <Plot
                      data={this.data}
-                     layout={{barmode: 'group', title: '', showlegend: false}}
+                     layout={{barmode: 'group', showlegend: false}}
                      style={{width: '100%', height: '100%'}}
                  />
             </div>
