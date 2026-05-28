@@ -1,20 +1,54 @@
 import React from 'react'
-import { Checkbox, FormGroup, FormControl, FormControlLabel, Slider, FormLabel, Box, TextField } from '@material-ui/core'
+import { Checkbox, FormGroup, FormControl, FormControlLabel, Slider, FormLabel, Box, TextField, Button } from '@material-ui/core'
 import { inject, observer } from 'mobx-react'
 import { injectClause, StoreProps } from '../stores/storeHelper'
 import Autocomplete from '@mui/material/Autocomplete'
 import { AbstractCsvRowMapper } from '../mapper/AbstractCsvRowMapper'
-import { Gender, GenderRecord } from '../model/gender'
+import { Gender } from '../model/gender'
 import ControlComponentWrapper from './controlComponentWrapper'
 import { AVAILABLE_YEARS } from '../model/constantMetaData'
 
-class ControlPane extends React.Component<StoreProps> {
+interface ControlPaneState {
+    refreshKey: number
+}
+
+class ControlPane extends React.Component<StoreProps, ControlPaneState> {
     private key = 0
+    private loadedPendingState = false
+
+    constructor(props: StoreProps) {
+        super(props)
+        this.state = {
+            refreshKey: 0
+        }
+    }
+
+    componentDidMount(): void {
+        this.loadPendingStateIfNeeded()
+    }
+
+    componentDidUpdate(): void {
+        this.loadPendingStateIfNeeded()
+    }
+
+    loadPendingStateIfNeeded(): void {
+        const cs = this.props.controlStore!
+        if (!this.loadedPendingState && cs.pendingState && AbstractCsvRowMapper.abilities.size > 0 && AbstractCsvRowMapper.countries.size > 0) {
+            this.loadedPendingState = true
+            const targetYear = cs.pendingState.selectedYear
+            cs.loadPendingState()
+            if (targetYear && targetYear !== AVAILABLE_YEARS[AVAILABLE_YEARS.length - 1]) {
+                setTimeout(() => {
+                    AbstractCsvRowMapper.clearDistinctValues()
+                    this.props.entryStore!.initParser(targetYear)
+                }, 100)
+            }
+        }
+    }
 
     render(): JSX.Element {
-        // Focused false as otherwise the labels change their color unintentionally.
         return (
-            <div style={{padding: 50, overflow: 'scroll', position: 'relative', top: 0, left: 0, right: 0, maxHeight: 'calc(100% - 100px)'}}>
+            <div key={this.state.refreshKey} style={{padding: 50, overflow: 'scroll', position: 'relative', top: 0, left: 0, right: 0, maxHeight: 'calc(100% - 100px)'}}>
                 <Box sx={{ display: 'flex' }}>
                     <FormControl focused={false} component="fieldset" variant="standard">
                         <FormLabel component="legend">Include Data from years</FormLabel>
@@ -29,27 +63,22 @@ class ControlPane extends React.Component<StoreProps> {
                         </FormGroup>
                     </FormControl>
                 </Box>
+                {this.sessionButtons}
             </div>
         )
     }
 
     get years(): JSX.Element {
         const config = this.props.controlStore!
-
-        // Find currently selected year (assuming only one is selected)
-        let selectedYear: string | null = config.controlState.selectedYear
-
+        const selectedYear: string | null = config.controlState.selectedYear
         const filteredValues = AVAILABLE_YEARS
         const autoCompleteComponent = (<Autocomplete
             options={filteredValues}
             value={selectedYear}
             onChange={this.handleYearChange.bind(this)}
-            // getOptionLabel={([k, v]) => k as string +  ' (' + v + ')'}
             renderOption={(props, option, { selected }) => (
                 <li {...props}>
                     <Checkbox
-                        // icon={icon}
-                        // checkedIcon={checkedIcon}
                         style={{ marginRight: 8 }}
                         checked={selected}
                     />
@@ -61,7 +90,6 @@ class ControlPane extends React.Component<StoreProps> {
                 <TextField style={{ padding: '10px' }} {...params} label="Show data for year" />
             )}
         />)
-         
         return autoCompleteComponent
     }
     
@@ -78,20 +106,16 @@ class ControlPane extends React.Component<StoreProps> {
             Array.from(AbstractCsvRowMapper.abilities)
                 .filter(([k, v]) => v > 10 )
                 .map(([k, v]) => k as string)
-                // .map(([k, v]) => k as string +  ' (' + v + ')')
-        //
         const autoCompleteComponent = (<Autocomplete
             multiple
             id="checkboxes-tags-demo"
             options={filterdValues}
             disableCloseOnSelect
+            value={this.props.controlStore!.abilities}
             onChange={this.handleChangesForAbilities.bind(this)}
-            // getOptionLabel={([k, v]) => k as string +  ' (' + v + ')'}
             renderOption={(props, option, state) => (
                 <li {...props}>
                     <Checkbox
-                        // icon={icon}
-                        // checkedIcon={checkedIcon}
                         style={{ marginRight: 8 }}
                         checked={state.selected}
                     />
@@ -120,15 +144,11 @@ class ControlPane extends React.Component<StoreProps> {
                     min={0}
                     step={1}
                     max={40}
-                    // valueLabelFormat={numFormatter}
-                    // marks={followersMarks}
-                    // scale={scaleValues}
                     onChange={this.handleChange.bind(this)}
                     valueLabelDisplay="auto"
                     aria-labelledby="non-linear-slider"
                 />
             )
-        
         return (<ControlComponentWrapper
             title='Years of Expirience'
             controlComponent={slider}
@@ -142,19 +162,16 @@ class ControlPane extends React.Component<StoreProps> {
             Array.from(AbstractCsvRowMapper.countries)
                 .filter(([k, v]) => v > 10 )
                 .map(([k, v]) => k as string)
-                // .map(([k, v]) => k as string +  ' (' + v + ')')
         const autoCompleteComponent = (<Autocomplete
             multiple
             id="checkboxes-tags-demo"
             options={filterdValues}
             disableCloseOnSelect
+            value={this.props.controlStore!.countries}
             onChange={this.handleChangesForCountries.bind(this)}
-            // getOptionLabel={([k, v]) => k as string +  ' (' + v + ')'}
             renderOption={(props, option, state) => (
                 <li {...props}>
                     <Checkbox
-                        // icon={icon}
-                        // checkedIcon={checkedIcon}
                         style={{ marginRight: 8 }}
                         checked={state.selected}
                     />
@@ -179,19 +196,16 @@ class ControlPane extends React.Component<StoreProps> {
             Array.from(AbstractCsvRowMapper.educations)
                 .filter(([k, v]) => v > 10 )
                 .map(([k, v]) => k as string)
-                // .map(([k, v]) => k as string +  ' (' + v + ')')
         const autoCompleteComponent = (<Autocomplete
             multiple
             id="checkboxes-tags-demo"
             options={filterdValues}
             disableCloseOnSelect
+            value={this.props.controlStore!.degrees}
             onChange={this.handleChangesForDegree.bind(this)}
-            // getOptionLabel={([k, v]) => k as string +  ' (' + v + ')'}
             renderOption={(props, option, state) => (
                 <li {...props}>
                     <Checkbox
-                        // icon={icon}
-                        // checkedIcon={checkedIcon}
                         style={{ marginRight: 8 }}
                         checked={state.selected}
                     />
@@ -218,7 +232,6 @@ class ControlPane extends React.Component<StoreProps> {
     get gender(): JSX.Element {
         const values = this.props.controlStore!.genders
         const checkboxes = this.getCheckboxesForValues(values, Object.values(Gender).filter((v): v is Gender => typeof v === 'string'))
-        
         return (<ControlComponentWrapper
             title='Gender'
             controlComponent={checkboxes}
@@ -227,19 +240,16 @@ class ControlPane extends React.Component<StoreProps> {
         </ControlComponentWrapper>)
     }
 
-    // TODO: Get General generator for checkbox, slider, dropdown (company size)
-    // Add generic header for: collapsible, active, weight
     getCheckboxesForValues(selectedValues: Gender[], enumKeys: Gender[]): JSX.Element {
         const values = enumKeys.map(g => g.toString())
-        
         const checkboxes = values.map(value => {
             const check = selectedValues.includes(Gender[value as keyof typeof Gender])
             return (
                 <FormControlLabel
                     key={this.key++}
                     control={<Checkbox
+                        checked={check}
                         onChange={() => { this.props.controlStore!.setGenders(Gender[value as keyof typeof Gender]) }}
-                        defaultChecked={check}
                     />}
                     label={value}
                 />
@@ -262,15 +272,11 @@ class ControlPane extends React.Component<StoreProps> {
                     min={values.min}
                     step={values.steps}
                     max={values.max}
-                    // valueLabelFormat={numFormatter}
-                    // marks={followersMarks}
-                    // scale={scaleValues}
                     onChange={this.handleChangeForCompanySize.bind(this)}
                     valueLabelDisplay="auto"
                     aria-labelledby="non-linear-slider"
                 />
             )
-        
         return (<ControlComponentWrapper
             title='Company Size'
             controlComponent={slider}
@@ -279,7 +285,6 @@ class ControlPane extends React.Component<StoreProps> {
         </ControlComponentWrapper>)
     }
 
-    
     handleChangesForCountries(event: React.ChangeEvent<unknown>, value: string[]): void {
         this.props.controlStore!.setCountries(value)
     }
@@ -298,6 +303,72 @@ class ControlPane extends React.Component<StoreProps> {
     
     handleChangeForCompanySize(event: React.ChangeEvent<unknown>, value: number | number[]): void {
         this.props.controlStore!.setCompanySize(value as number[])
+    }
+
+    handleSaveToSession = (): void => {
+        const state = this.props.controlStore!.getSessionState()
+        sessionStorage.setItem('controlPaneSettings', JSON.stringify(state, null, 2))
+    }
+
+    handleLoadFromSession = (): void => {
+        const saved = sessionStorage.getItem('controlPaneSettings')
+        if (saved) {
+            const parsed = JSON.parse(saved)
+            this.props.controlStore!.loadFromSessionState(parsed)
+            this.setState({ refreshKey: this.state.refreshKey + 1 })
+        }
+    }
+
+    handleDownloadJson = (): void => {
+        const state = this.props.controlStore!.getSessionState()
+        const json = JSON.stringify(state, null, 2)
+        const blob = new Blob([json], { type: 'application/json' })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = 'control-pane-settings.json'
+        a.click()
+        URL.revokeObjectURL(url)
+    }
+
+    handleUploadJson = (): void => {
+        const input = document.createElement('input')
+        input.type = 'file'
+        input.accept = '.json'
+        input.onchange = (e) => {
+            const file = (e.target as HTMLInputElement).files?.[0]
+            if (file) {
+                const reader = new FileReader()
+                reader.onload = () => {
+                    const parsed = JSON.parse(reader.result as string)
+                    this.props.controlStore!.loadFromSessionState(parsed)
+                    this.setState({ refreshKey: this.state.refreshKey + 1 })
+                }
+                reader.readAsText(file)
+            }
+        }
+        input.click()
+    }
+
+    handleShareLink = (): void => {
+        const state = this.props.controlStore!.getSessionState()
+        const encoded = encodeURIComponent(JSON.stringify(state))
+        const url = `${window.location.origin}${window.location.pathname}?settings=${encoded}`
+        navigator.clipboard.writeText(url).then(() => {
+            alert('Share link copied to clipboard!')
+        })
+    }
+
+    get sessionButtons(): JSX.Element {
+        return (
+            <Box style={{ display: 'flex', gap: '8px', marginTop: '16px', flexWrap: 'wrap' }}>
+                <Button variant="contained" size="small" onClick={this.handleSaveToSession}>Save to Session</Button>
+                <Button variant="contained" size="small" onClick={this.handleLoadFromSession}>Load from Session</Button>
+                <Button variant="contained" size="small" onClick={this.handleDownloadJson}>Download JSON</Button>
+                <Button variant="contained" size="small" onClick={this.handleUploadJson}>Upload JSON</Button>
+                <Button variant="contained" size="small" onClick={this.handleShareLink}>Share Link</Button>
+            </Box>
+        )
     }
 
 }

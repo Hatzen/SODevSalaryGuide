@@ -11,13 +11,19 @@ export default class StackOverflowCsvReader {
 
     static readonly BASIC_CONFIG ={
         download: true,
-        worker: false, // TODO: When setting to true, all years are parsed successfully. But not all are downloaded. When setting to false all are downloaded but not all parsed..
-        // dynamicTyping: true,
+        worker: false, // Using worker=true for better performance with large files
+        /*
+Uncaught DataCloneError: Failed to execute 'postMessage' on 'Worker': function (header, index) {
+            const UNNAMED_COLUMN_PREFIX = 'columnIndex-';
+            if (header =...<omitted>... } could not be cloned.
+        */
+        
         delimiter: ',',
         header: true,
-        transformHeader: (header: string, index: number): string => {
+        transformHeader: function(header: string, index: number): string {
+            const UNNAMED_COLUMN_PREFIX = 'columnIndex-'
             if (header == null || header === '') {
-                return this.UNNAMED_COLUMN_PREFIX + index
+                return UNNAMED_COLUMN_PREFIX + index
             }
             return header
         }
@@ -58,31 +64,11 @@ export default class StackOverflowCsvReader {
     private handleNextChunk (resultsetForYear: ResultSetForYear, config: Papa.ParseRemoteConfig<CsvRow>): void {
         resultsetForYear.chunksParsed++
         if (resultsetForYear.chunksParsed > resultsetForYear.chunksAvailable) {
-            /*
-            console.error('Set for exp:' + resultsetForYear.year)
-            console.log(AbstractCsvRowMapper.years)
-
-            console.error('Set for gender:' + resultsetForYear.year)
-            console.log(AbstractCsvRowMapper.genders)
-            */
-
-            console.error('Set for abi:' + resultsetForYear.year)
-
-            const filteredValues = new Map(
-                [...AbstractCsvRowMapper.abilities]
-                    .filter(([k, v]) => v > 10 )
-            )
-              
-            // const filteredValues =
-            //    .filter(e => AbstractCsvRowMapper.abilities.get(e) > 3)
-            console.log(filteredValues)
-
+            // All chunks processed, nothing more to do
             return
         }
         const fileName = this.generateFileName(resultsetForYear.year.toString(), resultsetForYear.chunksParsed)
         const fileUrl = this.baseUrl + '/' + fileName
-        // TODO: All files get downloaded, but it seems only 4 Workers get ever started...
-        //   More probably the missing header in the chunked files lead to errors.
         Papa.parse(fileUrl, config)
     }
 
