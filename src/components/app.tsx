@@ -15,6 +15,7 @@ import SurveyEntry from '../model/surveyEntry'
 import RawDataTable from './rawDataTable'
 import ConsideredDataTable from './consideredDataTable'
 import { uiStore } from '../stores/uiStore'
+import { AbstractCsvRowMapper } from '../mapper/AbstractCsvRowMapper'
 
 interface AppState {
     components: number[],
@@ -31,8 +32,16 @@ class App extends React.Component<Record<string, unknown>, AppState> {
             components: [0, 1],
             tabIndex: 0
         }
-        // Store must be created only once.
         SurveyEntry.entryStore = entryStore
+        const urlParams = new URLSearchParams(window.location.search)
+        const settingsParam = urlParams.get('settings')
+        if (settingsParam) {
+            try {
+                controlStore.pendingState = JSON.parse(decodeURIComponent(settingsParam))
+            } catch (e) {
+                console.error('Failed to parse settings from URL', e)
+            }
+        }
     }
 
     render(): JSX.Element {

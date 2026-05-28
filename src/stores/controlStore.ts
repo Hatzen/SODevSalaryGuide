@@ -4,7 +4,7 @@ import { Gender } from '../model/gender'
 
 // https://devlinduldulao.pro/mobx-in-a-nutshell/
 export class ControlStore {
-    selectedYear: string = '2025'
+    selectedYear = '2025'
     expirienceInYears: [min: number, max:number] = [4, 20]
     genders: Gender[] = [Gender.MALE, Gender.FEMALE, Gender.OTHER]
     abilities: string[] = []
@@ -20,7 +20,9 @@ export class ControlStore {
     companySizeFilterActive = false
     degreeFilterActive = false
     countriesFilterActive = false
-    
+
+    pendingState: any = null
+
     constructor() {
         makeAutoObservable(this)
     }
@@ -132,9 +134,65 @@ export class ControlStore {
     setDegreeFilterActive(degreeFilterActive: boolean): void {
         this.degreeFilterActive = degreeFilterActive
     }
-    
+
     setCountriesFilterActive(countriesFilterActive: boolean): void {
         this.countriesFilterActive = countriesFilterActive
+    }
+
+    loadPendingState(): void {
+        if (this.pendingState) {
+            const state = this.pendingState
+            this.pendingState = null
+            this.selectedYear = state.selectedYear ?? this.selectedYear
+            if (state.expirienceInYears !== undefined) this.expirienceInYears = state.expirienceInYears
+            if (state.genders !== undefined) this.genders = state.genders
+            if (state.abilities !== undefined) this.abilities = state.abilities
+            if (state.companySize !== undefined) this.companySize = state.companySize
+            if (state.countries !== undefined) this.countries = state.countries
+            if (state.degrees !== undefined) this.degrees = state.degrees
+            if (state.gendersFilterActive !== undefined) this.gendersFilterActive = state.gendersFilterActive
+            if (state.abilitiesFilterActive !== undefined) this.abilitiesFilterActive = state.abilitiesFilterActive
+            if (state.expirienceFilterActive !== undefined) this.expirienceFilterActive = state.expirienceFilterActive
+            if (state.companySizeFilterActive !== undefined) this.companySizeFilterActive = state.companySizeFilterActive
+            if (state.degreeFilterActive !== undefined) this.degreeFilterActive = state.degreeFilterActive
+            if (state.countriesFilterActive !== undefined) this.countriesFilterActive = state.countriesFilterActive
+        }
+    }
+
+    getSessionState(): any {
+        return {
+            selectedYear: this.selectedYear,
+            expirienceInYears: this.expirienceInYears,
+            genders: this.genders,
+            abilities: this.abilities,
+            companySize: this.companySize,
+            countries: this.countries,
+            degrees: this.degrees,
+            gendersFilterActive: this.gendersFilterActive,
+            abilitiesFilterActive: this.abilitiesFilterActive,
+            expirienceFilterActive: this.expirienceFilterActive,
+            companySizeFilterActive: this.companySizeFilterActive,
+            degreeFilterActive: this.degreeFilterActive,
+            countriesFilterActive: this.countriesFilterActive
+        }
+    }
+
+    loadFromSessionState(state: any): void {
+        if (state.selectedYear !== undefined) {
+            this.selectedYear = state.selectedYear
+        }
+        if (state.expirienceInYears !== undefined) this.expirienceInYears = state.expirienceInYears
+        if (state.genders !== undefined) this.genders = state.genders
+        if (state.abilities !== undefined) this.abilities = state.abilities
+        if (state.companySize !== undefined) this.companySize = state.companySize
+        if (state.countries !== undefined) this.countries = state.countries
+        if (state.degrees !== undefined) this.degrees = state.degrees
+        if (state.gendersFilterActive !== undefined) this.gendersFilterActive = state.gendersFilterActive
+        if (state.abilitiesFilterActive !== undefined) this.abilitiesFilterActive = state.abilitiesFilterActive
+        if (state.expirienceFilterActive !== undefined) this.expirienceFilterActive = state.expirienceFilterActive
+        if (state.companySizeFilterActive !== undefined) this.companySizeFilterActive = state.companySizeFilterActive
+        if (state.degreeFilterActive !== undefined) this.degreeFilterActive = state.degreeFilterActive
+        if (state.countriesFilterActive !== undefined) this.countriesFilterActive = state.countriesFilterActive
     }
 }
 

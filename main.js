@@ -405442,8 +405442,17 @@ class App extends react__WEBPACK_IMPORTED_MODULE_1__.Component {
             components: [0, 1],
             tabIndex: 0
         };
-        // Store must be created only once.
         _model_surveyEntry__WEBPACK_IMPORTED_MODULE_14__["default"].entryStore = _stores_entryStore__WEBPACK_IMPORTED_MODULE_2__["default"];
+        const urlParams = new URLSearchParams(window.location.search);
+        const settingsParam = urlParams.get('settings');
+        if (settingsParam) {
+            try {
+                _stores_controlStore__WEBPACK_IMPORTED_MODULE_11__["default"].pendingState = JSON.parse(decodeURIComponent(settingsParam));
+            }
+            catch (e) {
+                console.error('Failed to parse settings from URL', e);
+            }
+        }
     }
     render() {
         const fitAll = { position: 'absolute', top: 0, left: 0, bottom: 0, right: 0 };
@@ -405654,7 +405663,7 @@ __webpack_require__.r(__webpack_exports__);
 
 class BarPlot extends react__WEBPACK_IMPORTED_MODULE_1__.Component {
     render() {
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, overflow: 'auto' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(react_plotly_js__WEBPACK_IMPORTED_MODULE_2__["default"], { data: this.data, layout: { barmode: 'group', showlegend: false }, style: { width: '100%', height: '100%' } }) }));
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, overflow: 'auto' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(react_plotly_js__WEBPACK_IMPORTED_MODULE_2__["default"], { data: this.data, layout: this.layout, style: { width: '100%', height: '100%' } }) }));
     }
     get data() {
         const selectedYearStr = this.props.controlStore.controlState.selectedYear;
@@ -405678,6 +405687,14 @@ class BarPlot extends react__WEBPACK_IMPORTED_MODULE_1__.Component {
             { y: invalidNumbers, name: 'considered invalid', type: 'bar' },
         ];
         return traces;
+    }
+    get layout() {
+        return {
+            barmode: 'group',
+            showlegend: true,
+            paper_bgcolor: '#FF000000',
+            plot_bgcolor: '#FF000000'
+        };
     }
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,mobx_react__WEBPACK_IMPORTED_MODULE_3__.inject)(..._stores_storeHelper__WEBPACK_IMPORTED_MODULE_4__.injectClause)((0,mobx_react__WEBPACK_IMPORTED_MODULE_3__.observer)(BarPlot)));
@@ -405706,6 +405723,12 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+// Define the shape of the figure argument passed by react-plotly.js
+/*interface PlotlyFigure {
+  data: PlotData[];
+  layout: Partial<Layout>;
+  frames: any[] | null;
+}*/
 class BoxPlot extends react__WEBPACK_IMPORTED_MODULE_1__.Component {
     defaultBoxConfig = {
         type: 'box',
@@ -405714,6 +405737,8 @@ class BoxPlot extends react__WEBPACK_IMPORTED_MODULE_1__.Component {
         // jitter: 0.3,
         // pointpos: -1.8
     };
+    // Create a reference to store the plot instance
+    //plotRef: MutableRefObject<HTMLElement | null> = useRef(null);
     render() {
         /*
                 <div>
@@ -405722,6 +405747,50 @@ class BoxPlot extends react__WEBPACK_IMPORTED_MODULE_1__.Component {
         */
         return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, overflow: 'auto' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(react_plotly_js__WEBPACK_IMPORTED_MODULE_2__["default"], { data: this.data, layout: this.layout, style: { width: '100%', height: '100%' } }) }));
     }
+    /*
+    render(): JSX.Element {
+        return (
+            <div style={{position: 'absolute', top: 0, bottom: 0, left:0, right: 0, overflow: 'auto'}}>
+                 <Plot
+                     data={this.data}
+                     layout={this.layout}
+                     style={{width: '100%', height: '100%'}}
+                    // Store reference and trigger hover when first loaded
+                        onInitialized={this.initializ}
+                        // Re-trigger hover if the plot layout updates or resizes
+                        onUpdate={this.update}
+                        // Re-trigger hover when user moves mouse away
+                        onUnhover={this.unhover}
+
+                 />
+            </div>
+        )
+    }
+    
+    pinBoxHover(plotElement: HTMLElement | null): void {
+        // Cast window or element to access Fx API safely in TypeScript
+        const plotlyModule = (window as any).Plotly || (plotElement as any)?.Plotly;
+        
+        if (plotElement && plotlyModule) {
+        plotlyModule.Fx.hover(plotElement, [
+            { curveNumber: 0, pointNumber: 0 }
+        ]);
+        }
+
+    };
+
+    initializ(figure: Readonly<Figure>, graphDiv: Readonly<HTMLElement>): void {
+        this.plotRef.current = graphDiv;
+        this.pinBoxHover(graphDiv);
+    }
+
+    update(figure: Readonly<Figure>): void {
+        this.pinBoxHover(this.plotRef.current);
+    }
+
+    unhover(): void {
+        this.pinBoxHover(this.plotRef.current);
+    }*/
     get data() {
         const resultList = this.props.uiStore.filteredData;
         const selectedYearStr = this.props.controlStore.controlState.selectedYear;
@@ -405734,7 +405803,7 @@ class BoxPlot extends react__WEBPACK_IMPORTED_MODULE_1__.Component {
         const trace = {
             type: 'box',
             boxmean: 'sd',
-            name: 'Year' + selectedYearStr,
+            name: 'Year ' + selectedYearStr,
             y: yearData.map((entry) => entry.salary),
         };
         return [trace];
@@ -405743,10 +405812,14 @@ class BoxPlot extends react__WEBPACK_IMPORTED_MODULE_1__.Component {
         return {
             autosize: true,
             showlegend: false,
+            // 'x' mode forces plotly to show the summary statistics for the column on that X coordinate
+            // hovermode: 'x',
+            //hovermode: 'closest',
             yaxis: { fixedrange: true },
             xaxis: { fixedrange: true },
             paper_bgcolor: '#FF000000',
-            plot_bgcolor: '#FF000000'
+            plot_bgcolor: '#FF000000',
+            // hoverdistance: -1
         };
     }
 }
@@ -405889,13 +405962,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/TextField/TextField.js");
 /* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/Slider/Slider.js");
 /* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/FormControlLabel/FormControlLabel.js");
-/* harmony import */ var mobx_react__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! mobx-react */ "./node_modules/mobx-react/dist/mobxreact.esm.js");
-/* harmony import */ var _stores_storeHelper__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../stores/storeHelper */ "./src/stores/storeHelper.ts");
-/* harmony import */ var _mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @mui/material/Autocomplete */ "./node_modules/@mui/material/Autocomplete/Autocomplete.js");
-/* harmony import */ var _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../mapper/AbstractCsvRowMapper */ "./src/mapper/AbstractCsvRowMapper.ts");
-/* harmony import */ var _model_gender__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../model/gender */ "./src/model/gender.ts");
-/* harmony import */ var _controlComponentWrapper__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./controlComponentWrapper */ "./src/components/controlComponentWrapper.tsx");
-/* harmony import */ var _model_constantMetaData__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../model/constantMetaData */ "./src/model/constantMetaData.ts");
+/* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/Button/Button.js");
+/* harmony import */ var mobx_react__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! mobx-react */ "./node_modules/mobx-react/dist/mobxreact.esm.js");
+/* harmony import */ var _stores_storeHelper__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../stores/storeHelper */ "./src/stores/storeHelper.ts");
+/* harmony import */ var _mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! @mui/material/Autocomplete */ "./node_modules/@mui/material/Autocomplete/Autocomplete.js");
+/* harmony import */ var _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../mapper/AbstractCsvRowMapper */ "./src/mapper/AbstractCsvRowMapper.ts");
+/* harmony import */ var _model_gender__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../model/gender */ "./src/model/gender.ts");
+/* harmony import */ var _controlComponentWrapper__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./controlComponentWrapper */ "./src/components/controlComponentWrapper.tsx");
+/* harmony import */ var _model_constantMetaData__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../model/constantMetaData */ "./src/model/constantMetaData.ts");
 
 
 
@@ -405908,116 +405982,95 @@ __webpack_require__.r(__webpack_exports__);
 
 class ControlPane extends react__WEBPACK_IMPORTED_MODULE_1__.Component {
     key = 0;
+    loadedPendingState = false;
+    constructor(props) {
+        super(props);
+        this.state = {
+            refreshKey: 0
+        };
+    }
+    componentDidMount() {
+        this.loadPendingStateIfNeeded();
+    }
+    componentDidUpdate() {
+        this.loadPendingStateIfNeeded();
+    }
+    loadPendingStateIfNeeded() {
+        const cs = this.props.controlStore;
+        if (!this.loadedPendingState && cs.pendingState && _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_14__.AbstractCsvRowMapper.abilities.size > 0 && _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_14__.AbstractCsvRowMapper.countries.size > 0) {
+            this.loadedPendingState = true;
+            const targetYear = cs.pendingState.selectedYear;
+            cs.loadPendingState();
+            if (targetYear && targetYear !== _model_constantMetaData__WEBPACK_IMPORTED_MODULE_17__.AVAILABLE_YEARS[_model_constantMetaData__WEBPACK_IMPORTED_MODULE_17__.AVAILABLE_YEARS.length - 1]) {
+                setTimeout(() => {
+                    _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_14__.AbstractCsvRowMapper.clearDistinctValues();
+                    this.props.entryStore.initParser(targetYear);
+                }, 100);
+            }
+        }
+    }
     render() {
-        // Focused false as otherwise the labels change their color unintentionally.
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { padding: 50, overflow: 'scroll', position: 'relative', top: 0, left: 0, right: 0, maxHeight: 'calc(100% - 100px)' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_2__["default"], { sx: { display: 'flex' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_material_ui_core__WEBPACK_IMPORTED_MODULE_3__["default"], { focused: false, component: "fieldset", variant: "standard", children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_4__["default"], { component: "legend", children: "Include Data from years" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_material_ui_core__WEBPACK_IMPORTED_MODULE_5__["default"], { children: [this.years, this.slider, this.gender, this.abilities, this.sliderForCompanySize, this.countries, this.degrees] }, 1)] }) }) }));
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { padding: 50, overflow: 'scroll', position: 'relative', top: 0, left: 0, right: 0, maxHeight: 'calc(100% - 100px)' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_2__["default"], { sx: { display: 'flex' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_material_ui_core__WEBPACK_IMPORTED_MODULE_3__["default"], { focused: false, component: "fieldset", variant: "standard", children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_4__["default"], { component: "legend", children: "Include Data from years" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_material_ui_core__WEBPACK_IMPORTED_MODULE_5__["default"], { children: [this.years, this.slider, this.gender, this.abilities, this.sliderForCompanySize, this.countries, this.degrees] }, 1)] }) }), this.sessionButtons] }, this.state.refreshKey));
     }
     get years() {
         const config = this.props.controlStore;
-        // Find currently selected year (assuming only one is selected)
-        let selectedYear = config.controlState.selectedYear;
-        const filteredValues = _model_constantMetaData__WEBPACK_IMPORTED_MODULE_16__.AVAILABLE_YEARS;
-        const autoCompleteComponent = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_12__["default"], { options: filteredValues, value: selectedYear, onChange: this.handleYearChange.bind(this), 
-            // getOptionLabel={([k, v]) => k as string +  ' (' + v + ')'}
-            renderOption: (props, option, { selected }) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("li", { ...props, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_6__["default"]
-                    // icon={icon}
-                    // checkedIcon={checkedIcon}
-                    , { 
-                        // icon={icon}
-                        // checkedIcon={checkedIcon}
-                        style: { marginRight: 8 }, checked: selected }), option] })), style: { width: 250 }, renderInput: (params) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__["default"], { style: { padding: '10px' }, ...params, label: "Show data for year" })) }));
+        const selectedYear = config.controlState.selectedYear;
+        const filteredValues = _model_constantMetaData__WEBPACK_IMPORTED_MODULE_17__.AVAILABLE_YEARS;
+        const autoCompleteComponent = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_13__["default"], { options: filteredValues, value: selectedYear, onChange: this.handleYearChange.bind(this), renderOption: (props, option, { selected }) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("li", { ...props, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_6__["default"], { style: { marginRight: 8 }, checked: selected }), option] })), style: { width: 250 }, renderInput: (params) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__["default"], { style: { padding: '10px' }, ...params, label: "Show data for year" })) }));
         return autoCompleteComponent;
     }
     handleYearChange = (event, value, reason, details) => {
         if (value !== null) {
             this.props.controlStore.setSelectedYear(value);
-            _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_13__.AbstractCsvRowMapper.clearDistinctValues();
+            _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_14__.AbstractCsvRowMapper.clearDistinctValues();
             this.props.entryStore.initParser(value);
         }
     };
     get abilities() {
-        const filterdValues = Array.from(_mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_13__.AbstractCsvRowMapper.abilities)
+        const filterdValues = Array.from(_mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_14__.AbstractCsvRowMapper.abilities)
             .filter(([k, v]) => v > 10)
             .map(([k, v]) => k);
-        // .map(([k, v]) => k as string +  ' (' + v + ')')
-        //
-        const autoCompleteComponent = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_12__["default"], { multiple: true, id: "checkboxes-tags-demo", options: filterdValues, disableCloseOnSelect: true, onChange: this.handleChangesForAbilities.bind(this), 
-            // getOptionLabel={([k, v]) => k as string +  ' (' + v + ')'}
-            renderOption: (props, option, state) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("li", { ...props, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_6__["default"]
-                    // icon={icon}
-                    // checkedIcon={checkedIcon}
-                    , { 
-                        // icon={icon}
-                        // checkedIcon={checkedIcon}
-                        style: { marginRight: 8 }, checked: state.selected }), option] })), style: { width: 250 }, renderInput: (params) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__["default"], { style: { padding: '10px' }, ...params, label: "SQL, Java, etc." })) }));
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_15__["default"], { title: 'Tools and Technologies', controlComponent: autoCompleteComponent, isEnabled: this.props.controlStore.abilitiesFilterActive, enable: (event, value) => { this.props.controlStore.setAbilitiesFilterActive(value); } }));
+        const autoCompleteComponent = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_13__["default"], { multiple: true, id: "checkboxes-tags-demo", options: filterdValues, disableCloseOnSelect: true, value: this.props.controlStore.abilities, onChange: this.handleChangesForAbilities.bind(this), renderOption: (props, option, state) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("li", { ...props, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_6__["default"], { style: { marginRight: 8 }, checked: state.selected }), option] })), style: { width: 250 }, renderInput: (params) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__["default"], { style: { padding: '10px' }, ...params, label: "SQL, Java, etc." })) }));
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_16__["default"], { title: 'Tools and Technologies', controlComponent: autoCompleteComponent, isEnabled: this.props.controlStore.abilitiesFilterActive, enable: (event, value) => { this.props.controlStore.setAbilitiesFilterActive(value); } }));
     }
     get slider() {
-        const slider = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_8__["default"], { style: { width: '90%', minWidth: '200px' }, value: this.valuesForExp, min: 0, step: 1, max: 40, 
-            // valueLabelFormat={numFormatter}
-            // marks={followersMarks}
-            // scale={scaleValues}
-            onChange: this.handleChange.bind(this), valueLabelDisplay: "auto", "aria-labelledby": "non-linear-slider" }));
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_15__["default"], { title: 'Years of Expirience', controlComponent: slider, isEnabled: this.props.controlStore.expirienceFilterActive, enable: (event, value) => { this.props.controlStore.setExpirienceFilterActive(value); } }));
+        const slider = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_8__["default"], { style: { width: '90%', minWidth: '200px' }, value: this.valuesForExp, min: 0, step: 1, max: 40, onChange: this.handleChange.bind(this), valueLabelDisplay: "auto", "aria-labelledby": "non-linear-slider" }));
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_16__["default"], { title: 'Years of Expirience', controlComponent: slider, isEnabled: this.props.controlStore.expirienceFilterActive, enable: (event, value) => { this.props.controlStore.setExpirienceFilterActive(value); } }));
     }
     get countries() {
-        const filterdValues = Array.from(_mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_13__.AbstractCsvRowMapper.countries)
+        const filterdValues = Array.from(_mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_14__.AbstractCsvRowMapper.countries)
             .filter(([k, v]) => v > 10)
             .map(([k, v]) => k);
-        // .map(([k, v]) => k as string +  ' (' + v + ')')
-        const autoCompleteComponent = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_12__["default"], { multiple: true, id: "checkboxes-tags-demo", options: filterdValues, disableCloseOnSelect: true, onChange: this.handleChangesForCountries.bind(this), 
-            // getOptionLabel={([k, v]) => k as string +  ' (' + v + ')'}
-            renderOption: (props, option, state) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("li", { ...props, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_6__["default"]
-                    // icon={icon}
-                    // checkedIcon={checkedIcon}
-                    , { 
-                        // icon={icon}
-                        // checkedIcon={checkedIcon}
-                        style: { marginRight: 8 }, checked: state.selected }), option] })), style: { width: 250 }, renderInput: (params) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__["default"], { style: { padding: '10px' }, ...params, label: "USA, Japan, Germany etc." })) }));
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_15__["default"], { title: 'Countries', controlComponent: autoCompleteComponent, isEnabled: this.props.controlStore.countriesFilterActive, enable: (event, value) => { this.props.controlStore.setCountriesFilterActive(value); } }));
+        const autoCompleteComponent = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_13__["default"], { multiple: true, id: "checkboxes-tags-demo", options: filterdValues, disableCloseOnSelect: true, value: this.props.controlStore.countries, onChange: this.handleChangesForCountries.bind(this), renderOption: (props, option, state) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("li", { ...props, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_6__["default"], { style: { marginRight: 8 }, checked: state.selected }), option] })), style: { width: 250 }, renderInput: (params) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__["default"], { style: { padding: '10px' }, ...params, label: "USA, Japan, Germany etc." })) }));
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_16__["default"], { title: 'Countries', controlComponent: autoCompleteComponent, isEnabled: this.props.controlStore.countriesFilterActive, enable: (event, value) => { this.props.controlStore.setCountriesFilterActive(value); } }));
     }
     get degrees() {
-        const filterdValues = Array.from(_mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_13__.AbstractCsvRowMapper.educations)
+        const filterdValues = Array.from(_mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_14__.AbstractCsvRowMapper.educations)
             .filter(([k, v]) => v > 10)
             .map(([k, v]) => k);
-        // .map(([k, v]) => k as string +  ' (' + v + ')')
-        const autoCompleteComponent = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_12__["default"], { multiple: true, id: "checkboxes-tags-demo", options: filterdValues, disableCloseOnSelect: true, onChange: this.handleChangesForDegree.bind(this), 
-            // getOptionLabel={([k, v]) => k as string +  ' (' + v + ')'}
-            renderOption: (props, option, state) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("li", { ...props, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_6__["default"]
-                    // icon={icon}
-                    // checkedIcon={checkedIcon}
-                    , { 
-                        // icon={icon}
-                        // checkedIcon={checkedIcon}
-                        style: { marginRight: 8 }, checked: state.selected }), option] })), style: { width: 250 }, renderInput: (params) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__["default"], { style: { padding: '10px' }, ...params, label: "Bachelor, Master, etc." })) }));
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_15__["default"], { title: 'Highest Degree', controlComponent: autoCompleteComponent, isEnabled: this.props.controlStore.degreeFilterActive, enable: (event, value) => { this.props.controlStore.setDegreeFilterActive(value); } }));
+        const autoCompleteComponent = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_13__["default"], { multiple: true, id: "checkboxes-tags-demo", options: filterdValues, disableCloseOnSelect: true, value: this.props.controlStore.degrees, onChange: this.handleChangesForDegree.bind(this), renderOption: (props, option, state) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("li", { ...props, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_6__["default"], { style: { marginRight: 8 }, checked: state.selected }), option] })), style: { width: 250 }, renderInput: (params) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__["default"], { style: { padding: '10px' }, ...params, label: "Bachelor, Master, etc." })) }));
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_16__["default"], { title: 'Highest Degree', controlComponent: autoCompleteComponent, isEnabled: this.props.controlStore.degreeFilterActive, enable: (event, value) => { this.props.controlStore.setDegreeFilterActive(value); } }));
     }
     get valuesForExp() {
         return this.props.controlStore.expirienceInYears;
     }
     get gender() {
         const values = this.props.controlStore.genders;
-        const checkboxes = this.getCheckboxesForValues(values, Object.values(_model_gender__WEBPACK_IMPORTED_MODULE_14__.Gender).filter((v) => typeof v === 'string'));
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_15__["default"], { title: 'Gender', controlComponent: checkboxes, isEnabled: this.props.controlStore.gendersFilterActive, enable: (event, value) => { this.props.controlStore.setGendersFilterActive(value); } }));
+        const checkboxes = this.getCheckboxesForValues(values, Object.values(_model_gender__WEBPACK_IMPORTED_MODULE_15__.Gender).filter((v) => typeof v === 'string'));
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_16__["default"], { title: 'Gender', controlComponent: checkboxes, isEnabled: this.props.controlStore.gendersFilterActive, enable: (event, value) => { this.props.controlStore.setGendersFilterActive(value); } }));
     }
-    // TODO: Get General generator for checkbox, slider, dropdown (company size)
-    // Add generic header for: collapsible, active, weight
     getCheckboxesForValues(selectedValues, enumKeys) {
         const values = enumKeys.map(g => g.toString());
         const checkboxes = values.map(value => {
-            const check = selectedValues.includes(_model_gender__WEBPACK_IMPORTED_MODULE_14__.Gender[value]);
-            return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_9__["default"], { control: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_6__["default"], { onChange: () => { this.props.controlStore.setGenders(_model_gender__WEBPACK_IMPORTED_MODULE_14__.Gender[value]); }, defaultChecked: check }), label: value }, this.key++));
+            const check = selectedValues.includes(_model_gender__WEBPACK_IMPORTED_MODULE_15__.Gender[value]);
+            return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_9__["default"], { control: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_6__["default"], { checked: check, onChange: () => { this.props.controlStore.setGenders(_model_gender__WEBPACK_IMPORTED_MODULE_15__.Gender[value]); } }), label: value }, this.key++));
         });
         return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { children: checkboxes }));
     }
     get sliderForCompanySize() {
         const values = this.props.controlStore.companySizeValues;
-        const slider = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_8__["default"], { style: { width: '90%', minWidth: '200px' }, value: this.props.controlStore?.companySize, min: values.min, step: values.steps, max: values.max, 
-            // valueLabelFormat={numFormatter}
-            // marks={followersMarks}
-            // scale={scaleValues}
-            onChange: this.handleChangeForCompanySize.bind(this), valueLabelDisplay: "auto", "aria-labelledby": "non-linear-slider" }));
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_15__["default"], { title: 'Company Size', controlComponent: slider, isEnabled: this.props.controlStore.companySizeFilterActive, enable: (event, value) => { this.props.controlStore.setCompanySizeFilterActive(value); } }));
+        const slider = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_8__["default"], { style: { width: '90%', minWidth: '200px' }, value: this.props.controlStore?.companySize, min: values.min, step: values.steps, max: values.max, onChange: this.handleChangeForCompanySize.bind(this), valueLabelDisplay: "auto", "aria-labelledby": "non-linear-slider" }));
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_16__["default"], { title: 'Company Size', controlComponent: slider, isEnabled: this.props.controlStore.companySizeFilterActive, enable: (event, value) => { this.props.controlStore.setCompanySizeFilterActive(value); } }));
     }
     handleChangesForCountries(event, value) {
         this.props.controlStore.setCountries(value);
@@ -406034,8 +406087,60 @@ class ControlPane extends react__WEBPACK_IMPORTED_MODULE_1__.Component {
     handleChangeForCompanySize(event, value) {
         this.props.controlStore.setCompanySize(value);
     }
+    handleSaveToSession = () => {
+        const state = this.props.controlStore.getSessionState();
+        sessionStorage.setItem('controlPaneSettings', JSON.stringify(state, null, 2));
+    };
+    handleLoadFromSession = () => {
+        const saved = sessionStorage.getItem('controlPaneSettings');
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            this.props.controlStore.loadFromSessionState(parsed);
+            this.setState({ refreshKey: this.state.refreshKey + 1 });
+        }
+    };
+    handleDownloadJson = () => {
+        const state = this.props.controlStore.getSessionState();
+        const json = JSON.stringify(state, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'control-pane-settings.json';
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+    handleUploadJson = () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.onchange = (e) => {
+            const file = e.target.files?.[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const parsed = JSON.parse(reader.result);
+                    this.props.controlStore.loadFromSessionState(parsed);
+                    this.setState({ refreshKey: this.state.refreshKey + 1 });
+                };
+                reader.readAsText(file);
+            }
+        };
+        input.click();
+    };
+    handleShareLink = () => {
+        const state = this.props.controlStore.getSessionState();
+        const encoded = encodeURIComponent(JSON.stringify(state));
+        const url = `${window.location.origin}${window.location.pathname}?settings=${encoded}`;
+        navigator.clipboard.writeText(url).then(() => {
+            alert('Share link copied to clipboard!');
+        });
+    };
+    get sessionButtons() {
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_material_ui_core__WEBPACK_IMPORTED_MODULE_2__["default"], { style: { display: 'flex', gap: '8px', marginTop: '16px', flexWrap: 'wrap' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_10__["default"], { variant: "contained", size: "small", onClick: this.handleSaveToSession, children: "Save to Session" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_10__["default"], { variant: "contained", size: "small", onClick: this.handleLoadFromSession, children: "Load from Session" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_10__["default"], { variant: "contained", size: "small", onClick: this.handleDownloadJson, children: "Download JSON" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_10__["default"], { variant: "contained", size: "small", onClick: this.handleUploadJson, children: "Upload JSON" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_10__["default"], { variant: "contained", size: "small", onClick: this.handleShareLink, children: "Share Link" })] }));
+    }
 }
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,mobx_react__WEBPACK_IMPORTED_MODULE_10__.inject)(..._stores_storeHelper__WEBPACK_IMPORTED_MODULE_11__.injectClause)((0,mobx_react__WEBPACK_IMPORTED_MODULE_10__.observer)(ControlPane)));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,mobx_react__WEBPACK_IMPORTED_MODULE_11__.inject)(..._stores_storeHelper__WEBPACK_IMPORTED_MODULE_12__.injectClause)((0,mobx_react__WEBPACK_IMPORTED_MODULE_11__.observer)(ControlPane)));
 
 
 /***/ },
@@ -407418,10 +407523,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var papaparse__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! papaparse */ "./node_modules/papaparse/papaparse.min.js");
 /* harmony import */ var papaparse__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(papaparse__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../mapper/AbstractCsvRowMapper */ "./src/mapper/AbstractCsvRowMapper.ts");
-/* harmony import */ var _mapper_CsvRowMapper__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../mapper/CsvRowMapper */ "./src/mapper/CsvRowMapper.ts");
-/* harmony import */ var _model_constantMetaData__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../model/constantMetaData */ "./src/model/constantMetaData.ts");
-
+/* harmony import */ var _mapper_CsvRowMapper__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../mapper/CsvRowMapper */ "./src/mapper/CsvRowMapper.ts");
+/* harmony import */ var _model_constantMetaData__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../model/constantMetaData */ "./src/model/constantMetaData.ts");
 
 
 
@@ -407430,12 +407533,17 @@ class StackOverflowCsvReader {
     static BASIC_CONFIG = {
         download: true,
         worker: false,
-        // dynamicTyping: true,
+        /*
+Uncaught DataCloneError: Failed to execute 'postMessage' on 'Worker': function (header, index) {
+            const UNNAMED_COLUMN_PREFIX = 'columnIndex-';
+            if (header =...<omitted>... } could not be cloned.
+        */
         delimiter: ',',
         header: true,
-        transformHeader: (header, index) => {
+        transformHeader: function (header, index) {
+            const UNNAMED_COLUMN_PREFIX = 'columnIndex-';
             if (header == null || header === '') {
-                return this.UNNAMED_COLUMN_PREFIX + index;
+                return UNNAMED_COLUMN_PREFIX + index;
             }
             return header;
         }
@@ -407454,13 +407562,13 @@ class StackOverflowCsvReader {
             }
         };
         const year = resultsetForYear.year.toString();
-        const chunkCountForYear = _model_constantMetaData__WEBPACK_IMPORTED_MODULE_3__.CHUNK_COUNT_PER_YEAR[year];
+        const chunkCountForYear = _model_constantMetaData__WEBPACK_IMPORTED_MODULE_2__.CHUNK_COUNT_PER_YEAR[year];
         resultsetForYear.chunksParsed = 0;
         resultsetForYear.chunksAvailable = chunkCountForYear;
         this.handleNextChunk(resultsetForYear, config);
     }
     handleRow(csvRowRaw, resultsetForYear) {
-        const mapper = new _mapper_CsvRowMapper__WEBPACK_IMPORTED_MODULE_2__.CsvRowMapper(resultsetForYear.year);
+        const mapper = new _mapper_CsvRowMapper__WEBPACK_IMPORTED_MODULE_1__.CsvRowMapper(resultsetForYear.year);
         const rowEntry = mapper.map(csvRowRaw);
         if (rowEntry.isValid) {
             resultsetForYear.resultSet.push(rowEntry);
@@ -407473,25 +407581,11 @@ class StackOverflowCsvReader {
     handleNextChunk(resultsetForYear, config) {
         resultsetForYear.chunksParsed++;
         if (resultsetForYear.chunksParsed > resultsetForYear.chunksAvailable) {
-            /*
-            console.error('Set for exp:' + resultsetForYear.year)
-            console.log(AbstractCsvRowMapper.years)
-
-            console.error('Set for gender:' + resultsetForYear.year)
-            console.log(AbstractCsvRowMapper.genders)
-            */
-            console.error('Set for abi:' + resultsetForYear.year);
-            const filteredValues = new Map([..._mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_1__.AbstractCsvRowMapper.abilities]
-                .filter(([k, v]) => v > 10));
-            // const filteredValues =
-            //    .filter(e => AbstractCsvRowMapper.abilities.get(e) > 3)
-            console.log(filteredValues);
+            // All chunks processed, nothing more to do
             return;
         }
         const fileName = this.generateFileName(resultsetForYear.year.toString(), resultsetForYear.chunksParsed);
         const fileUrl = this.baseUrl + '/' + fileName;
-        // TODO: All files get downloaded, but it seems only 4 Workers get ever started...
-        //   More probably the missing header in the chunked files lead to errors.
         papaparse__WEBPACK_IMPORTED_MODULE_0___default().parse(fileUrl, config);
     }
     generateFileName(year, chunk) {
@@ -407538,6 +407632,7 @@ class ControlStore {
     companySizeFilterActive = false;
     degreeFilterActive = false;
     countriesFilterActive = false;
+    pendingState = null;
     constructor() {
         (0,mobx__WEBPACK_IMPORTED_MODULE_0__.makeAutoObservable)(this);
     }
@@ -407633,6 +407728,83 @@ class ControlStore {
     setCountriesFilterActive(countriesFilterActive) {
         this.countriesFilterActive = countriesFilterActive;
     }
+    loadPendingState() {
+        if (this.pendingState) {
+            const state = this.pendingState;
+            this.pendingState = null;
+            this.selectedYear = state.selectedYear ?? this.selectedYear;
+            if (state.expirienceInYears !== undefined)
+                this.expirienceInYears = state.expirienceInYears;
+            if (state.genders !== undefined)
+                this.genders = state.genders;
+            if (state.abilities !== undefined)
+                this.abilities = state.abilities;
+            if (state.companySize !== undefined)
+                this.companySize = state.companySize;
+            if (state.countries !== undefined)
+                this.countries = state.countries;
+            if (state.degrees !== undefined)
+                this.degrees = state.degrees;
+            if (state.gendersFilterActive !== undefined)
+                this.gendersFilterActive = state.gendersFilterActive;
+            if (state.abilitiesFilterActive !== undefined)
+                this.abilitiesFilterActive = state.abilitiesFilterActive;
+            if (state.expirienceFilterActive !== undefined)
+                this.expirienceFilterActive = state.expirienceFilterActive;
+            if (state.companySizeFilterActive !== undefined)
+                this.companySizeFilterActive = state.companySizeFilterActive;
+            if (state.degreeFilterActive !== undefined)
+                this.degreeFilterActive = state.degreeFilterActive;
+            if (state.countriesFilterActive !== undefined)
+                this.countriesFilterActive = state.countriesFilterActive;
+        }
+    }
+    getSessionState() {
+        return {
+            selectedYear: this.selectedYear,
+            expirienceInYears: this.expirienceInYears,
+            genders: this.genders,
+            abilities: this.abilities,
+            companySize: this.companySize,
+            countries: this.countries,
+            degrees: this.degrees,
+            gendersFilterActive: this.gendersFilterActive,
+            abilitiesFilterActive: this.abilitiesFilterActive,
+            expirienceFilterActive: this.expirienceFilterActive,
+            companySizeFilterActive: this.companySizeFilterActive,
+            degreeFilterActive: this.degreeFilterActive,
+            countriesFilterActive: this.countriesFilterActive
+        };
+    }
+    loadFromSessionState(state) {
+        if (state.selectedYear !== undefined) {
+            this.selectedYear = state.selectedYear;
+        }
+        if (state.expirienceInYears !== undefined)
+            this.expirienceInYears = state.expirienceInYears;
+        if (state.genders !== undefined)
+            this.genders = state.genders;
+        if (state.abilities !== undefined)
+            this.abilities = state.abilities;
+        if (state.companySize !== undefined)
+            this.companySize = state.companySize;
+        if (state.countries !== undefined)
+            this.countries = state.countries;
+        if (state.degrees !== undefined)
+            this.degrees = state.degrees;
+        if (state.gendersFilterActive !== undefined)
+            this.gendersFilterActive = state.gendersFilterActive;
+        if (state.abilitiesFilterActive !== undefined)
+            this.abilitiesFilterActive = state.abilitiesFilterActive;
+        if (state.expirienceFilterActive !== undefined)
+            this.expirienceFilterActive = state.expirienceFilterActive;
+        if (state.companySizeFilterActive !== undefined)
+            this.companySizeFilterActive = state.companySizeFilterActive;
+        if (state.degreeFilterActive !== undefined)
+            this.degreeFilterActive = state.degreeFilterActive;
+        if (state.countriesFilterActive !== undefined)
+            this.countriesFilterActive = state.countriesFilterActive;
+    }
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (new ControlStore());
 
@@ -407692,7 +407864,6 @@ class EntryStore {
      */
     loadData() {
         this.reader = new _services_stackOverflowCsvReader__WEBPACK_IMPORTED_MODULE_2__["default"]();
-        // debugger
         const currentYear = _model_constantMetaData__WEBPACK_IMPORTED_MODULE_4__.AVAILABLE_YEARS[_model_constantMetaData__WEBPACK_IMPORTED_MODULE_4__.AVAILABLE_YEARS.length - 1];
         new _services_currencyService__WEBPACK_IMPORTED_MODULE_1__["default"]().getCurrencies()
             .then(this.setCurrencyValues.bind(this));

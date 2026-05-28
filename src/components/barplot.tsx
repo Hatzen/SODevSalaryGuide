@@ -1,5 +1,6 @@
 import React from 'react'
 import Plot from 'react-plotly.js'
+import { Data, Layout } from 'plotly.js'
 import { inject, observer } from 'mobx-react'
 import { injectClause, StoreProps } from '../stores/storeHelper'
 
@@ -10,7 +11,7 @@ class BarPlot extends React.Component<StoreProps> {
             <div style={{position: 'absolute', top: 0, bottom: 0, left:0, right: 0, overflow: 'auto'}}>
                  <Plot
                      data={this.data}
-                     layout={{barmode: 'group', showlegend: false}}
+                     layout={this.layout}
                      style={{width: '100%', height: '100%'}}
                  />
             </div>
@@ -44,6 +45,15 @@ class BarPlot extends React.Component<StoreProps> {
             { y: invalidNumbers, name: 'considered invalid', type: 'bar' },
         ];
         return traces;
+    }
+    
+    get layout(): Partial<Layout> {
+        return {
+            barmode: 'group', 
+            showlegend: true, 
+            paper_bgcolor: '#FF000000',
+            plot_bgcolor: '#FF000000'
+        }
     }
 }
 
