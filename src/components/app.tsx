@@ -15,7 +15,6 @@ import SurveyEntry from '../model/surveyEntry'
 import RawDataTable from './rawDataTable'
 import ConsideredDataTable from './consideredDataTable'
 import { uiStore } from '../stores/uiStore'
-import { AbstractCsvRowMapper } from '../mapper/AbstractCsvRowMapper'
 
 interface AppState {
     components: number[],

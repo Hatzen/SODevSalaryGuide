@@ -33,15 +33,18 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
 
     loadPendingStateIfNeeded(): void {
         const cs = this.props.controlStore!
-        if (!this.loadedPendingState && cs.pendingState && AbstractCsvRowMapper.abilities.size > 0 && AbstractCsvRowMapper.countries.size > 0) {
-            this.loadedPendingState = true
+        if (cs.pendingState) {
             const targetYear = cs.pendingState.selectedYear
-            cs.loadPendingState()
-            if (targetYear && targetYear !== AVAILABLE_YEARS[AVAILABLE_YEARS.length - 1]) {
-                setTimeout(() => {
+            const dataReady = AbstractCsvRowMapper.abilities.size > 0 && AbstractCsvRowMapper.countries.size > 0
+            
+            if (dataReady && !this.loadedPendingState) {
+                this.loadedPendingState = true
+                cs.loadPendingState()
+                if (targetYear && targetYear !== AVAILABLE_YEARS[AVAILABLE_YEARS.length - 1]) {
                     AbstractCsvRowMapper.clearDistinctValues()
                     this.props.entryStore!.initParser(targetYear)
-                }, 100)
+                }
+                this.setState({ refreshKey: this.state.refreshKey + 1 })
             }
         }
     }

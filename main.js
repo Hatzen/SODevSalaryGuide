@@ -405997,15 +405997,17 @@ class ControlPane extends react__WEBPACK_IMPORTED_MODULE_1__.Component {
     }
     loadPendingStateIfNeeded() {
         const cs = this.props.controlStore;
-        if (!this.loadedPendingState && cs.pendingState && _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_14__.AbstractCsvRowMapper.abilities.size > 0 && _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_14__.AbstractCsvRowMapper.countries.size > 0) {
-            this.loadedPendingState = true;
+        if (cs.pendingState) {
             const targetYear = cs.pendingState.selectedYear;
-            cs.loadPendingState();
-            if (targetYear && targetYear !== _model_constantMetaData__WEBPACK_IMPORTED_MODULE_17__.AVAILABLE_YEARS[_model_constantMetaData__WEBPACK_IMPORTED_MODULE_17__.AVAILABLE_YEARS.length - 1]) {
-                setTimeout(() => {
+            const dataReady = _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_14__.AbstractCsvRowMapper.abilities.size > 0 && _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_14__.AbstractCsvRowMapper.countries.size > 0;
+            if (dataReady && !this.loadedPendingState) {
+                this.loadedPendingState = true;
+                cs.loadPendingState();
+                if (targetYear && targetYear !== _model_constantMetaData__WEBPACK_IMPORTED_MODULE_17__.AVAILABLE_YEARS[_model_constantMetaData__WEBPACK_IMPORTED_MODULE_17__.AVAILABLE_YEARS.length - 1]) {
                     _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_14__.AbstractCsvRowMapper.clearDistinctValues();
                     this.props.entryStore.initParser(targetYear);
-                }, 100);
+                }
+                this.setState({ refreshKey: this.state.refreshKey + 1 });
             }
         }
     }
@@ -407334,6 +407336,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (/* binding */ ResultSetForYear)
 /* harmony export */ });
+/* harmony import */ var mobx__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mobx */ "./node_modules/mobx/dist/mobx.esm.js");
+
 class ResultSetForYear {
     resultSet = [];
     overallEntryCount = 0;
@@ -407341,6 +407345,9 @@ class ResultSetForYear {
     year = -1;
     chunksAvailable = -1;
     chunksParsed = -1;
+    constructor() {
+        (0,mobx__WEBPACK_IMPORTED_MODULE_0__.makeAutoObservable)(this);
+    }
 }
 
 
@@ -407874,7 +407881,6 @@ class EntryStore {
     }
     setDataForYear(entrySet) {
         this.parsedDataByYear[entrySet.year] = entrySet;
-        // TODO: This might lead to a race condition?
         this.parsedData.resultSet = this.parsedData.resultSet.concat(entrySet.resultSet);
     }
     initParser(year) {
