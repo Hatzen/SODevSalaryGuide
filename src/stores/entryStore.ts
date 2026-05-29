@@ -64,6 +64,8 @@ export class EntryStore {
 
         const resultsetForYear = new ResultSetForYear()
         resultsetForYear.year = parseInt(year)
+        // Store in map first so mutations trigger reactivity
+        this.parsedDataByYear[resultsetForYear.year] = resultsetForYear
         this.reader.startWorkerForYear(
             resultsetForYear,
             this.addRow,
@@ -76,7 +78,7 @@ export class EntryStore {
                 console.log('Finished parsing a chunk for year: ' + year + '\n'
                         + '\t chunks parsed ' + parsed + ' chunks to go ' + available + '\n '
                         + '\t entries parsed ' + overallEntryCount + ' invalid ones ' + invalidEntryCount + ' ')
-                this.setDataForYear(resultsetForYear)
+                this.parsedData.resultSet = this.parsedData.resultSet.concat(resultsetForYear.resultSet)
             }
         )
     }
