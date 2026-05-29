@@ -1,4 +1,5 @@
 import SurveyEntry from './surveyEntry'
+import { makeAutoObservable } from 'mobx'
 
 export default class ResultSetForYear {
     resultSet: SurveyEntry[] = []
@@ -9,4 +10,8 @@ export default class ResultSetForYear {
 
     chunksAvailable = -1
     chunksParsed = -1
+
+    constructor() {
+        makeAutoObservable(this)
+    }
 }
