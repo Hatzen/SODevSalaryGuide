@@ -1,7 +1,7 @@
 import ResultSetForYear from '../model/resultSetForYear'
 
 describe('ResultSetForYear', () => {
-    it('should create observable with default values', () => {
+    it('should create with default values', () => {
         const rs = new ResultSetForYear()
 
         expect(rs.resultSet).toEqual([])
@@ -12,14 +12,13 @@ describe('ResultSetForYear', () => {
         expect(rs.chunksParsed).toBe(-1)
     })
 
-    it('should update chunksParsed reactively', () => {
+    it('should have properties that can be updated', () => {
         const rs = new ResultSetForYear()
+        rs.year = 2025
         rs.chunksParsed = 1
-        
         expect(rs.chunksParsed).toBe(1)
 
         rs.chunksParsed = 2
-        
         expect(rs.chunksParsed).toBe(2)
     })
 })

@@ -54,7 +54,6 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
             <div key={this.state.refreshKey} style={{padding: 50, overflow: 'scroll', position: 'relative', top: 0, left: 0, right: 0, maxHeight: 'calc(100% - 100px)'}}>
                 <Box sx={{ display: 'flex' }}>
                     <FormControl focused={false} component="fieldset" variant="standard">
-                        <FormLabel component="legend">Include Data from years</FormLabel>
                         <FormGroup key={1}>
                             {this.years}
                             {this.slider}

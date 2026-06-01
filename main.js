@@ -405662,31 +405662,46 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class BarPlot extends react__WEBPACK_IMPORTED_MODULE_1__.Component {
-    render() {
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, overflow: 'auto' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(react_plotly_js__WEBPACK_IMPORTED_MODULE_2__["default"], { data: this.data, layout: this.layout, style: { width: '100%', height: '100%' } }) }));
+    plotRef;
+    constructor(props) {
+        super(props);
+        this.plotRef = react__WEBPACK_IMPORTED_MODULE_1__.createRef();
     }
+    render() {
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { ref: this.plotRef, style: { position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, overflow: 'auto' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(react_plotly_js__WEBPACK_IMPORTED_MODULE_2__["default"], { data: this.data, layout: this.layout, style: { width: '100%', height: '100%' }, onInitialized: this.handleInit, onUpdate: this.handleResize }) }));
+    }
+    componentDidUpdate() {
+        this.handleResize();
+    }
+    handleInit = () => {
+        setTimeout(this.handleResize, 0);
+    };
+    handleResize = () => {
+        if (this.plotRef.current) {
+            const plotlyEl = this.plotRef.current.querySelector('.js-plotly-plot');
+            if (plotlyEl && plotlyEl.Plotly) {
+                plotlyEl.Plotly.relayout(plotlyEl, { autosize: true });
+            }
+        }
+    };
     get data() {
         const selectedYearStr = this.props.controlStore.controlState.selectedYear;
         const selectedYearNum = parseInt(selectedYearStr, 10);
         const resultList = this.props.entryStore.parsedDataByYear;
         const filteredList = this.props.uiStore.filteredData;
-        // Get the data for the selected year from entryStore.parsedDataByYear (by number key)
         const yearEntrySet = resultList[selectedYearNum];
-        // Get the data for the selected year from uiStore.filteredData (by string key)
         const filteredYearList = filteredList[selectedYearNum];
-        // If we don't have data for the selected year, return empty traces?
         if (!yearEntrySet || !filteredYearList) {
             return [];
         }
         const overallNumbers = [yearEntrySet.overallEntryCount];
         const invalidNumbers = [yearEntrySet.invalidEntryCount];
         const matchingFilterNumbers = [filteredYearList.length];
-        const traces = [
+        return [
             { y: matchingFilterNumbers, name: 'matching filter', type: 'bar' },
             { y: overallNumbers, name: 'allParticipations', type: 'bar' },
             { y: invalidNumbers, name: 'considered invalid', type: 'bar' },
         ];
-        return traces;
     }
     get layout() {
         return {
@@ -405723,82 +405738,40 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-// Define the shape of the figure argument passed by react-plotly.js
-/*interface PlotlyFigure {
-  data: PlotData[];
-  layout: Partial<Layout>;
-  frames: any[] | null;
-}*/
 class BoxPlot extends react__WEBPACK_IMPORTED_MODULE_1__.Component {
     defaultBoxConfig = {
         type: 'box',
         boxmean: 'sd',
-        // boxpoints: 'all',
-        // jitter: 0.3,
-        // pointpos: -1.8
     };
-    // Create a reference to store the plot instance
-    //plotRef: MutableRefObject<HTMLElement | null> = useRef(null);
+    plotRef;
+    constructor(props) {
+        super(props);
+        this.plotRef = react__WEBPACK_IMPORTED_MODULE_1__.createRef();
+    }
     render() {
-        /*
-                <div>
-                    {this.getLoader()}
-                </div>
-        */
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, overflow: 'auto' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(react_plotly_js__WEBPACK_IMPORTED_MODULE_2__["default"], { data: this.data, layout: this.layout, style: { width: '100%', height: '100%' } }) }));
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { ref: this.plotRef, style: { position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, overflow: 'auto' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(react_plotly_js__WEBPACK_IMPORTED_MODULE_2__["default"], { data: this.data, layout: this.layout, style: { width: '100%', height: '100%' }, onInitialized: this.handleInit, onUpdate: this.handleResize }) }));
     }
-    /*
-    render(): JSX.Element {
-        return (
-            <div style={{position: 'absolute', top: 0, bottom: 0, left:0, right: 0, overflow: 'auto'}}>
-                 <Plot
-                     data={this.data}
-                     layout={this.layout}
-                     style={{width: '100%', height: '100%'}}
-                    // Store reference and trigger hover when first loaded
-                        onInitialized={this.initializ}
-                        // Re-trigger hover if the plot layout updates or resizes
-                        onUpdate={this.update}
-                        // Re-trigger hover when user moves mouse away
-                        onUnhover={this.unhover}
-
-                 />
-            </div>
-        )
+    componentDidUpdate() {
+        this.handleResize();
     }
-    
-    pinBoxHover(plotElement: HTMLElement | null): void {
-        // Cast window or element to access Fx API safely in TypeScript
-        const plotlyModule = (window as any).Plotly || (plotElement as any)?.Plotly;
-        
-        if (plotElement && plotlyModule) {
-        plotlyModule.Fx.hover(plotElement, [
-            { curveNumber: 0, pointNumber: 0 }
-        ]);
-        }
-
+    handleInit = () => {
+        setTimeout(this.handleResize, 0);
     };
-
-    initializ(figure: Readonly<Figure>, graphDiv: Readonly<HTMLElement>): void {
-        this.plotRef.current = graphDiv;
-        this.pinBoxHover(graphDiv);
-    }
-
-    update(figure: Readonly<Figure>): void {
-        this.pinBoxHover(this.plotRef.current);
-    }
-
-    unhover(): void {
-        this.pinBoxHover(this.plotRef.current);
-    }*/
+    handleResize = () => {
+        if (this.plotRef.current) {
+            const plotlyEl = this.plotRef.current.querySelector('.js-plotly-plot');
+            if (plotlyEl && plotlyEl.Plotly) {
+                plotlyEl.Plotly.relayout(plotlyEl, { autosize: true });
+            }
+        }
+    };
     get data() {
         const resultList = this.props.uiStore.filteredData;
         const selectedYearStr = this.props.controlStore.controlState.selectedYear;
         const selectedYearNum = parseInt(selectedYearStr, 10);
-        // Get the data for the selected year
         const yearData = resultList[selectedYearNum];
         if (!yearData) {
-            return []; // no data for the selected year
+            return [];
         }
         const trace = {
             type: 'box',
@@ -405812,14 +405785,10 @@ class BoxPlot extends react__WEBPACK_IMPORTED_MODULE_1__.Component {
         return {
             autosize: true,
             showlegend: false,
-            // 'x' mode forces plotly to show the summary statistics for the column on that X coordinate
-            // hovermode: 'x',
-            //hovermode: 'closest',
             yaxis: { fixedrange: true },
             xaxis: { fixedrange: true },
             paper_bgcolor: '#FF000000',
             plot_bgcolor: '#FF000000',
-            // hoverdistance: -1
         };
     }
 }
@@ -405844,6 +405813,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _mui_x_data_grid__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @mui/x-data-grid */ "./node_modules/@mui/x-data-grid/DataGrid/DataGrid.js");
 /* harmony import */ var react_loader_spinner__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react-loader-spinner */ "./node_modules/react-loader-spinner/dist/index.js");
 /* harmony import */ var _stores_uiStore__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../stores/uiStore */ "./src/stores/uiStore.ts");
+/* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/FormLabel/FormLabel.js");
+
 
 
 
@@ -405907,7 +405878,7 @@ const ConsideredDataTable = (0,mobx_react__WEBPACK_IMPORTED_MODULE_1__.observer)
             return formatValueForDisplay(value);
         }
     }));
-    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { padding: '20px', height: '100%', display: 'flex', flexDirection: 'column' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("h2", { children: "Considered Data (Filtered)" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { flex: 1, minHeight: 0 }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_x_data_grid__WEBPACK_IMPORTED_MODULE_2__.DataGrid, { rows: rowsWithId, columns: columns, pageSizeOptions: [10, 25, 50, 100], pageSize: 10, checkboxSelection: true, disableSelectionOnClick: true }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { marginTop: '10px', fontSize: '0.9em', color: '#666' }, children: ["Showing ", consideredData.length, " considered entries"] })] }));
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { padding: '20px', height: '100%', display: 'flex', flexDirection: 'column' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("h2", { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_5__["default"], { children: "Considered Data (Filtered)" }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { flex: 1, minHeight: 0 }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_x_data_grid__WEBPACK_IMPORTED_MODULE_2__.DataGrid, { rows: rowsWithId, columns: columns, pageSizeOptions: [10, 25, 50, 100], pageSize: 10, checkboxSelection: true, disableSelectionOnClick: true }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { marginTop: '10px', fontSize: '0.9em', color: '#666' }, children: ["Showing ", consideredData.length, " considered entries"] })] }));
 });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ConsideredDataTable);
 
@@ -405956,20 +405927,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/Box/Box.js");
 /* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/FormControl/FormControl.js");
-/* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/FormLabel/FormLabel.js");
-/* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/FormGroup/FormGroup.js");
-/* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/Checkbox/Checkbox.js");
-/* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/TextField/TextField.js");
-/* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/Slider/Slider.js");
-/* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/FormControlLabel/FormControlLabel.js");
-/* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/Button/Button.js");
-/* harmony import */ var mobx_react__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! mobx-react */ "./node_modules/mobx-react/dist/mobxreact.esm.js");
-/* harmony import */ var _stores_storeHelper__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../stores/storeHelper */ "./src/stores/storeHelper.ts");
-/* harmony import */ var _mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! @mui/material/Autocomplete */ "./node_modules/@mui/material/Autocomplete/Autocomplete.js");
-/* harmony import */ var _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../mapper/AbstractCsvRowMapper */ "./src/mapper/AbstractCsvRowMapper.ts");
-/* harmony import */ var _model_gender__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../model/gender */ "./src/model/gender.ts");
-/* harmony import */ var _controlComponentWrapper__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./controlComponentWrapper */ "./src/components/controlComponentWrapper.tsx");
-/* harmony import */ var _model_constantMetaData__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../model/constantMetaData */ "./src/model/constantMetaData.ts");
+/* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/FormGroup/FormGroup.js");
+/* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/Checkbox/Checkbox.js");
+/* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/TextField/TextField.js");
+/* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/Slider/Slider.js");
+/* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/FormControlLabel/FormControlLabel.js");
+/* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/Button/Button.js");
+/* harmony import */ var mobx_react__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! mobx-react */ "./node_modules/mobx-react/dist/mobxreact.esm.js");
+/* harmony import */ var _stores_storeHelper__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../stores/storeHelper */ "./src/stores/storeHelper.ts");
+/* harmony import */ var _mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @mui/material/Autocomplete */ "./node_modules/@mui/material/Autocomplete/Autocomplete.js");
+/* harmony import */ var _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../mapper/AbstractCsvRowMapper */ "./src/mapper/AbstractCsvRowMapper.ts");
+/* harmony import */ var _model_gender__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../model/gender */ "./src/model/gender.ts");
+/* harmony import */ var _controlComponentWrapper__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./controlComponentWrapper */ "./src/components/controlComponentWrapper.tsx");
+/* harmony import */ var _model_constantMetaData__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../model/constantMetaData */ "./src/model/constantMetaData.ts");
 
 
 
@@ -405999,12 +405969,12 @@ class ControlPane extends react__WEBPACK_IMPORTED_MODULE_1__.Component {
         const cs = this.props.controlStore;
         if (cs.pendingState) {
             const targetYear = cs.pendingState.selectedYear;
-            const dataReady = _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_14__.AbstractCsvRowMapper.abilities.size > 0 && _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_14__.AbstractCsvRowMapper.countries.size > 0;
+            const dataReady = _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_13__.AbstractCsvRowMapper.abilities.size > 0 && _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_13__.AbstractCsvRowMapper.countries.size > 0;
             if (dataReady && !this.loadedPendingState) {
                 this.loadedPendingState = true;
                 cs.loadPendingState();
-                if (targetYear && targetYear !== _model_constantMetaData__WEBPACK_IMPORTED_MODULE_17__.AVAILABLE_YEARS[_model_constantMetaData__WEBPACK_IMPORTED_MODULE_17__.AVAILABLE_YEARS.length - 1]) {
-                    _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_14__.AbstractCsvRowMapper.clearDistinctValues();
+                if (targetYear && targetYear !== _model_constantMetaData__WEBPACK_IMPORTED_MODULE_16__.AVAILABLE_YEARS[_model_constantMetaData__WEBPACK_IMPORTED_MODULE_16__.AVAILABLE_YEARS.length - 1]) {
+                    _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_13__.AbstractCsvRowMapper.clearDistinctValues();
                     this.props.entryStore.initParser(targetYear);
                 }
                 this.setState({ refreshKey: this.state.refreshKey + 1 });
@@ -406012,67 +405982,67 @@ class ControlPane extends react__WEBPACK_IMPORTED_MODULE_1__.Component {
         }
     }
     render() {
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { padding: 50, overflow: 'scroll', position: 'relative', top: 0, left: 0, right: 0, maxHeight: 'calc(100% - 100px)' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_2__["default"], { sx: { display: 'flex' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_material_ui_core__WEBPACK_IMPORTED_MODULE_3__["default"], { focused: false, component: "fieldset", variant: "standard", children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_4__["default"], { component: "legend", children: "Include Data from years" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_material_ui_core__WEBPACK_IMPORTED_MODULE_5__["default"], { children: [this.years, this.slider, this.gender, this.abilities, this.sliderForCompanySize, this.countries, this.degrees] }, 1)] }) }), this.sessionButtons] }, this.state.refreshKey));
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { padding: 50, overflow: 'scroll', position: 'relative', top: 0, left: 0, right: 0, maxHeight: 'calc(100% - 100px)' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_2__["default"], { sx: { display: 'flex' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_3__["default"], { focused: false, component: "fieldset", variant: "standard", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_material_ui_core__WEBPACK_IMPORTED_MODULE_4__["default"], { children: [this.years, this.slider, this.gender, this.abilities, this.sliderForCompanySize, this.countries, this.degrees] }, 1) }) }), this.sessionButtons] }, this.state.refreshKey));
     }
     get years() {
         const config = this.props.controlStore;
         const selectedYear = config.controlState.selectedYear;
-        const filteredValues = _model_constantMetaData__WEBPACK_IMPORTED_MODULE_17__.AVAILABLE_YEARS;
-        const autoCompleteComponent = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_13__["default"], { options: filteredValues, value: selectedYear, onChange: this.handleYearChange.bind(this), renderOption: (props, option, { selected }) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("li", { ...props, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_6__["default"], { style: { marginRight: 8 }, checked: selected }), option] })), style: { width: 250 }, renderInput: (params) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__["default"], { style: { padding: '10px' }, ...params, label: "Show data for year" })) }));
+        const filteredValues = _model_constantMetaData__WEBPACK_IMPORTED_MODULE_16__.AVAILABLE_YEARS;
+        const autoCompleteComponent = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_12__["default"], { options: filteredValues, value: selectedYear, onChange: this.handleYearChange.bind(this), renderOption: (props, option, { selected }) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("li", { ...props, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_5__["default"], { style: { marginRight: 8 }, checked: selected }), option] })), style: { width: 250 }, renderInput: (params) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_6__["default"], { style: { padding: '10px' }, ...params, label: "Show data for year" })) }));
         return autoCompleteComponent;
     }
     handleYearChange = (event, value, reason, details) => {
         if (value !== null) {
             this.props.controlStore.setSelectedYear(value);
-            _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_14__.AbstractCsvRowMapper.clearDistinctValues();
+            _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_13__.AbstractCsvRowMapper.clearDistinctValues();
             this.props.entryStore.initParser(value);
         }
     };
     get abilities() {
-        const filterdValues = Array.from(_mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_14__.AbstractCsvRowMapper.abilities)
+        const filterdValues = Array.from(_mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_13__.AbstractCsvRowMapper.abilities)
             .filter(([k, v]) => v > 10)
             .map(([k, v]) => k);
-        const autoCompleteComponent = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_13__["default"], { multiple: true, id: "checkboxes-tags-demo", options: filterdValues, disableCloseOnSelect: true, value: this.props.controlStore.abilities, onChange: this.handleChangesForAbilities.bind(this), renderOption: (props, option, state) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("li", { ...props, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_6__["default"], { style: { marginRight: 8 }, checked: state.selected }), option] })), style: { width: 250 }, renderInput: (params) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__["default"], { style: { padding: '10px' }, ...params, label: "SQL, Java, etc." })) }));
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_16__["default"], { title: 'Tools and Technologies', controlComponent: autoCompleteComponent, isEnabled: this.props.controlStore.abilitiesFilterActive, enable: (event, value) => { this.props.controlStore.setAbilitiesFilterActive(value); } }));
+        const autoCompleteComponent = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_12__["default"], { multiple: true, id: "checkboxes-tags-demo", options: filterdValues, disableCloseOnSelect: true, value: this.props.controlStore.abilities, onChange: this.handleChangesForAbilities.bind(this), renderOption: (props, option, state) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("li", { ...props, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_5__["default"], { style: { marginRight: 8 }, checked: state.selected }), option] })), style: { width: 250 }, renderInput: (params) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_6__["default"], { style: { padding: '10px' }, ...params, label: "SQL, Java, etc." })) }));
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_15__["default"], { title: 'Tools and Technologies', controlComponent: autoCompleteComponent, isEnabled: this.props.controlStore.abilitiesFilterActive, enable: (event, value) => { this.props.controlStore.setAbilitiesFilterActive(value); } }));
     }
     get slider() {
-        const slider = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_8__["default"], { style: { width: '90%', minWidth: '200px' }, value: this.valuesForExp, min: 0, step: 1, max: 40, onChange: this.handleChange.bind(this), valueLabelDisplay: "auto", "aria-labelledby": "non-linear-slider" }));
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_16__["default"], { title: 'Years of Expirience', controlComponent: slider, isEnabled: this.props.controlStore.expirienceFilterActive, enable: (event, value) => { this.props.controlStore.setExpirienceFilterActive(value); } }));
+        const slider = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__["default"], { style: { width: '90%', minWidth: '200px' }, value: this.valuesForExp, min: 0, step: 1, max: 40, onChange: this.handleChange.bind(this), valueLabelDisplay: "auto", "aria-labelledby": "non-linear-slider" }));
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_15__["default"], { title: 'Years of Expirience', controlComponent: slider, isEnabled: this.props.controlStore.expirienceFilterActive, enable: (event, value) => { this.props.controlStore.setExpirienceFilterActive(value); } }));
     }
     get countries() {
-        const filterdValues = Array.from(_mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_14__.AbstractCsvRowMapper.countries)
+        const filterdValues = Array.from(_mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_13__.AbstractCsvRowMapper.countries)
             .filter(([k, v]) => v > 10)
             .map(([k, v]) => k);
-        const autoCompleteComponent = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_13__["default"], { multiple: true, id: "checkboxes-tags-demo", options: filterdValues, disableCloseOnSelect: true, value: this.props.controlStore.countries, onChange: this.handleChangesForCountries.bind(this), renderOption: (props, option, state) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("li", { ...props, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_6__["default"], { style: { marginRight: 8 }, checked: state.selected }), option] })), style: { width: 250 }, renderInput: (params) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__["default"], { style: { padding: '10px' }, ...params, label: "USA, Japan, Germany etc." })) }));
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_16__["default"], { title: 'Countries', controlComponent: autoCompleteComponent, isEnabled: this.props.controlStore.countriesFilterActive, enable: (event, value) => { this.props.controlStore.setCountriesFilterActive(value); } }));
+        const autoCompleteComponent = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_12__["default"], { multiple: true, id: "checkboxes-tags-demo", options: filterdValues, disableCloseOnSelect: true, value: this.props.controlStore.countries, onChange: this.handleChangesForCountries.bind(this), renderOption: (props, option, state) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("li", { ...props, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_5__["default"], { style: { marginRight: 8 }, checked: state.selected }), option] })), style: { width: 250 }, renderInput: (params) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_6__["default"], { style: { padding: '10px' }, ...params, label: "USA, Japan, Germany etc." })) }));
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_15__["default"], { title: 'Countries', controlComponent: autoCompleteComponent, isEnabled: this.props.controlStore.countriesFilterActive, enable: (event, value) => { this.props.controlStore.setCountriesFilterActive(value); } }));
     }
     get degrees() {
-        const filterdValues = Array.from(_mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_14__.AbstractCsvRowMapper.educations)
+        const filterdValues = Array.from(_mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_13__.AbstractCsvRowMapper.educations)
             .filter(([k, v]) => v > 10)
             .map(([k, v]) => k);
-        const autoCompleteComponent = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_13__["default"], { multiple: true, id: "checkboxes-tags-demo", options: filterdValues, disableCloseOnSelect: true, value: this.props.controlStore.degrees, onChange: this.handleChangesForDegree.bind(this), renderOption: (props, option, state) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("li", { ...props, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_6__["default"], { style: { marginRight: 8 }, checked: state.selected }), option] })), style: { width: 250 }, renderInput: (params) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__["default"], { style: { padding: '10px' }, ...params, label: "Bachelor, Master, etc." })) }));
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_16__["default"], { title: 'Highest Degree', controlComponent: autoCompleteComponent, isEnabled: this.props.controlStore.degreeFilterActive, enable: (event, value) => { this.props.controlStore.setDegreeFilterActive(value); } }));
+        const autoCompleteComponent = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_12__["default"], { multiple: true, id: "checkboxes-tags-demo", options: filterdValues, disableCloseOnSelect: true, value: this.props.controlStore.degrees, onChange: this.handleChangesForDegree.bind(this), renderOption: (props, option, state) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("li", { ...props, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_5__["default"], { style: { marginRight: 8 }, checked: state.selected }), option] })), style: { width: 250 }, renderInput: (params) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_6__["default"], { style: { padding: '10px' }, ...params, label: "Bachelor, Master, etc." })) }));
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_15__["default"], { title: 'Highest Degree', controlComponent: autoCompleteComponent, isEnabled: this.props.controlStore.degreeFilterActive, enable: (event, value) => { this.props.controlStore.setDegreeFilterActive(value); } }));
     }
     get valuesForExp() {
         return this.props.controlStore.expirienceInYears;
     }
     get gender() {
         const values = this.props.controlStore.genders;
-        const checkboxes = this.getCheckboxesForValues(values, Object.values(_model_gender__WEBPACK_IMPORTED_MODULE_15__.Gender).filter((v) => typeof v === 'string'));
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_16__["default"], { title: 'Gender', controlComponent: checkboxes, isEnabled: this.props.controlStore.gendersFilterActive, enable: (event, value) => { this.props.controlStore.setGendersFilterActive(value); } }));
+        const checkboxes = this.getCheckboxesForValues(values, Object.values(_model_gender__WEBPACK_IMPORTED_MODULE_14__.Gender).filter((v) => typeof v === 'string'));
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_15__["default"], { title: 'Gender', controlComponent: checkboxes, isEnabled: this.props.controlStore.gendersFilterActive, enable: (event, value) => { this.props.controlStore.setGendersFilterActive(value); } }));
     }
     getCheckboxesForValues(selectedValues, enumKeys) {
         const values = enumKeys.map(g => g.toString());
         const checkboxes = values.map(value => {
-            const check = selectedValues.includes(_model_gender__WEBPACK_IMPORTED_MODULE_15__.Gender[value]);
-            return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_9__["default"], { control: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_6__["default"], { checked: check, onChange: () => { this.props.controlStore.setGenders(_model_gender__WEBPACK_IMPORTED_MODULE_15__.Gender[value]); } }), label: value }, this.key++));
+            const check = selectedValues.includes(_model_gender__WEBPACK_IMPORTED_MODULE_14__.Gender[value]);
+            return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_8__["default"], { control: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_5__["default"], { checked: check, onChange: () => { this.props.controlStore.setGenders(_model_gender__WEBPACK_IMPORTED_MODULE_14__.Gender[value]); } }), label: value }, this.key++));
         });
         return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { children: checkboxes }));
     }
     get sliderForCompanySize() {
         const values = this.props.controlStore.companySizeValues;
-        const slider = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_8__["default"], { style: { width: '90%', minWidth: '200px' }, value: this.props.controlStore?.companySize, min: values.min, step: values.steps, max: values.max, onChange: this.handleChangeForCompanySize.bind(this), valueLabelDisplay: "auto", "aria-labelledby": "non-linear-slider" }));
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_16__["default"], { title: 'Company Size', controlComponent: slider, isEnabled: this.props.controlStore.companySizeFilterActive, enable: (event, value) => { this.props.controlStore.setCompanySizeFilterActive(value); } }));
+        const slider = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__["default"], { style: { width: '90%', minWidth: '200px' }, value: this.props.controlStore?.companySize, min: values.min, step: values.steps, max: values.max, onChange: this.handleChangeForCompanySize.bind(this), valueLabelDisplay: "auto", "aria-labelledby": "non-linear-slider" }));
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_15__["default"], { title: 'Company Size', controlComponent: slider, isEnabled: this.props.controlStore.companySizeFilterActive, enable: (event, value) => { this.props.controlStore.setCompanySizeFilterActive(value); } }));
     }
     handleChangesForCountries(event, value) {
         this.props.controlStore.setCountries(value);
@@ -406139,10 +406109,10 @@ class ControlPane extends react__WEBPACK_IMPORTED_MODULE_1__.Component {
         });
     };
     get sessionButtons() {
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_material_ui_core__WEBPACK_IMPORTED_MODULE_2__["default"], { style: { display: 'flex', gap: '8px', marginTop: '16px', flexWrap: 'wrap' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_10__["default"], { variant: "contained", size: "small", onClick: this.handleSaveToSession, children: "Save to Session" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_10__["default"], { variant: "contained", size: "small", onClick: this.handleLoadFromSession, children: "Load from Session" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_10__["default"], { variant: "contained", size: "small", onClick: this.handleDownloadJson, children: "Download JSON" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_10__["default"], { variant: "contained", size: "small", onClick: this.handleUploadJson, children: "Upload JSON" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_10__["default"], { variant: "contained", size: "small", onClick: this.handleShareLink, children: "Share Link" })] }));
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_material_ui_core__WEBPACK_IMPORTED_MODULE_2__["default"], { style: { display: 'flex', gap: '8px', marginTop: '16px', flexWrap: 'wrap' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_9__["default"], { variant: "contained", size: "small", onClick: this.handleSaveToSession, children: "Save to Session" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_9__["default"], { variant: "contained", size: "small", onClick: this.handleLoadFromSession, children: "Load from Session" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_9__["default"], { variant: "contained", size: "small", onClick: this.handleDownloadJson, children: "Download JSON" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_9__["default"], { variant: "contained", size: "small", onClick: this.handleUploadJson, children: "Upload JSON" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_9__["default"], { variant: "contained", size: "small", onClick: this.handleShareLink, children: "Share Link" })] }));
     }
 }
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,mobx_react__WEBPACK_IMPORTED_MODULE_11__.inject)(..._stores_storeHelper__WEBPACK_IMPORTED_MODULE_12__.injectClause)((0,mobx_react__WEBPACK_IMPORTED_MODULE_11__.observer)(ControlPane)));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,mobx_react__WEBPACK_IMPORTED_MODULE_10__.inject)(..._stores_storeHelper__WEBPACK_IMPORTED_MODULE_11__.injectClause)((0,mobx_react__WEBPACK_IMPORTED_MODULE_10__.observer)(ControlPane)));
 
 
 /***/ },
@@ -406217,6 +406187,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _mui_x_data_grid__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @mui/x-data-grid */ "./node_modules/@mui/x-data-grid/DataGrid/DataGrid.js");
 /* harmony import */ var react_loader_spinner__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react-loader-spinner */ "./node_modules/react-loader-spinner/dist/index.js");
 /* harmony import */ var _stores_entryStore__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../stores/entryStore */ "./src/stores/entryStore.ts");
+/* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/FormLabel/FormLabel.js");
+
 
 
 
@@ -406280,7 +406252,7 @@ const RawDataTable = (0,mobx_react__WEBPACK_IMPORTED_MODULE_1__.observer)(() => 
             return formatValueForDisplay(value);
         }
     }));
-    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { padding: '20px', height: '100%', display: 'flex', flexDirection: 'column' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("h2", { children: "Raw Data from CSV" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { flex: 1, minHeight: 0 }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_x_data_grid__WEBPACK_IMPORTED_MODULE_2__.DataGrid, { rows: rowsWithId, columns: columns, pageSizeOptions: [10, 25, 50, 100], pageSize: 10, checkboxSelection: true, disableSelectionOnClick: true }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { marginTop: '10px', fontSize: '0.9em', color: '#666' }, children: ["Showing ", rawData.length, " raw entries"] })] }));
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { padding: '20px', height: '100%', display: 'flex', flexDirection: 'column' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("h2", { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_5__["default"], { children: "Raw Data from CSV" }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { flex: 1, minHeight: 0 }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_x_data_grid__WEBPACK_IMPORTED_MODULE_2__.DataGrid, { rows: rowsWithId, columns: columns, pageSizeOptions: [10, 25, 50, 100], pageSize: 10, checkboxSelection: true, disableSelectionOnClick: true }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { marginTop: '10px', fontSize: '0.9em', color: '#666' }, children: ["Showing ", rawData.length, " raw entries"] })] }));
 });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (RawDataTable);
 
@@ -407530,8 +407502,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var papaparse__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! papaparse */ "./node_modules/papaparse/papaparse.min.js");
 /* harmony import */ var papaparse__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(papaparse__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _mapper_CsvRowMapper__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../mapper/CsvRowMapper */ "./src/mapper/CsvRowMapper.ts");
-/* harmony import */ var _model_constantMetaData__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../model/constantMetaData */ "./src/model/constantMetaData.ts");
+/* harmony import */ var mobx__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! mobx */ "./node_modules/mobx/dist/mobx.esm.js");
+/* harmony import */ var _mapper_CsvRowMapper__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../mapper/CsvRowMapper */ "./src/mapper/CsvRowMapper.ts");
+/* harmony import */ var _model_constantMetaData__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../model/constantMetaData */ "./src/model/constantMetaData.ts");
+
 
 
 
@@ -407556,34 +407530,44 @@ Uncaught DataCloneError: Failed to execute 'postMessage' on 'Worker': function (
         }
     };
     startWorkerForYear(resultsetForYear, consumer, completed) {
+        let validRows = [];
+        let invalidCount = 0;
+        let totalCount = 0;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const config = {
             ...StackOverflowCsvReader.BASIC_CONFIG,
             step: (row) => {
-                this.handleRow(row, resultsetForYear);
+                const mapper = new _mapper_CsvRowMapper__WEBPACK_IMPORTED_MODULE_2__.CsvRowMapper(resultsetForYear.year);
+                const rowEntry = mapper.map(row);
+                if (rowEntry.isValid) {
+                    validRows.push(rowEntry);
+                }
+                else {
+                    invalidCount++;
+                }
+                totalCount++;
                 consumer(row);
             },
             complete: () => {
+                // Batch update observables once per chunk within a transaction
+                (0,mobx__WEBPACK_IMPORTED_MODULE_1__.transaction)(() => {
+                    // Replace array entirely to avoid multiple MobX notifications
+                    resultsetForYear.resultSet = [...resultsetForYear.resultSet, ...validRows];
+                    resultsetForYear.invalidEntryCount += invalidCount;
+                    resultsetForYear.overallEntryCount += totalCount;
+                });
+                validRows = [];
+                invalidCount = 0;
+                totalCount = 0;
                 this.handleNextChunk(resultsetForYear, config);
                 completed();
             }
         };
         const year = resultsetForYear.year.toString();
-        const chunkCountForYear = _model_constantMetaData__WEBPACK_IMPORTED_MODULE_2__.CHUNK_COUNT_PER_YEAR[year];
+        const chunkCountForYear = _model_constantMetaData__WEBPACK_IMPORTED_MODULE_3__.CHUNK_COUNT_PER_YEAR[year];
         resultsetForYear.chunksParsed = 0;
         resultsetForYear.chunksAvailable = chunkCountForYear;
         this.handleNextChunk(resultsetForYear, config);
-    }
-    handleRow(csvRowRaw, resultsetForYear) {
-        const mapper = new _mapper_CsvRowMapper__WEBPACK_IMPORTED_MODULE_1__.CsvRowMapper(resultsetForYear.year);
-        const rowEntry = mapper.map(csvRowRaw);
-        if (rowEntry.isValid) {
-            resultsetForYear.resultSet.push(rowEntry);
-        }
-        else {
-            resultsetForYear.invalidEntryCount++;
-        }
-        resultsetForYear.overallEntryCount++;
     }
     handleNextChunk(resultsetForYear, config) {
         resultsetForYear.chunksParsed++;
@@ -407835,6 +407819,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _services_stackOverflowCsvReader__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../services/stackOverflowCsvReader */ "./src/services/stackOverflowCsvReader.ts");
 /* harmony import */ var _model_resultSetForYear__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../model/resultSetForYear */ "./src/model/resultSetForYear.ts");
 /* harmony import */ var _model_constantMetaData__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../model/constantMetaData */ "./src/model/constantMetaData.ts");
+/* harmony import */ var _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../mapper/AbstractCsvRowMapper */ "./src/mapper/AbstractCsvRowMapper.ts");
+
 
 
 
@@ -407886,8 +407872,19 @@ class EntryStore {
     initParser(year) {
         // TODO: Implement
         // this.reader.cancleCurrentloading
+        // Clear previous data to prevent memory accumulation
+        this.parsedData = new _model_resultSetForYear__WEBPACK_IMPORTED_MODULE_3__["default"]();
+        _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_5__.AbstractCsvRowMapper.clearDistinctValues();
+        // Clear all cached year data - we only keep the currently loading year
+        for (const y of _model_constantMetaData__WEBPACK_IMPORTED_MODULE_4__.AVAILABLE_YEARS) {
+            this.parsedDataByYear[parseInt(y)].resultSet = [];
+            this.parsedDataByYear[parseInt(y)].invalidEntryCount = 0;
+            this.parsedDataByYear[parseInt(y)].overallEntryCount = 0;
+        }
         const resultsetForYear = new _model_resultSetForYear__WEBPACK_IMPORTED_MODULE_3__["default"]();
         resultsetForYear.year = parseInt(year);
+        // Store in map first so mutations trigger reactivity
+        this.parsedDataByYear[resultsetForYear.year] = resultsetForYear;
         this.reader.startWorkerForYear(resultsetForYear, this.addRow, () => {
             const parsed = resultsetForYear.chunksParsed;
             const available = resultsetForYear.chunksAvailable;
@@ -407897,7 +407894,7 @@ class EntryStore {
             console.log('Finished parsing a chunk for year: ' + year + '\n'
                 + '\t chunks parsed ' + parsed + ' chunks to go ' + available + '\n '
                 + '\t entries parsed ' + overallEntryCount + ' invalid ones ' + invalidEntryCount + ' ');
-            this.setDataForYear(resultsetForYear);
+            this.parsedData.resultSet = resultsetForYear.resultSet;
         });
     }
     addRow(csvRowRaw) {
@@ -407949,36 +407946,38 @@ __webpack_require__.r(__webpack_exports__);
 
 class UiStore {
     filteredData = {};
-    static renderPeriodInMs = 3000;
     controlStore;
     entryStore;
-    timeoutId;
-    dataChanged = true;
+    reactionDisposer = null;
+    lastFilterUpdateTime = 0;
+    static minUpdateIntervalMs = 500;
     constructor(controlStore, entryStore) {
         this.controlStore = controlStore;
         this.entryStore = entryStore;
         (0,mobx__WEBPACK_IMPORTED_MODULE_0__.makeObservable)(this, {
             filteredData: mobx__WEBPACK_IMPORTED_MODULE_0__.observable,
-            udpateFilteredData: mobx__WEBPACK_IMPORTED_MODULE_0__.action,
+            updateFilteredData: mobx__WEBPACK_IMPORTED_MODULE_0__.action,
         });
-        this.initStore();
-        this.resetRenderSchedule();
+        this.initReactions();
     }
-    initStore() {
-        (0,mobx__WEBPACK_IMPORTED_MODULE_0__.observe)(this.entryStore.parsedDataByYear, this.handleChanges.bind(this));
+    initReactions() {
+        // Create a debounced reaction that only updates when overallEntryCount changes
+        this.reactionDisposer = (0,mobx__WEBPACK_IMPORTED_MODULE_0__.reaction)(() => {
+            // Return a summary that only changes when counts change
+            const years = Object.keys(this.entryStore.parsedDataByYear);
+            return years.map(y => ({
+                year: parseInt(y, 10),
+                overallEntryCount: this.entryStore.parsedDataByYear[parseInt(y, 10)].overallEntryCount
+            }));
+        }, () => {
+            const now = Date.now();
+            if (now - this.lastFilterUpdateTime > UiStore.minUpdateIntervalMs) {
+                this.lastFilterUpdateTime = now;
+                this.updateFilteredData();
+            }
+        }, { fireImmediately: true });
     }
-    handleChanges() {
-        //
-        this.dataChanged = true;
-        this.resetRenderSchedule();
-    }
-    resetRenderSchedule() {
-        window.clearInterval(this.timeoutId);
-        this.timeoutId = window.setInterval(this.udpateFilteredData.bind(this), UiStore.renderPeriodInMs);
-    }
-    // TODO: Maybe do in worker? https://medium.com/launch-school/what-are-web-workers-4a0e1ded7a67
-    udpateFilteredData() {
-        this.dataChanged = false;
+    updateFilteredData = () => {
         Object.keys(this.entryStore.parsedDataByYear).forEach((yearStr) => {
             const year = parseInt(yearStr, 10);
             const parsedData = this.entryStore.parsedDataByYear[year];
@@ -407986,6 +407985,11 @@ class UiStore {
             this.filteredData[year] = parsedData.resultSet
                 .filter(controlState.filterByState.bind(controlState));
         });
+    };
+    destroy() {
+        if (this.reactionDisposer) {
+            this.reactionDisposer();
+        }
     }
 }
 const uiStore = new UiStore(_controlStore__WEBPACK_IMPORTED_MODULE_1__["default"], _entryStore__WEBPACK_IMPORTED_MODULE_2__["default"]);
@@ -411018,10 +411022,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_app__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./components/app */ "./src/components/app.tsx");
 /* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/styles/esm/ThemeProvider/ThemeProvider.js");
 /* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/styles/createTheme.js");
+/* harmony import */ var mobx__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! mobx */ "./node_modules/mobx/dist/mobx.esm.js");
 
 
 
 
+
+// Disable strict mode for better performance with frequent observable updates
+(0,mobx__WEBPACK_IMPORTED_MODULE_5__.configure)({ enforceActions: 'never' });
 const theme = (0,_material_ui_core__WEBPACK_IMPORTED_MODULE_4__["default"])({
     palette: {
         primary: {

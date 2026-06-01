@@ -6,6 +6,7 @@ import { ParseStepResult } from 'papaparse'
 import CsvRow from '../model/csvRow'
 import ResultSetForYear from '../model/resultSetForYear'
 import { AVAILABLE_YEARS } from '../model/constantMetaData'
+import { AbstractCsvRowMapper } from '../mapper/AbstractCsvRowMapper'
 
 // https://devlinduldulao.pro/mobx-in-a-nutshell/
 export class EntryStore {
@@ -62,8 +63,20 @@ export class EntryStore {
         // TODO: Implement
         // this.reader.cancleCurrentloading
 
+        // Clear previous data to prevent memory accumulation
+        this.parsedData = new ResultSetForYear()
+        AbstractCsvRowMapper.clearDistinctValues()
+        // Clear all cached year data - we only keep the currently loading year
+        for (const y of AVAILABLE_YEARS) {
+            this.parsedDataByYear[parseInt(y)].resultSet = []
+            this.parsedDataByYear[parseInt(y)].invalidEntryCount = 0
+            this.parsedDataByYear[parseInt(y)].overallEntryCount = 0
+        }
+        
         const resultsetForYear = new ResultSetForYear()
         resultsetForYear.year = parseInt(year)
+        // Store in map first so mutations trigger reactivity
+        this.parsedDataByYear[resultsetForYear.year] = resultsetForYear
         this.reader.startWorkerForYear(
             resultsetForYear,
             this.addRow,
@@ -76,7 +89,7 @@ export class EntryStore {
                 console.log('Finished parsing a chunk for year: ' + year + '\n'
                         + '\t chunks parsed ' + parsed + ' chunks to go ' + available + '\n '
                         + '\t entries parsed ' + overallEntryCount + ' invalid ones ' + invalidEntryCount + ' ')
-                this.setDataForYear(resultsetForYear)
+                this.parsedData.resultSet = resultsetForYear.resultSet
             }
         )
     }

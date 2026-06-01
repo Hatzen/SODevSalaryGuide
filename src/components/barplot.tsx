@@ -6,45 +6,67 @@ import { injectClause, StoreProps } from '../stores/storeHelper'
 
 class BarPlot extends React.Component<StoreProps> {
 
+    plotRef: React.RefObject<HTMLDivElement>
+
+    constructor(props: StoreProps) {
+        super(props)
+        this.plotRef = React.createRef()
+    }
+
     render(): JSX.Element {
         return (
-            <div style={{position: 'absolute', top: 0, bottom: 0, left:0, right: 0, overflow: 'auto'}}>
+            <div ref={this.plotRef} style={{position: 'absolute', top: 0, bottom: 0, left:0, right: 0, overflow: 'auto'}}>
                  <Plot
                      data={this.data}
                      layout={this.layout}
                      style={{width: '100%', height: '100%'}}
+                     onInitialized={this.handleInit}
+                     onUpdate={this.handleResize}
                  />
             </div>
         )
     }
 
-    private get data(): Array<Record<string, unknown>> { // TODO: Plotty Data
-        const selectedYearStr = this.props.controlStore!.controlState.selectedYear;
-        const selectedYearNum = parseInt(selectedYearStr, 10);
+    componentDidUpdate(): void {
+        this.handleResize()
+    }
 
-        const resultList = this.props.entryStore!.parsedDataByYear;
-        const filteredList = this.props.uiStore!.filteredData;
+    handleInit = (): void => {
+        setTimeout(this.handleResize, 0)
+    }
 
-        // Get the data for the selected year from entryStore.parsedDataByYear (by number key)
-        const yearEntrySet = resultList[selectedYearNum];
-        // Get the data for the selected year from uiStore.filteredData (by string key)
-        const filteredYearList = filteredList[selectedYearNum];
+    handleResize = (): void => {
+        if (this.plotRef.current) {
+            const plotlyEl = this.plotRef.current.querySelector('.js-plotly-plot') as HTMLElement & { Plotly?: { relayout: (el: HTMLElement, layout: Partial<Layout>) => void } }
+            if (plotlyEl && plotlyEl.Plotly) {
+                plotlyEl.Plotly.relayout(plotlyEl, { autosize: true })
+            }
+        }
+    }
 
-        // If we don't have data for the selected year, return empty traces?
+    private get data(): Data[] {
+        const selectedYearStr = this.props.controlStore!.controlState.selectedYear
+        const selectedYearNum = parseInt(selectedYearStr, 10)
+
+        const resultList = this.props.entryStore!.parsedDataByYear
+        const filteredList = this.props.uiStore!.filteredData
+
+        const yearEntrySet = resultList[selectedYearNum]
+        const filteredYearList = filteredList[selectedYearNum]
+
         if (!yearEntrySet || !filteredYearList) {
-            return [];
+            return []
         }
 
-        const overallNumbers = [yearEntrySet.overallEntryCount];
-        const invalidNumbers = [yearEntrySet.invalidEntryCount];
-        const matchingFilterNumbers = [filteredYearList.length];
+        const overallNumbers = [yearEntrySet.overallEntryCount]
+        const invalidNumbers = [yearEntrySet.invalidEntryCount]
+        const matchingFilterNumbers = [filteredYearList.length]
 
-        const traces: Array<Record<string, unknown>> = [
+        return [
             { y: matchingFilterNumbers, name: 'matching filter', type: 'bar' },
             { y: overallNumbers, name: 'allParticipations', type: 'bar' },
             { y: invalidNumbers, name: 'considered invalid', type: 'bar' },
-        ];
-        return traces;
+        ]
     }
     
     get layout(): Partial<Layout> {

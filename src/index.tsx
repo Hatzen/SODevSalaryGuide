@@ -2,6 +2,10 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import App from './components/app'
 import { createTheme , MuiThemeProvider } from '@material-ui/core'
+import { configure } from 'mobx'
+
+// Disable strict mode for better performance with frequent observable updates
+configure({ enforceActions: 'never' })
 
 const theme = createTheme ({
     palette: {

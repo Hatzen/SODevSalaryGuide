@@ -1,9 +1,10 @@
 import Papa, { ParseStepResult } from 'papaparse'
-import { AbstractCsvRowMapper } from '../mapper/AbstractCsvRowMapper'
+import { transaction } from 'mobx'
 import { CsvRowMapper } from '../mapper/CsvRowMapper'
 import { CHUNK_COUNT_PER_YEAR } from '../model/constantMetaData'
 import CsvRow from '../model/csvRow'
 import ResultSetForYear from '../model/resultSetForYear'
+import SurveyEntry from '../model/surveyEntry'
 
 export default class StackOverflowCsvReader {
 
@@ -30,14 +31,36 @@ Uncaught DataCloneError: Failed to execute 'postMessage' on 'Worker': function (
     }
 
     startWorkerForYear (resultsetForYear: ResultSetForYear, consumer: (row: Papa.ParseStepResult<CsvRow>) => void, completed: () => void): void {
+        let validRows: SurveyEntry[] = []
+        let invalidCount = 0
+        let totalCount = 0
+        
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const config = {
             ...StackOverflowCsvReader.BASIC_CONFIG,
             step: (row: Papa.ParseStepResult<CsvRow>) => {
-                this.handleRow(row, resultsetForYear)
+                const mapper = new CsvRowMapper(resultsetForYear.year)
+                const rowEntry = mapper.map(row)
+                if (rowEntry.isValid) {
+                    validRows.push(rowEntry)
+                } else {
+                    invalidCount++
+                }
+                totalCount++
                 consumer(row)
             },
             complete: () => {
+                // Batch update observables once per chunk within a transaction
+                transaction(() => {
+                    // Replace array entirely to avoid multiple MobX notifications
+                    resultsetForYear.resultSet = [...resultsetForYear.resultSet, ...validRows]
+                    resultsetForYear.invalidEntryCount += invalidCount
+                    resultsetForYear.overallEntryCount += totalCount
+                })
+                validRows = []
+                invalidCount = 0
+                totalCount = 0
+                
                 this.handleNextChunk(resultsetForYear, config)
                 completed()
             }
@@ -48,17 +71,6 @@ Uncaught DataCloneError: Failed to execute 'postMessage' on 'Worker': function (
         resultsetForYear.chunksAvailable = chunkCountForYear
         
         this.handleNextChunk(resultsetForYear, config)
-    }
-
-    private handleRow (csvRowRaw: ParseStepResult<CsvRow>, resultsetForYear: ResultSetForYear): void {
-        const mapper = new CsvRowMapper(resultsetForYear.year)
-        const rowEntry = mapper.map(csvRowRaw)
-        if (rowEntry.isValid) {
-            resultsetForYear.resultSet.push(rowEntry)
-        } else {
-            resultsetForYear.invalidEntryCount++
-        }
-        resultsetForYear.overallEntryCount++
     }
 
     private handleNextChunk (resultsetForYear: ResultSetForYear, config: Papa.ParseRemoteConfig<CsvRow>): void {
