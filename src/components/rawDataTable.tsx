@@ -4,6 +4,7 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid'
 import Loader from 'react-loader-spinner'
 import entryStore from '../stores/entryStore'
 import SurveyEntry from '../model/surveyEntry'
+import { FormLabel } from '@material-ui/core'
 
 // Helper function to format values for display
 const formatValueForDisplay = (value: any): string => {
@@ -80,9 +81,9 @@ const RawDataTable = observer(() => {
 
     return (
         <div style={{padding: '20px', height: '100%', display: 'flex', flexDirection: 'column'}}>
-            <h2>Raw Data from CSV</h2>
+            <h2><FormLabel>Raw Data from CSV</FormLabel></h2>
             <div style={{flex: 1, minHeight: 0}}>
-<DataGrid
+              <DataGrid
                      rows={rowsWithId}
                      columns={columns}
                      pageSizeOptions={[10, 25, 50, 100]}
