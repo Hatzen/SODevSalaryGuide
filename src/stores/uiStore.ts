@@ -46,7 +46,8 @@ export class UiStore {
                     countries: cs.countries,
                     degreeFilterActive: cs.degreeFilterActive,
                     degrees: cs.degrees,
-                    companySizeFilterActive: cs.companySizeFilterActive
+                    companySizeFilterActive: cs.companySizeFilterActive,
+                    enableSalaryFilter: cs.enableSalaryFilter
                 }))
             },
             () => {

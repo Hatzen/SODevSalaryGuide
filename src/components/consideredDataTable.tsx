@@ -53,7 +53,7 @@ const ConsideredDataTable = observer(() => {
     if (consideredData.length === 0) {
         return (
             <div style={{textAlign: 'center', padding: '40px'}}>
-                <Loader type="ThreeDots" height={80} width={80} color="#007bff" />
+                <Loader type="ThreeDots" height={80} width={80} color="#F48024" />
                 <p>Loading considered data...</p>
             </div>
         );

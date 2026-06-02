@@ -13,13 +13,15 @@ export class ControlStore {
     countries: string[] = []
     degrees: string[] = []
     
-    gendersFilterActive = false
+gendersFilterActive = false
     abilitiesFilterActive = false
     expirienceFilterActive = false
-    
+     
     companySizeFilterActive = false
     degreeFilterActive = false
     countriesFilterActive = false
+
+    enableSalaryFilter = true
 
     pendingState: any = null
 
@@ -48,6 +50,7 @@ export class ControlStore {
         const companySizeFilterActive = this.companySizeFilterActive
         const degreeFilterActive = this.degreeFilterActive
         const countriesFilterActive = this.countriesFilterActive
+        const enableSalaryFilter = this.enableSalaryFilter
 
         return new ControlState({
             selectedYear,
@@ -62,7 +65,8 @@ export class ControlStore {
             expirienceFilterActive,
             companySizeFilterActive,
             degreeFilterActive,
-            countriesFilterActive
+            countriesFilterActive,
+            enableSalaryFilter
         } as ControlState)
     }
 
@@ -143,6 +147,10 @@ export class ControlStore {
         this.countriesFilterActive = countriesFilterActive
     }
 
+    setEnableSalaryFilter(enableSalaryFilter: boolean): void {
+        this.enableSalaryFilter = enableSalaryFilter
+    }
+
     loadPendingState(): void {
         if (this.pendingState) {
             const state = this.pendingState
@@ -160,6 +168,7 @@ export class ControlStore {
             if (state.companySizeFilterActive !== undefined) this.companySizeFilterActive = state.companySizeFilterActive
             if (state.degreeFilterActive !== undefined) this.degreeFilterActive = state.degreeFilterActive
             if (state.countriesFilterActive !== undefined) this.countriesFilterActive = state.countriesFilterActive
+            if (state.enableSalaryFilter !== undefined) this.enableSalaryFilter = state.enableSalaryFilter
         }
     }
 
@@ -177,7 +186,8 @@ export class ControlStore {
             expirienceFilterActive: this.expirienceFilterActive,
             companySizeFilterActive: this.companySizeFilterActive,
             degreeFilterActive: this.degreeFilterActive,
-            countriesFilterActive: this.countriesFilterActive
+            countriesFilterActive: this.countriesFilterActive,
+            enableSalaryFilter: this.enableSalaryFilter
         }
     }
 
@@ -197,6 +207,7 @@ export class ControlStore {
         if (state.companySizeFilterActive !== undefined) this.companySizeFilterActive = state.companySizeFilterActive
         if (state.degreeFilterActive !== undefined) this.degreeFilterActive = state.degreeFilterActive
         if (state.countriesFilterActive !== undefined) this.countriesFilterActive = state.countriesFilterActive
+        if (state.enableSalaryFilter !== undefined) this.enableSalaryFilter = state.enableSalaryFilter
     }
 }
 

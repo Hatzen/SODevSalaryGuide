@@ -10,26 +10,36 @@ export default class ControlState {
     countries: string[] = []
     degrees: string[] = []
 
-    gendersFilterActive = false
+gendersFilterActive = false
     abilitiesFilterActive = false
     expirienceFilterActive = false
-    
+     
     companySizeFilterActive = false
     degreeFilterActive = false
     countriesFilterActive = false
-    
+
+    enableSalaryFilter = true
 
     constructor (partial: ControlState) {
         Object.assign(this, partial)
     }
 
     filterByState(entry: SurveyEntry): boolean {
-        return this.filterByExpierience(entry)
+        return this.filterBySalary(entry)
+            && this.filterByExpierience(entry)
             && this.filterByAbilities(entry)
             && this.filterByGender(entry)
             && this.filterByCompanySize(entry)
             && this.filterByCountries(entry)
             && this.filterByDegree(entry)
+    }
+
+    private filterBySalary(entry: SurveyEntry): boolean {
+        if (!this.enableSalaryFilter) {
+            return true
+        }
+        const salary = entry.salary
+        return salary >= 10000 && salary <= 250000
     }
 
     private filterByAbilities(entry: SurveyEntry): boolean {
