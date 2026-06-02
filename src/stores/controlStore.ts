@@ -9,7 +9,7 @@ export class ControlStore {
     genders: Gender[] = [Gender.MALE, Gender.FEMALE, Gender.OTHER]
     abilities: string[] = []
 
-    companySize: [min: number, max:number] = [1, 100000]
+    companySize: [min: number | null, max: number | null] = [null, null]
     countries: string[] = []
     degrees: string[] = []
     
@@ -103,8 +103,12 @@ export class ControlStore {
         this.abilities = abilities
     }
     
-    setCompanySize(values: number[]): void {
-        this.companySize = [values[0], values[1]]
+    setCompanySizeFromMin(min: number | null): void {
+        this.companySize = [min, this.companySize[1]]
+    }
+
+    setCompanySizeFromMax(max: number | null): void {
+        this.companySize = [this.companySize[0], max]
     }
 
     setCountries(countries: string[]): void {

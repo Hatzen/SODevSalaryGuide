@@ -28,14 +28,25 @@ export class UiStore {
     }
 
     private initReactions(): void {
-        // Create a debounced reaction that only updates when overallEntryCount changes
+        // Create a debounced reaction that updates when data or filter state changes
         this.reactionDisposer = reaction(
             () => {
-                // Return a summary that only changes when counts change
                 const years = Object.keys(this.entryStore.parsedDataByYear)
+                const cs = this.controlStore
                 return years.map(y => ({
                     year: parseInt(y, 10),
-                    overallEntryCount: this.entryStore.parsedDataByYear[parseInt(y, 10)].overallEntryCount
+                    overallEntryCount: this.entryStore.parsedDataByYear[parseInt(y, 10)].overallEntryCount,
+                    expirienceInYears: cs.expirienceInYears,
+                    companySize: cs.companySize,
+                    gendersFilterActive: cs.gendersFilterActive,
+                    genders: cs.genders,
+                    abilitiesFilterActive: cs.abilitiesFilterActive,
+                    abilities: cs.abilities,
+                    countriesFilterActive: cs.countriesFilterActive,
+                    countries: cs.countries,
+                    degreeFilterActive: cs.degreeFilterActive,
+                    degrees: cs.degrees,
+                    companySizeFilterActive: cs.companySizeFilterActive
                 }))
             },
             () => {

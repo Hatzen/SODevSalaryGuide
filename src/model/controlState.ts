@@ -6,7 +6,7 @@ export default class ControlState {
     expirienceInYears!: [min: number, max:number]
     genders!: Gender[]
     abilities!: string[]
-    companySize: [min: number, max:number] = [1, 100000]
+    companySize: [min: number | null, max: number | null] = [null, null]
     countries: string[] = []
     degrees: string[] = []
 
@@ -83,11 +83,18 @@ export default class ControlState {
         }
         const companySize = entry.companySize
         if (companySize != null) {
-            const max = this.companySize[1]
-            const min = this.companySize[0]
-            if (companySize.max <= max
-                || companySize.min >= min) {
+            const filterMin = this.companySize[0]
+            const filterMax = this.companySize[1]
+            const entryMin = companySize.min
+            const entryMax = companySize.max
+            if (filterMin === null && filterMax === null) {
                 return true
+            } else if (filterMin !== null && filterMax !== null) {
+                return entryMax >= filterMin && entryMin <= filterMax
+            } else if (filterMin !== null && filterMax === null) {
+                return entryMax >= filterMin
+            } else if (filterMin === null && filterMax !== null) {
+                return entryMin <= filterMax
             }
         }
         return false

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Checkbox, FormGroup, FormControl, FormControlLabel, Slider, FormLabel, Box, TextField, Button } from '@material-ui/core'
+import { Checkbox, FormGroup, FormControl, FormControlLabel, Slider, Box, TextField, Button } from '@material-ui/core'
 import { inject, observer } from 'mobx-react'
 import { injectClause, StoreProps } from '../stores/storeHelper'
 import Autocomplete from '@mui/material/Autocomplete'
@@ -59,7 +59,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
                             {this.slider}
                             {this.gender}
                             {this.abilities}
-                            {this.sliderForCompanySize}
+                            {this.companySizeInputs}
                             {this.countries}
                             {this.degrees}
                         </FormGroup>
@@ -264,27 +264,46 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
         )
     }
     
-    get sliderForCompanySize(): JSX.Element {
+    get companySizeInputs(): JSX.Element {
+        const currentMin = this.props.controlStore!.companySize[0]
+        const currentMax = this.props.controlStore!.companySize[1]
         const values = this.props.controlStore!.companySizeValues
-        const slider =
-            (
-                <Slider
-                    style={{ width: '90%', minWidth: '200px' }}
-                    value={this.props!.controlStore?.companySize}
-                    min={values.min}
-                    step={values.steps}
-                    max={values.max}
-                    onChange={this.handleChangeForCompanySize.bind(this)}
-                    valueLabelDisplay="auto"
-                    aria-labelledby="non-linear-slider"
+        const inputs = (
+            <div>
+                <TextField
+                    label="From"
+                    type="number"
+                    value={currentMin ?? ''}
+                    onChange={this.handleMinCompanySizeChange.bind(this)}
+                    inputProps={{ min: values.min, max: values.max, step: 1 }}
+                    style={{ width: 120 }}
                 />
-            )
+                <TextField
+                    label="To"
+                    type="number"
+                    value={currentMax ?? ''}
+                    onChange={this.handleMaxCompanySizeChange.bind(this)}
+                    inputProps={{ min: values.min, max: values.max, step: 1 }}
+                    style={{ width: 120 }}
+                />
+            </div>
+        )
         return (<ControlComponentWrapper
             title='Company Size'
-            controlComponent={slider}
+            controlComponent={inputs}
             isEnabled={this.props.controlStore!.companySizeFilterActive}
             enable={(event, value) => { this.props.controlStore!.setCompanySizeFilterActive(value)}}>
         </ControlComponentWrapper>)
+    }
+
+    handleMinCompanySizeChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+        const value = event.target.value === '' ? null : parseInt(event.target.value, 10)
+        this.props.controlStore!.setCompanySizeFromMin(value)
+    }
+
+    handleMaxCompanySizeChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+        const value = event.target.value === '' ? null : parseInt(event.target.value, 10)
+        this.props.controlStore!.setCompanySizeFromMax(value)
     }
 
     handleChangesForCountries(event: React.ChangeEvent<unknown>, value: string[]): void {
@@ -301,10 +320,6 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
 
     handleChange(event: React.ChangeEvent<unknown>, value: number | number[]): void {
         this.props.controlStore!.setExp(value as number[])
-    }
-    
-    handleChangeForCompanySize(event: React.ChangeEvent<unknown>, value: number | number[]): void {
-        this.props.controlStore!.setCompanySize(value as number[])
     }
 
     handleSaveToSession = (): void => {
