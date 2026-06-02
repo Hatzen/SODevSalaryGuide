@@ -9,17 +9,19 @@ export class ControlStore {
     genders: Gender[] = [Gender.MALE, Gender.FEMALE, Gender.OTHER]
     abilities: string[] = []
 
-    companySize: [min: number, max:number] = [1, 100000]
+    companySize: [min: number | null, max: number | null] = [null, null]
     countries: string[] = []
     degrees: string[] = []
     
-    gendersFilterActive = false
+gendersFilterActive = false
     abilitiesFilterActive = false
     expirienceFilterActive = false
-    
+     
     companySizeFilterActive = false
     degreeFilterActive = false
     countriesFilterActive = false
+
+    enableSalaryFilter = true
 
     pendingState: any = null
 
@@ -48,6 +50,7 @@ export class ControlStore {
         const companySizeFilterActive = this.companySizeFilterActive
         const degreeFilterActive = this.degreeFilterActive
         const countriesFilterActive = this.countriesFilterActive
+        const enableSalaryFilter = this.enableSalaryFilter
 
         return new ControlState({
             selectedYear,
@@ -62,7 +65,8 @@ export class ControlStore {
             expirienceFilterActive,
             companySizeFilterActive,
             degreeFilterActive,
-            countriesFilterActive
+            countriesFilterActive,
+            enableSalaryFilter
         } as ControlState)
     }
 
@@ -103,8 +107,12 @@ export class ControlStore {
         this.abilities = abilities
     }
     
-    setCompanySize(values: number[]): void {
-        this.companySize = [values[0], values[1]]
+    setCompanySizeFromMin(min: number | null): void {
+        this.companySize = [min, this.companySize[1]]
+    }
+
+    setCompanySizeFromMax(max: number | null): void {
+        this.companySize = [this.companySize[0], max]
     }
 
     setCountries(countries: string[]): void {
@@ -139,6 +147,10 @@ export class ControlStore {
         this.countriesFilterActive = countriesFilterActive
     }
 
+    setEnableSalaryFilter(enableSalaryFilter: boolean): void {
+        this.enableSalaryFilter = enableSalaryFilter
+    }
+
     loadPendingState(): void {
         if (this.pendingState) {
             const state = this.pendingState
@@ -156,6 +168,7 @@ export class ControlStore {
             if (state.companySizeFilterActive !== undefined) this.companySizeFilterActive = state.companySizeFilterActive
             if (state.degreeFilterActive !== undefined) this.degreeFilterActive = state.degreeFilterActive
             if (state.countriesFilterActive !== undefined) this.countriesFilterActive = state.countriesFilterActive
+            if (state.enableSalaryFilter !== undefined) this.enableSalaryFilter = state.enableSalaryFilter
         }
     }
 
@@ -173,7 +186,8 @@ export class ControlStore {
             expirienceFilterActive: this.expirienceFilterActive,
             companySizeFilterActive: this.companySizeFilterActive,
             degreeFilterActive: this.degreeFilterActive,
-            countriesFilterActive: this.countriesFilterActive
+            countriesFilterActive: this.countriesFilterActive,
+            enableSalaryFilter: this.enableSalaryFilter
         }
     }
 
@@ -193,6 +207,7 @@ export class ControlStore {
         if (state.companySizeFilterActive !== undefined) this.companySizeFilterActive = state.companySizeFilterActive
         if (state.degreeFilterActive !== undefined) this.degreeFilterActive = state.degreeFilterActive
         if (state.countriesFilterActive !== undefined) this.countriesFilterActive = state.countriesFilterActive
+        if (state.enableSalaryFilter !== undefined) this.enableSalaryFilter = state.enableSalaryFilter
     }
 }
 

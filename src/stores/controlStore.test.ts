@@ -11,7 +11,7 @@ describe('ControlStore', () => {
         controlStore.setDegrees([])
         controlStore.genders = []
         controlStore.expirienceInYears = [4, 20]
-        controlStore.companySize = [1, 100000]
+        controlStore.companySize = [null, null]
     })
 
     describe('getSessionState and loadFromSessionState', () => {

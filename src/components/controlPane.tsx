@@ -1,5 +1,8 @@
 import React from 'react'
-import { Checkbox, FormGroup, FormControl, FormControlLabel, Slider, FormLabel, Box, TextField, Button } from '@material-ui/core'
+import { Checkbox, FormGroup, FormControl, FormControlLabel, Slider, Box, TextField, Button, Typography, IconButton } from '@material-ui/core'
+import MoreVertIcon from '@material-ui/icons/MoreVert'
+import Menu from '@material-ui/core/Menu'
+import MenuItem from '@material-ui/core/MenuItem'
 import { inject, observer } from 'mobx-react'
 import { injectClause, StoreProps } from '../stores/storeHelper'
 import Autocomplete from '@mui/material/Autocomplete'
@@ -10,6 +13,7 @@ import { AVAILABLE_YEARS } from '../model/constantMetaData'
 
 interface ControlPaneState {
     refreshKey: number
+    anchorEl: HTMLElement | null
 }
 
 class ControlPane extends React.Component<StoreProps, ControlPaneState> {
@@ -19,7 +23,8 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
     constructor(props: StoreProps) {
         super(props)
         this.state = {
-            refreshKey: 0
+            refreshKey: 0,
+            anchorEl: null
         }
     }
 
@@ -52,21 +57,61 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
     render(): JSX.Element {
         return (
             <div key={this.state.refreshKey} style={{padding: 50, overflow: 'scroll', position: 'relative', top: 0, left: 0, right: 0, maxHeight: 'calc(100% - 100px)'}}>
+                {this.headerWithMenu}
                 <Box sx={{ display: 'flex' }}>
                     <FormControl focused={false} component="fieldset" variant="standard">
                         <FormGroup key={1}>
                             {this.years}
-                            {this.slider}
                             {this.gender}
+                            {this.slider}
                             {this.abilities}
-                            {this.sliderForCompanySize}
+                            {this.companySizeInputs}
                             {this.countries}
                             {this.degrees}
+                            {this.salaryFilter}
                         </FormGroup>
                     </FormControl>
                 </Box>
-                {this.sessionButtons}
             </div>
+        )
+    }
+
+    get headerWithMenu(): JSX.Element {
+        return (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                <Typography variant="h6" style={{ fontFamily: 'Roboto, Helvetica, Arial, sans-serif' }}>
+                    Filters
+                </Typography>
+                <IconButton onClick={this.handleMenuClick.bind(this)} size="small">
+                    <MoreVertIcon />
+                </IconButton>
+                {this.menu}
+            </div>
+        )
+    }
+
+    handleMenuClick = (event: React.MouseEvent<HTMLElement>): void => {
+        this.setState({ anchorEl: event.currentTarget })
+    }
+
+    handleMenuClose = (): void => {
+        this.setState({ anchorEl: null })
+    }
+
+    get menu(): JSX.Element | null {
+        const anchorEl = this.state.anchorEl
+        return (
+            <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={this.handleMenuClose}
+            >
+                <MenuItem onClick={this.handleSaveToSession}>Save to Session</MenuItem>
+                <MenuItem onClick={this.handleLoadFromSession}>Load from Session</MenuItem>
+                <MenuItem onClick={this.handleDownloadJson}>Download JSON</MenuItem>
+                <MenuItem onClick={this.handleUploadJson}>Upload JSON</MenuItem>
+                <MenuItem onClick={this.handleShareLink}>Share Link</MenuItem>
+            </Menu>
         )
     }
 
@@ -104,10 +149,8 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
     }
     
     get abilities(): JSX.Element {
-        const filterdValues =
-            Array.from(AbstractCsvRowMapper.abilities)
-                .filter(([k, v]) => v > 10 )
-                .map(([k, v]) => k as string)
+        const allAbilities = Array.from(AbstractCsvRowMapper.abilities).map(([k, v]) => ({ key: k as string, count: v }))
+        const filterdValues = allAbilities.map(a => a.key)
         const autoCompleteComponent = (<Autocomplete
             multiple
             id="checkboxes-tags-demo"
@@ -133,7 +176,8 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
             title='Tools and Technologies'
             controlComponent={autoCompleteComponent}
             isEnabled={this.props.controlStore!.abilitiesFilterActive}
-            enable={(event, value) => { this.props.controlStore!.setAbilitiesFilterActive(value)}}>
+            enable={(event, value) => { this.props.controlStore!.setAbilitiesFilterActive(value)}}
+            count={allAbilities.length}>
         </ControlComponentWrapper>)
     }
 
@@ -151,19 +195,19 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
                     aria-labelledby="non-linear-slider"
                 />
             )
+        const experienceCount = AbstractCsvRowMapper.years.size
         return (<ControlComponentWrapper
             title='Years of Expirience'
             controlComponent={slider}
             isEnabled={this.props.controlStore!.expirienceFilterActive}
-            enable={(event, value) => { this.props.controlStore!.setExpirienceFilterActive(value)}}>
+            enable={(event, value) => { this.props.controlStore!.setExpirienceFilterActive(value)}}
+            count={experienceCount}>
         </ControlComponentWrapper>)
     }
     
     get countries(): JSX.Element {
-        const filterdValues =
-            Array.from(AbstractCsvRowMapper.countries)
-                .filter(([k, v]) => v > 10 )
-                .map(([k, v]) => k as string)
+        const allCountries = Array.from(AbstractCsvRowMapper.countries).map(([k, v]) => ({ key: k as string, count: v }))
+        const filterdValues = allCountries.map(a => a.key)
         const autoCompleteComponent = (<Autocomplete
             multiple
             id="checkboxes-tags-demo"
@@ -189,15 +233,14 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
             title='Countries'
             controlComponent={autoCompleteComponent}
             isEnabled={this.props.controlStore!.countriesFilterActive}
-            enable={(event, value) => { this.props.controlStore!.setCountriesFilterActive(value)}}>
+            enable={(event, value) => { this.props.controlStore!.setCountriesFilterActive(value)}}
+            count={allCountries.length}>
         </ControlComponentWrapper>)
     }
     
     get degrees(): JSX.Element {
-        const filterdValues =
-            Array.from(AbstractCsvRowMapper.educations)
-                .filter(([k, v]) => v > 10 )
-                .map(([k, v]) => k as string)
+        const allDegrees = Array.from(AbstractCsvRowMapper.educations).map(([k, v]) => ({ key: k as string, count: v }))
+        const filterdValues = allDegrees.map(a => a.key)
         const autoCompleteComponent = (<Autocomplete
             multiple
             id="checkboxes-tags-demo"
@@ -223,7 +266,8 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
             title='Highest Degree'
             controlComponent={autoCompleteComponent}
             isEnabled={this.props.controlStore!.degreeFilterActive}
-            enable={(event, value) => { this.props.controlStore!.setDegreeFilterActive(value)}}>
+            enable={(event, value) => { this.props.controlStore!.setDegreeFilterActive(value)}}
+            count={allDegrees.length}>
         </ControlComponentWrapper>)
     }
 
@@ -234,11 +278,13 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
     get gender(): JSX.Element {
         const values = this.props.controlStore!.genders
         const checkboxes = this.getCheckboxesForValues(values, Object.values(Gender).filter((v): v is Gender => typeof v === 'string'))
+        const genderCount = AbstractCsvRowMapper.genders.size
         return (<ControlComponentWrapper
             title='Gender'
             controlComponent={checkboxes}
             isEnabled={this.props.controlStore!.gendersFilterActive}
-            enable={(event, value) => { this.props.controlStore!.setGendersFilterActive(value)}}>
+            enable={(event, value) => { this.props.controlStore!.setGendersFilterActive(value)}}
+            count={genderCount}>
         </ControlComponentWrapper>)
     }
 
@@ -264,27 +310,57 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
         )
     }
     
-    get sliderForCompanySize(): JSX.Element {
+    get companySizeInputs(): JSX.Element {
+        const currentMin = this.props.controlStore!.companySize[0]
+        const currentMax = this.props.controlStore!.companySize[1]
         const values = this.props.controlStore!.companySizeValues
-        const slider =
-            (
-                <Slider
-                    style={{ width: '90%', minWidth: '200px' }}
-                    value={this.props!.controlStore?.companySize}
-                    min={values.min}
-                    step={values.steps}
-                    max={values.max}
-                    onChange={this.handleChangeForCompanySize.bind(this)}
-                    valueLabelDisplay="auto"
-                    aria-labelledby="non-linear-slider"
+        const allCompanySizes = AbstractCsvRowMapper.companySize ?? new Map()
+        const inputs = (
+            <div>
+                <TextField
+                    label="From"
+                    type="number"
+                    value={currentMin ?? ''}
+                    onChange={this.handleMinCompanySizeChange.bind(this)}
+                    inputProps={{ min: values.min, max: values.max, step: 1 }}
+                    style={{ width: 120 }}
                 />
-            )
+                <TextField
+                    label="To"
+                    type="number"
+                    value={currentMax ?? ''}
+                    onChange={this.handleMaxCompanySizeChange.bind(this)}
+                    inputProps={{ min: values.min, max: values.max, step: 1 }}
+                    style={{ width: 120 }}
+                />
+            </div>
+        )
         return (<ControlComponentWrapper
             title='Company Size'
-            controlComponent={slider}
+            controlComponent={inputs}
             isEnabled={this.props.controlStore!.companySizeFilterActive}
-            enable={(event, value) => { this.props.controlStore!.setCompanySizeFilterActive(value)}}>
+            enable={(event, value) => { this.props.controlStore!.setCompanySizeFilterActive(value)}}
+            count={allCompanySizes.size}>
         </ControlComponentWrapper>)
+    }
+
+    get salaryFilter(): JSX.Element {
+        return (<ControlComponentWrapper
+            title='Salary Threshold Filter'
+            controlComponent={<Typography variant="body2" style={{ padding: '10px', color: '#666', fontSize: '0.85em' }}>When disabled: consider all salaries. When enabled: filter 10k-250k</Typography>}
+            isEnabled={this.props.controlStore!.enableSalaryFilter}
+            enable={(event, value) => { this.props.controlStore!.setEnableSalaryFilter(value)}}>
+        </ControlComponentWrapper>)
+    }
+
+    handleMinCompanySizeChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+        const value = event.target.value === '' ? null : parseInt(event.target.value, 10)
+        this.props.controlStore!.setCompanySizeFromMin(value)
+    }
+
+    handleMaxCompanySizeChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+        const value = event.target.value === '' ? null : parseInt(event.target.value, 10)
+        this.props.controlStore!.setCompanySizeFromMax(value)
     }
 
     handleChangesForCountries(event: React.ChangeEvent<unknown>, value: string[]): void {
@@ -302,14 +378,11 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
     handleChange(event: React.ChangeEvent<unknown>, value: number | number[]): void {
         this.props.controlStore!.setExp(value as number[])
     }
-    
-    handleChangeForCompanySize(event: React.ChangeEvent<unknown>, value: number | number[]): void {
-        this.props.controlStore!.setCompanySize(value as number[])
-    }
 
     handleSaveToSession = (): void => {
         const state = this.props.controlStore!.getSessionState()
         sessionStorage.setItem('controlPaneSettings', JSON.stringify(state, null, 2))
+        this.handleMenuClose()
     }
 
     handleLoadFromSession = (): void => {
@@ -319,6 +392,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
             this.props.controlStore!.loadFromSessionState(parsed)
             this.setState({ refreshKey: this.state.refreshKey + 1 })
         }
+        this.handleMenuClose()
     }
 
     handleDownloadJson = (): void => {
@@ -331,6 +405,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
         a.download = 'control-pane-settings.json'
         a.click()
         URL.revokeObjectURL(url)
+        this.handleMenuClose()
     }
 
     handleUploadJson = (): void => {
@@ -350,6 +425,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
             }
         }
         input.click()
+        this.handleMenuClose()
     }
 
     handleShareLink = (): void => {
@@ -359,18 +435,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
         navigator.clipboard.writeText(url).then(() => {
             alert('Share link copied to clipboard!')
         })
-    }
-
-    get sessionButtons(): JSX.Element {
-        return (
-            <Box style={{ display: 'flex', gap: '8px', marginTop: '16px', flexWrap: 'wrap' }}>
-                <Button variant="contained" size="small" onClick={this.handleSaveToSession}>Save to Session</Button>
-                <Button variant="contained" size="small" onClick={this.handleLoadFromSession}>Load from Session</Button>
-                <Button variant="contained" size="small" onClick={this.handleDownloadJson}>Download JSON</Button>
-                <Button variant="contained" size="small" onClick={this.handleUploadJson}>Upload JSON</Button>
-                <Button variant="contained" size="small" onClick={this.handleShareLink}>Share Link</Button>
-            </Box>
-        )
+        this.handleMenuClose()
     }
 
 }

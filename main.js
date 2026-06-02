@@ -8963,6 +8963,334 @@ if (true) {
 
 /***/ },
 
+/***/ "./node_modules/@material-ui/core/esm/ListItem/ListItem.js"
+/*!*****************************************************************!*\
+  !*** ./node_modules/@material-ui/core/esm/ListItem/ListItem.js ***!
+  \*****************************************************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
+/* harmony export */   styles: () => (/* binding */ styles)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/extends */ "./node_modules/@babel/runtime/helpers/esm/extends.js");
+/* harmony import */ var _babel_runtime_helpers_esm_objectWithoutProperties__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/esm/objectWithoutProperties */ "./node_modules/@babel/runtime/helpers/esm/objectWithoutProperties.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! prop-types */ "./node_modules/prop-types/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var clsx__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! clsx */ "./node_modules/clsx/dist/clsx.m.js");
+/* harmony import */ var _material_ui_utils__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @material-ui/utils */ "./node_modules/@material-ui/utils/esm/chainPropTypes.js");
+/* harmony import */ var _styles_withStyles__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../styles/withStyles */ "./node_modules/@material-ui/core/esm/styles/withStyles.js");
+/* harmony import */ var _ButtonBase__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../ButtonBase */ "./node_modules/@material-ui/core/esm/ButtonBase/ButtonBase.js");
+/* harmony import */ var _utils_isMuiElement__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../utils/isMuiElement */ "./node_modules/@material-ui/core/esm/utils/isMuiElement.js");
+/* harmony import */ var _utils_useForkRef__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../utils/useForkRef */ "./node_modules/@material-ui/core/esm/utils/useForkRef.js");
+/* harmony import */ var _List_ListContext__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../List/ListContext */ "./node_modules/@material-ui/core/esm/List/ListContext.js");
+/* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
+
+
+
+
+
+
+
+
+
+
+
+
+var styles = function styles(theme) {
+  return {
+    /* Styles applied to the (normally root) `component` element. May be wrapped by a `container`. */
+    root: {
+      display: 'flex',
+      justifyContent: 'flex-start',
+      alignItems: 'center',
+      position: 'relative',
+      textDecoration: 'none',
+      width: '100%',
+      boxSizing: 'border-box',
+      textAlign: 'left',
+      paddingTop: 8,
+      paddingBottom: 8,
+      '&$focusVisible': {
+        backgroundColor: theme.palette.action.selected
+      },
+      '&$selected, &$selected:hover': {
+        backgroundColor: theme.palette.action.selected
+      },
+      '&$disabled': {
+        opacity: 0.5
+      }
+    },
+
+    /* Styles applied to the `container` element if `children` includes `ListItemSecondaryAction`. */
+    container: {
+      position: 'relative'
+    },
+
+    /* Pseudo-class applied to the `component`'s `focusVisibleClassName` prop if `button={true}`. */
+    focusVisible: {},
+
+    /* Styles applied to the `component` element if dense. */
+    dense: {
+      paddingTop: 4,
+      paddingBottom: 4
+    },
+
+    /* Styles applied to the `component` element if `alignItems="flex-start"`. */
+    alignItemsFlexStart: {
+      alignItems: 'flex-start'
+    },
+
+    /* Pseudo-class applied to the inner `component` element if `disabled={true}`. */
+    disabled: {},
+
+    /* Styles applied to the inner `component` element if `divider={true}`. */
+    divider: {
+      borderBottom: "1px solid ".concat(theme.palette.divider),
+      backgroundClip: 'padding-box'
+    },
+
+    /* Styles applied to the inner `component` element if `disableGutters={false}`. */
+    gutters: {
+      paddingLeft: 16,
+      paddingRight: 16
+    },
+
+    /* Styles applied to the inner `component` element if `button={true}`. */
+    button: {
+      transition: theme.transitions.create('background-color', {
+        duration: theme.transitions.duration.shortest
+      }),
+      '&:hover': {
+        textDecoration: 'none',
+        backgroundColor: theme.palette.action.hover,
+        // Reset on touch devices, it doesn't add specificity
+        '@media (hover: none)': {
+          backgroundColor: 'transparent'
+        }
+      }
+    },
+
+    /* Styles applied to the `component` element if `children` includes `ListItemSecondaryAction`. */
+    secondaryAction: {
+      // Add some space to avoid collision as `ListItemSecondaryAction`
+      // is absolutely positioned.
+      paddingRight: 48
+    },
+
+    /* Pseudo-class applied to the root element if `selected={true}`. */
+    selected: {}
+  };
+};
+var useEnhancedEffect = typeof window === 'undefined' ? react__WEBPACK_IMPORTED_MODULE_2__.useEffect : react__WEBPACK_IMPORTED_MODULE_2__.useLayoutEffect;
+/**
+ * Uses an additional container component if `ListItemSecondaryAction` is the last child.
+ */
+
+var ListItem = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2__.forwardRef(function ListItem(props, ref) {
+  var _props$alignItems = props.alignItems,
+      alignItems = _props$alignItems === void 0 ? 'center' : _props$alignItems,
+      _props$autoFocus = props.autoFocus,
+      autoFocus = _props$autoFocus === void 0 ? false : _props$autoFocus,
+      _props$button = props.button,
+      button = _props$button === void 0 ? false : _props$button,
+      childrenProp = props.children,
+      classes = props.classes,
+      className = props.className,
+      componentProp = props.component,
+      _props$ContainerCompo = props.ContainerComponent,
+      ContainerComponent = _props$ContainerCompo === void 0 ? 'li' : _props$ContainerCompo,
+      _props$ContainerProps = props.ContainerProps;
+  _props$ContainerProps = _props$ContainerProps === void 0 ? {} : _props$ContainerProps;
+
+  var ContainerClassName = _props$ContainerProps.className,
+      ContainerProps = (0,_babel_runtime_helpers_esm_objectWithoutProperties__WEBPACK_IMPORTED_MODULE_1__["default"])(_props$ContainerProps, ["className"]),
+      _props$dense = props.dense,
+      dense = _props$dense === void 0 ? false : _props$dense,
+      _props$disabled = props.disabled,
+      disabled = _props$disabled === void 0 ? false : _props$disabled,
+      _props$disableGutters = props.disableGutters,
+      disableGutters = _props$disableGutters === void 0 ? false : _props$disableGutters,
+      _props$divider = props.divider,
+      divider = _props$divider === void 0 ? false : _props$divider,
+      focusVisibleClassName = props.focusVisibleClassName,
+      _props$selected = props.selected,
+      selected = _props$selected === void 0 ? false : _props$selected,
+      other = (0,_babel_runtime_helpers_esm_objectWithoutProperties__WEBPACK_IMPORTED_MODULE_1__["default"])(props, ["alignItems", "autoFocus", "button", "children", "classes", "className", "component", "ContainerComponent", "ContainerProps", "dense", "disabled", "disableGutters", "divider", "focusVisibleClassName", "selected"]);
+
+  var context = react__WEBPACK_IMPORTED_MODULE_2__.useContext(_List_ListContext__WEBPACK_IMPORTED_MODULE_10__["default"]);
+  var childContext = {
+    dense: dense || context.dense || false,
+    alignItems: alignItems
+  };
+  var listItemRef = react__WEBPACK_IMPORTED_MODULE_2__.useRef(null);
+  useEnhancedEffect(function () {
+    if (autoFocus) {
+      if (listItemRef.current) {
+        listItemRef.current.focus();
+      } else if (true) {
+        console.error('Material-UI: Unable to set focus to a ListItem whose component has not been rendered.');
+      }
+    }
+  }, [autoFocus]);
+  var children = react__WEBPACK_IMPORTED_MODULE_2__.Children.toArray(childrenProp);
+  var hasSecondaryAction = children.length && (0,_utils_isMuiElement__WEBPACK_IMPORTED_MODULE_8__["default"])(children[children.length - 1], ['ListItemSecondaryAction']);
+  var handleOwnRef = react__WEBPACK_IMPORTED_MODULE_2__.useCallback(function (instance) {
+    // #StrictMode ready
+    listItemRef.current = react_dom__WEBPACK_IMPORTED_MODULE_11__.findDOMNode(instance);
+  }, []);
+  var handleRef = (0,_utils_useForkRef__WEBPACK_IMPORTED_MODULE_9__["default"])(handleOwnRef, ref);
+
+  var componentProps = (0,_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({
+    className: (0,clsx__WEBPACK_IMPORTED_MODULE_4__["default"])(classes.root, className, childContext.dense && classes.dense, !disableGutters && classes.gutters, divider && classes.divider, disabled && classes.disabled, button && classes.button, alignItems !== "center" && classes.alignItemsFlexStart, hasSecondaryAction && classes.secondaryAction, selected && classes.selected),
+    disabled: disabled
+  }, other);
+
+  var Component = componentProp || 'li';
+
+  if (button) {
+    componentProps.component = componentProp || 'div';
+    componentProps.focusVisibleClassName = (0,clsx__WEBPACK_IMPORTED_MODULE_4__["default"])(classes.focusVisible, focusVisibleClassName);
+    Component = _ButtonBase__WEBPACK_IMPORTED_MODULE_7__["default"];
+  }
+
+  if (hasSecondaryAction) {
+    // Use div by default.
+    Component = !componentProps.component && !componentProp ? 'div' : Component; // Avoid nesting of li > li.
+
+    if (ContainerComponent === 'li') {
+      if (Component === 'li') {
+        Component = 'div';
+      } else if (componentProps.component === 'li') {
+        componentProps.component = 'div';
+      }
+    }
+
+    return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2__.createElement(_List_ListContext__WEBPACK_IMPORTED_MODULE_10__["default"].Provider, {
+      value: childContext
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2__.createElement(ContainerComponent, (0,_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({
+      className: (0,clsx__WEBPACK_IMPORTED_MODULE_4__["default"])(classes.container, ContainerClassName),
+      ref: handleRef
+    }, ContainerProps), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2__.createElement(Component, componentProps, children), children.pop()));
+  }
+
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2__.createElement(_List_ListContext__WEBPACK_IMPORTED_MODULE_10__["default"].Provider, {
+    value: childContext
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2__.createElement(Component, (0,_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({
+    ref: handleRef
+  }, componentProps), children));
+});
+ true ? ListItem.propTypes = {
+  /**
+   * Defines the `align-items` style property.
+   */
+  alignItems: prop_types__WEBPACK_IMPORTED_MODULE_3___default().oneOf(['flex-start', 'center']),
+
+  /**
+   * If `true`, the list item will be focused during the first mount.
+   * Focus will also be triggered if the value changes from false to true.
+   */
+  autoFocus: (prop_types__WEBPACK_IMPORTED_MODULE_3___default().bool),
+
+  /**
+   * If `true`, the list item will be a button (using `ButtonBase`). Props intended
+   * for `ButtonBase` can then be applied to `ListItem`.
+   */
+  button: (prop_types__WEBPACK_IMPORTED_MODULE_3___default().bool),
+
+  /**
+   * The content of the component. If a `ListItemSecondaryAction` is used it must
+   * be the last child.
+   */
+  children: (0,_material_ui_utils__WEBPACK_IMPORTED_MODULE_5__["default"])((prop_types__WEBPACK_IMPORTED_MODULE_3___default().node), function (props) {
+    var children = react__WEBPACK_IMPORTED_MODULE_2__.Children.toArray(props.children); // React.Children.toArray(props.children).findLastIndex(isListItemSecondaryAction)
+
+    var secondaryActionIndex = -1;
+
+    for (var i = children.length - 1; i >= 0; i -= 1) {
+      var child = children[i];
+
+      if ((0,_utils_isMuiElement__WEBPACK_IMPORTED_MODULE_8__["default"])(child, ['ListItemSecondaryAction'])) {
+        secondaryActionIndex = i;
+        break;
+      }
+    } //  is ListItemSecondaryAction the last child of ListItem
+
+
+    if (secondaryActionIndex !== -1 && secondaryActionIndex !== children.length - 1) {
+      return new Error('Material-UI: You used an element after ListItemSecondaryAction. ' + 'For ListItem to detect that it has a secondary action ' + 'you must pass it as the last child to ListItem.');
+    }
+
+    return null;
+  }),
+
+  /**
+   * Override or extend the styles applied to the component.
+   * See [CSS API](#css) below for more details.
+   */
+  classes: (prop_types__WEBPACK_IMPORTED_MODULE_3___default().object).isRequired,
+
+  /**
+   * @ignore
+   */
+  className: (prop_types__WEBPACK_IMPORTED_MODULE_3___default().string),
+
+  /**
+   * The component used for the root node.
+   * Either a string to use a HTML element or a component.
+   * By default, it's a `li` when `button` is `false` and a `div` when `button` is `true`.
+   */
+  component: (prop_types__WEBPACK_IMPORTED_MODULE_3___default().elementType),
+
+  /**
+   * The container component used when a `ListItemSecondaryAction` is the last child.
+   */
+  ContainerComponent: (prop_types__WEBPACK_IMPORTED_MODULE_3___default().elementType),
+
+  /**
+   * Props applied to the container component if used.
+   */
+  ContainerProps: (prop_types__WEBPACK_IMPORTED_MODULE_3___default().object),
+
+  /**
+   * If `true`, compact vertical padding designed for keyboard and mouse input will be used.
+   */
+  dense: (prop_types__WEBPACK_IMPORTED_MODULE_3___default().bool),
+
+  /**
+   * If `true`, the list item will be disabled.
+   */
+  disabled: (prop_types__WEBPACK_IMPORTED_MODULE_3___default().bool),
+
+  /**
+   * If `true`, the left and right padding is removed.
+   */
+  disableGutters: (prop_types__WEBPACK_IMPORTED_MODULE_3___default().bool),
+
+  /**
+   * If `true`, a 1px light border is added to the bottom of the list item.
+   */
+  divider: (prop_types__WEBPACK_IMPORTED_MODULE_3___default().bool),
+
+  /**
+   * @ignore
+   */
+  focusVisibleClassName: (prop_types__WEBPACK_IMPORTED_MODULE_3___default().string),
+
+  /**
+   * Use to apply selected styling.
+   */
+  selected: (prop_types__WEBPACK_IMPORTED_MODULE_3___default().bool)
+} : 0;
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,_styles_withStyles__WEBPACK_IMPORTED_MODULE_6__["default"])(styles, {
+  name: 'MuiListItem'
+})(ListItem));
+
+/***/ },
+
 /***/ "./node_modules/@material-ui/core/esm/Menu/Menu.js"
 /*!*********************************************************!*\
   !*** ./node_modules/@material-ui/core/esm/Menu/Menu.js ***!
@@ -9284,6 +9612,161 @@ var Menu = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_2__.forwardRef(function M
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,_styles_withStyles__WEBPACK_IMPORTED_MODULE_7__["default"])(styles, {
   name: 'MuiMenu'
 })(Menu));
+
+/***/ },
+
+/***/ "./node_modules/@material-ui/core/esm/MenuItem/MenuItem.js"
+/*!*****************************************************************!*\
+  !*** ./node_modules/@material-ui/core/esm/MenuItem/MenuItem.js ***!
+  \*****************************************************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
+/* harmony export */   styles: () => (/* binding */ styles)
+/* harmony export */ });
+/* harmony import */ var _babel_runtime_helpers_esm_objectWithoutProperties__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/helpers/esm/objectWithoutProperties */ "./node_modules/@babel/runtime/helpers/esm/objectWithoutProperties.js");
+/* harmony import */ var _babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime/helpers/esm/defineProperty */ "./node_modules/@babel/runtime/helpers/esm/defineProperty.js");
+/* harmony import */ var _babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime/helpers/esm/extends */ "./node_modules/@babel/runtime/helpers/esm/extends.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! prop-types */ "./node_modules/prop-types/index.js");
+/* harmony import */ var prop_types__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(prop_types__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var clsx__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! clsx */ "./node_modules/clsx/dist/clsx.m.js");
+/* harmony import */ var _styles_withStyles__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../styles/withStyles */ "./node_modules/@material-ui/core/esm/styles/withStyles.js");
+/* harmony import */ var _ListItem__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../ListItem */ "./node_modules/@material-ui/core/esm/ListItem/ListItem.js");
+
+
+
+
+
+
+
+
+var styles = function styles(theme) {
+  return {
+    /* Styles applied to the root element. */
+    root: (0,_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_2__["default"])({}, theme.typography.body1, (0,_babel_runtime_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_1__["default"])({
+      minHeight: 48,
+      paddingTop: 6,
+      paddingBottom: 6,
+      boxSizing: 'border-box',
+      width: 'auto',
+      overflow: 'hidden',
+      whiteSpace: 'nowrap'
+    }, theme.breakpoints.up('sm'), {
+      minHeight: 'auto'
+    })),
+    // TODO v5: remove
+
+    /* Styles applied to the root element if `disableGutters={false}`. */
+    gutters: {},
+
+    /* Styles applied to the root element if `selected={true}`. */
+    selected: {},
+
+    /* Styles applied to the root element if dense. */
+    dense: (0,_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_2__["default"])({}, theme.typography.body2, {
+      minHeight: 'auto'
+    })
+  };
+};
+var MenuItem = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3__.forwardRef(function MenuItem(props, ref) {
+  var classes = props.classes,
+      className = props.className,
+      _props$component = props.component,
+      component = _props$component === void 0 ? 'li' : _props$component,
+      _props$disableGutters = props.disableGutters,
+      disableGutters = _props$disableGutters === void 0 ? false : _props$disableGutters,
+      ListItemClasses = props.ListItemClasses,
+      _props$role = props.role,
+      role = _props$role === void 0 ? 'menuitem' : _props$role,
+      selected = props.selected,
+      tabIndexProp = props.tabIndex,
+      other = (0,_babel_runtime_helpers_esm_objectWithoutProperties__WEBPACK_IMPORTED_MODULE_0__["default"])(props, ["classes", "className", "component", "disableGutters", "ListItemClasses", "role", "selected", "tabIndex"]);
+
+  var tabIndex;
+
+  if (!props.disabled) {
+    tabIndex = tabIndexProp !== undefined ? tabIndexProp : -1;
+  }
+
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_3__.createElement(_ListItem__WEBPACK_IMPORTED_MODULE_7__["default"], (0,_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_2__["default"])({
+    button: true,
+    role: role,
+    tabIndex: tabIndex,
+    component: component,
+    selected: selected,
+    disableGutters: disableGutters,
+    classes: (0,_babel_runtime_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_2__["default"])({
+      dense: classes.dense
+    }, ListItemClasses),
+    className: (0,clsx__WEBPACK_IMPORTED_MODULE_5__["default"])(classes.root, className, selected && classes.selected, !disableGutters && classes.gutters),
+    ref: ref
+  }, other));
+});
+ true ? MenuItem.propTypes = {
+  /**
+   * Menu item contents.
+   */
+  children: (prop_types__WEBPACK_IMPORTED_MODULE_4___default().node),
+
+  /**
+   * Override or extend the styles applied to the component.
+   * See [CSS API](#css) below for more details.
+   */
+  classes: (prop_types__WEBPACK_IMPORTED_MODULE_4___default().object).isRequired,
+
+  /**
+   * @ignore
+   */
+  className: (prop_types__WEBPACK_IMPORTED_MODULE_4___default().string),
+
+  /**
+   * The component used for the root node.
+   * Either a string to use a HTML element or a component.
+   */
+  component: (prop_types__WEBPACK_IMPORTED_MODULE_4___default().elementType),
+
+  /**
+   * If `true`, compact vertical padding designed for keyboard and mouse input will be used.
+   */
+  dense: (prop_types__WEBPACK_IMPORTED_MODULE_4___default().bool),
+
+  /**
+   * @ignore
+   */
+  disabled: (prop_types__WEBPACK_IMPORTED_MODULE_4___default().bool),
+
+  /**
+   * If `true`, the left and right padding is removed.
+   */
+  disableGutters: (prop_types__WEBPACK_IMPORTED_MODULE_4___default().bool),
+
+  /**
+   * `classes` prop applied to the [`ListItem`](/api/list-item/) element.
+   */
+  ListItemClasses: (prop_types__WEBPACK_IMPORTED_MODULE_4___default().object),
+
+  /**
+   * @ignore
+   */
+  role: (prop_types__WEBPACK_IMPORTED_MODULE_4___default().string),
+
+  /**
+   * @ignore
+   */
+  selected: (prop_types__WEBPACK_IMPORTED_MODULE_4___default().bool),
+
+  /**
+   * @ignore
+   */
+  tabIndex: (prop_types__WEBPACK_IMPORTED_MODULE_4___default().number)
+} : 0;
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,_styles_withStyles__WEBPACK_IMPORTED_MODULE_6__["default"])(styles, {
+  name: 'MuiMenuItem'
+})(MenuItem));
 
 /***/ },
 
@@ -18772,6 +19255,36 @@ var _createSvgIcon = _interopRequireDefault(__webpack_require__(/*! ./utils/crea
 var _default = (0, _createSvgIcon.default)( /*#__PURE__*/React.createElement("path", {
   d: "M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"
 }), 'Menu');
+
+exports["default"] = _default;
+
+/***/ },
+
+/***/ "./node_modules/@material-ui/icons/MoreVert.js"
+/*!*****************************************************!*\
+  !*** ./node_modules/@material-ui/icons/MoreVert.js ***!
+  \*****************************************************/
+(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ "./node_modules/@babel/runtime/helpers/interopRequireDefault.js");
+
+var _interopRequireWildcard = __webpack_require__(/*! @babel/runtime/helpers/interopRequireWildcard */ "./node_modules/@babel/runtime/helpers/interopRequireWildcard.js");
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = void 0;
+
+var React = _interopRequireWildcard(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
+
+var _createSvgIcon = _interopRequireDefault(__webpack_require__(/*! ./utils/createSvgIcon */ "./node_modules/@material-ui/icons/utils/createSvgIcon.js"));
+
+var _default = (0, _createSvgIcon.default)( /*#__PURE__*/React.createElement("path", {
+  d: "M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+}), 'MoreVert');
 
 exports["default"] = _default;
 
@@ -405743,26 +406256,35 @@ class BoxPlot extends react__WEBPACK_IMPORTED_MODULE_1__.Component {
         type: 'box',
         boxmean: 'sd',
     };
-    plotRef;
-    constructor(props) {
-        super(props);
-        this.plotRef = react__WEBPACK_IMPORTED_MODULE_1__.createRef();
-    }
+    // Track the explicit plot DOM layout natively
+    chartElement = null;
     render() {
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { ref: this.plotRef, style: { position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, overflow: 'auto' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(react_plotly_js__WEBPACK_IMPORTED_MODULE_2__["default"], { data: this.data, layout: this.layout, style: { width: '100%', height: '100%' }, onInitialized: this.handleInit, onUpdate: this.handleResize }) }));
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, overflow: 'auto' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(react_plotly_js__WEBPACK_IMPORTED_MODULE_2__["default"], { data: this.data, layout: this.layout, style: { width: '100%', height: '100%' }, useResizeHandler: true, onInitialized: this.handleInit, onUpdate: this.handleUpdate }) }));
     }
-    componentDidUpdate() {
-        this.handleResize();
-    }
-    handleInit = () => {
-        setTimeout(this.handleResize, 0);
+    // 2. Capture the actual DOM Node element from the React-Plotly lifecycles
+    handleInit = (_figure, graphDiv) => {
+        this.chartElement = graphDiv;
+        this.triggerHoverEvent();
     };
-    handleResize = () => {
-        if (this.plotRef.current) {
-            const plotlyEl = this.plotRef.current.querySelector('.js-plotly-plot');
-            if (plotlyEl && plotlyEl.Plotly) {
-                plotlyEl.Plotly.relayout(plotlyEl, { autosize: true });
-            }
+    handleUpdate = (_figure, graphDiv) => {
+        this.chartElement = graphDiv;
+        this.triggerHoverEvent();
+    };
+    triggerHoverEvent = () => {
+        if (!this.chartElement)
+            return;
+        // 3. Resolve the runtime Plotly instance from the window namespace or internal component scope
+        const globalPlotly = window.Plotly;
+        if (globalPlotly && 'Fx' in globalPlotly) {
+            const Fx = globalPlotly.Fx;
+            // Push calculation execution onto the microtask queue to wait for the canvas layer to completely draw
+            setTimeout(() => {
+                if (this.chartElement) {
+                    Fx.hover(this.chartElement, [
+                        { curveNumber: 0, pointNumber: 0 }
+                    ]);
+                }
+            }, 0);
         }
     };
     get data() {
@@ -405777,6 +406299,9 @@ class BoxPlot extends react__WEBPACK_IMPORTED_MODULE_1__.Component {
             type: 'box',
             boxmean: 'sd',
             name: 'Year ' + selectedYearStr,
+            marker: {
+                color: '#F48024'
+            },
             y: yearData.map((entry) => entry.salary),
         };
         return [trace];
@@ -405785,6 +406310,7 @@ class BoxPlot extends react__WEBPACK_IMPORTED_MODULE_1__.Component {
         return {
             autosize: true,
             showlegend: false,
+            hovermode: 'closest',
             yaxis: { fixedrange: true },
             xaxis: { fixedrange: true },
             paper_bgcolor: '#FF000000',
@@ -405858,7 +406384,7 @@ const formatValueForDisplay = (value) => {
 const ConsideredDataTable = (0,mobx_react__WEBPACK_IMPORTED_MODULE_1__.observer)(() => {
     const consideredData = Object.values(_stores_uiStore__WEBPACK_IMPORTED_MODULE_4__.uiStore.filteredData).flat();
     if (consideredData.length === 0) {
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { textAlign: 'center', padding: '40px' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(react_loader_spinner__WEBPACK_IMPORTED_MODULE_3__["default"], { type: "ThreeDots", height: 80, width: 80, color: "#007bff" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("p", { children: "Loading considered data..." })] }));
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { textAlign: 'center', padding: '40px' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(react_loader_spinner__WEBPACK_IMPORTED_MODULE_3__["default"], { type: "ThreeDots", height: 80, width: 80, color: "#F48024" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("p", { children: "Loading considered data..." })] }));
     }
     // Add an id field for each row as required by MUI DataGrid
     const rowsWithId = consideredData.map((entry, index) => ({
@@ -405899,13 +406425,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 /* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/FormControlLabel/FormControlLabel.js");
 /* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/Checkbox/Checkbox.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/Typography/Typography.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 
 
 
-class ControlComponentWrapper extends react__WEBPACK_IMPORTED_MODULE_3__.Component {
+
+class ControlComponentWrapper extends react__WEBPACK_IMPORTED_MODULE_4__.Component {
     render() {
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { padding: '5px', marginTop: '10px' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { display: 'block', float: 'left', width: '100%', marginLeft: '-30px', marginBottom: '5px' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["default"], { label: this.props.title, control: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_2__["default"], { defaultChecked: this.props.isEnabled, onChange: this.props.enable }), labelPlacement: "start" }) }), this.props.controlComponent] }));
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { padding: '5px', marginTop: '10px' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { display: 'block', float: 'left', width: '100%', marginLeft: '-30px', marginBottom: '5px' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["default"], { label: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { display: 'flex', alignItems: 'center', gap: '8px' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_3__["default"], { variant: "body1", children: this.props.title }), this.props.count !== undefined && ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_material_ui_core__WEBPACK_IMPORTED_MODULE_3__["default"], { variant: "body2", style: { color: '#666', fontSize: '0.85em' }, children: ["(", this.props.count, ")"] }))] }), control: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_2__["default"], { defaultChecked: this.props.isEnabled, onChange: this.props.enable }), labelPlacement: "start" }) }), this.props.controlComponent] }));
     }
 }
 
@@ -405928,18 +406456,25 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/Box/Box.js");
 /* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/FormControl/FormControl.js");
 /* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/FormGroup/FormGroup.js");
-/* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/Checkbox/Checkbox.js");
-/* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/TextField/TextField.js");
-/* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/Slider/Slider.js");
-/* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/FormControlLabel/FormControlLabel.js");
-/* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/Button/Button.js");
-/* harmony import */ var mobx_react__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! mobx-react */ "./node_modules/mobx-react/dist/mobxreact.esm.js");
-/* harmony import */ var _stores_storeHelper__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../stores/storeHelper */ "./src/stores/storeHelper.ts");
-/* harmony import */ var _mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @mui/material/Autocomplete */ "./node_modules/@mui/material/Autocomplete/Autocomplete.js");
-/* harmony import */ var _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ../mapper/AbstractCsvRowMapper */ "./src/mapper/AbstractCsvRowMapper.ts");
-/* harmony import */ var _model_gender__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../model/gender */ "./src/model/gender.ts");
-/* harmony import */ var _controlComponentWrapper__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./controlComponentWrapper */ "./src/components/controlComponentWrapper.tsx");
-/* harmony import */ var _model_constantMetaData__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../model/constantMetaData */ "./src/model/constantMetaData.ts");
+/* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/Typography/Typography.js");
+/* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/IconButton/IconButton.js");
+/* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/Checkbox/Checkbox.js");
+/* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/TextField/TextField.js");
+/* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/Slider/Slider.js");
+/* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @material-ui/core */ "./node_modules/@material-ui/core/esm/FormControlLabel/FormControlLabel.js");
+/* harmony import */ var _material_ui_icons_MoreVert__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @material-ui/icons/MoreVert */ "./node_modules/@material-ui/icons/MoreVert.js");
+/* harmony import */ var _material_ui_core_Menu__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @material-ui/core/Menu */ "./node_modules/@material-ui/core/esm/Menu/Menu.js");
+/* harmony import */ var _material_ui_core_MenuItem__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! @material-ui/core/MenuItem */ "./node_modules/@material-ui/core/esm/MenuItem/MenuItem.js");
+/* harmony import */ var mobx_react__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! mobx-react */ "./node_modules/mobx-react/dist/mobxreact.esm.js");
+/* harmony import */ var _stores_storeHelper__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../stores/storeHelper */ "./src/stores/storeHelper.ts");
+/* harmony import */ var _mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! @mui/material/Autocomplete */ "./node_modules/@mui/material/Autocomplete/Autocomplete.js");
+/* harmony import */ var _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../mapper/AbstractCsvRowMapper */ "./src/mapper/AbstractCsvRowMapper.ts");
+/* harmony import */ var _model_gender__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ../model/gender */ "./src/model/gender.ts");
+/* harmony import */ var _controlComponentWrapper__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./controlComponentWrapper */ "./src/components/controlComponentWrapper.tsx");
+/* harmony import */ var _model_constantMetaData__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ../model/constantMetaData */ "./src/model/constantMetaData.ts");
+
+
+
 
 
 
@@ -405956,7 +406491,8 @@ class ControlPane extends react__WEBPACK_IMPORTED_MODULE_1__.Component {
     constructor(props) {
         super(props);
         this.state = {
-            refreshKey: 0
+            refreshKey: 0,
+            anchorEl: null
         };
     }
     componentDidMount() {
@@ -405969,12 +406505,12 @@ class ControlPane extends react__WEBPACK_IMPORTED_MODULE_1__.Component {
         const cs = this.props.controlStore;
         if (cs.pendingState) {
             const targetYear = cs.pendingState.selectedYear;
-            const dataReady = _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_13__.AbstractCsvRowMapper.abilities.size > 0 && _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_13__.AbstractCsvRowMapper.countries.size > 0;
+            const dataReady = _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_17__.AbstractCsvRowMapper.abilities.size > 0 && _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_17__.AbstractCsvRowMapper.countries.size > 0;
             if (dataReady && !this.loadedPendingState) {
                 this.loadedPendingState = true;
                 cs.loadPendingState();
-                if (targetYear && targetYear !== _model_constantMetaData__WEBPACK_IMPORTED_MODULE_16__.AVAILABLE_YEARS[_model_constantMetaData__WEBPACK_IMPORTED_MODULE_16__.AVAILABLE_YEARS.length - 1]) {
-                    _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_13__.AbstractCsvRowMapper.clearDistinctValues();
+                if (targetYear && targetYear !== _model_constantMetaData__WEBPACK_IMPORTED_MODULE_20__.AVAILABLE_YEARS[_model_constantMetaData__WEBPACK_IMPORTED_MODULE_20__.AVAILABLE_YEARS.length - 1]) {
+                    _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_17__.AbstractCsvRowMapper.clearDistinctValues();
                     this.props.entryStore.initParser(targetYear);
                 }
                 this.setState({ refreshKey: this.state.refreshKey + 1 });
@@ -405982,68 +406518,94 @@ class ControlPane extends react__WEBPACK_IMPORTED_MODULE_1__.Component {
         }
     }
     render() {
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { padding: 50, overflow: 'scroll', position: 'relative', top: 0, left: 0, right: 0, maxHeight: 'calc(100% - 100px)' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_2__["default"], { sx: { display: 'flex' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_3__["default"], { focused: false, component: "fieldset", variant: "standard", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_material_ui_core__WEBPACK_IMPORTED_MODULE_4__["default"], { children: [this.years, this.slider, this.gender, this.abilities, this.sliderForCompanySize, this.countries, this.degrees] }, 1) }) }), this.sessionButtons] }, this.state.refreshKey));
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { padding: 50, overflow: 'scroll', position: 'relative', top: 0, left: 0, right: 0, maxHeight: 'calc(100% - 100px)' }, children: [this.headerWithMenu, (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_2__["default"], { sx: { display: 'flex' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_3__["default"], { focused: false, component: "fieldset", variant: "standard", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_material_ui_core__WEBPACK_IMPORTED_MODULE_4__["default"], { children: [this.years, this.gender, this.slider, this.abilities, this.companySizeInputs, this.countries, this.degrees, this.salaryFilter] }, 1) }) })] }, this.state.refreshKey));
+    }
+    get headerWithMenu() {
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_5__["default"], { variant: "h6", style: { fontFamily: 'Roboto, Helvetica, Arial, sans-serif' }, children: "Filters" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_6__["default"], { onClick: this.handleMenuClick.bind(this), size: "small", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_icons_MoreVert__WEBPACK_IMPORTED_MODULE_11__["default"], {}) }), this.menu] }));
+    }
+    handleMenuClick = (event) => {
+        this.setState({ anchorEl: event.currentTarget });
+    };
+    handleMenuClose = () => {
+        this.setState({ anchorEl: null });
+    };
+    get menu() {
+        const anchorEl = this.state.anchorEl;
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_material_ui_core_Menu__WEBPACK_IMPORTED_MODULE_12__["default"], { anchorEl: anchorEl, open: Boolean(anchorEl), onClose: this.handleMenuClose, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core_MenuItem__WEBPACK_IMPORTED_MODULE_13__["default"], { onClick: this.handleSaveToSession, children: "Save to Session" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core_MenuItem__WEBPACK_IMPORTED_MODULE_13__["default"], { onClick: this.handleLoadFromSession, children: "Load from Session" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core_MenuItem__WEBPACK_IMPORTED_MODULE_13__["default"], { onClick: this.handleDownloadJson, children: "Download JSON" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core_MenuItem__WEBPACK_IMPORTED_MODULE_13__["default"], { onClick: this.handleUploadJson, children: "Upload JSON" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core_MenuItem__WEBPACK_IMPORTED_MODULE_13__["default"], { onClick: this.handleShareLink, children: "Share Link" })] }));
     }
     get years() {
         const config = this.props.controlStore;
         const selectedYear = config.controlState.selectedYear;
-        const filteredValues = _model_constantMetaData__WEBPACK_IMPORTED_MODULE_16__.AVAILABLE_YEARS;
-        const autoCompleteComponent = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_12__["default"], { options: filteredValues, value: selectedYear, onChange: this.handleYearChange.bind(this), renderOption: (props, option, { selected }) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("li", { ...props, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_5__["default"], { style: { marginRight: 8 }, checked: selected }), option] })), style: { width: 250 }, renderInput: (params) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_6__["default"], { style: { padding: '10px' }, ...params, label: "Show data for year" })) }));
+        const filteredValues = _model_constantMetaData__WEBPACK_IMPORTED_MODULE_20__.AVAILABLE_YEARS;
+        const autoCompleteComponent = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_16__["default"], { options: filteredValues, value: selectedYear, onChange: this.handleYearChange.bind(this), renderOption: (props, option, { selected }) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("li", { ...props, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__["default"], { style: { marginRight: 8 }, checked: selected }), option] })), style: { width: 250 }, renderInput: (params) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_8__["default"], { style: { padding: '10px' }, ...params, label: "Show data for year" })) }));
         return autoCompleteComponent;
     }
     handleYearChange = (event, value, reason, details) => {
         if (value !== null) {
             this.props.controlStore.setSelectedYear(value);
-            _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_13__.AbstractCsvRowMapper.clearDistinctValues();
+            _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_17__.AbstractCsvRowMapper.clearDistinctValues();
             this.props.entryStore.initParser(value);
         }
     };
     get abilities() {
-        const filterdValues = Array.from(_mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_13__.AbstractCsvRowMapper.abilities)
-            .filter(([k, v]) => v > 10)
-            .map(([k, v]) => k);
-        const autoCompleteComponent = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_12__["default"], { multiple: true, id: "checkboxes-tags-demo", options: filterdValues, disableCloseOnSelect: true, value: this.props.controlStore.abilities, onChange: this.handleChangesForAbilities.bind(this), renderOption: (props, option, state) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("li", { ...props, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_5__["default"], { style: { marginRight: 8 }, checked: state.selected }), option] })), style: { width: 250 }, renderInput: (params) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_6__["default"], { style: { padding: '10px' }, ...params, label: "SQL, Java, etc." })) }));
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_15__["default"], { title: 'Tools and Technologies', controlComponent: autoCompleteComponent, isEnabled: this.props.controlStore.abilitiesFilterActive, enable: (event, value) => { this.props.controlStore.setAbilitiesFilterActive(value); } }));
+        const allAbilities = Array.from(_mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_17__.AbstractCsvRowMapper.abilities).map(([k, v]) => ({ key: k, count: v }));
+        const filterdValues = allAbilities.map(a => a.key);
+        const autoCompleteComponent = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_16__["default"], { multiple: true, id: "checkboxes-tags-demo", options: filterdValues, disableCloseOnSelect: true, value: this.props.controlStore.abilities, onChange: this.handleChangesForAbilities.bind(this), renderOption: (props, option, state) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("li", { ...props, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__["default"], { style: { marginRight: 8 }, checked: state.selected }), option] })), style: { width: 250 }, renderInput: (params) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_8__["default"], { style: { padding: '10px' }, ...params, label: "SQL, Java, etc." })) }));
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_19__["default"], { title: 'Tools and Technologies', controlComponent: autoCompleteComponent, isEnabled: this.props.controlStore.abilitiesFilterActive, enable: (event, value) => { this.props.controlStore.setAbilitiesFilterActive(value); }, count: allAbilities.length }));
     }
     get slider() {
-        const slider = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__["default"], { style: { width: '90%', minWidth: '200px' }, value: this.valuesForExp, min: 0, step: 1, max: 40, onChange: this.handleChange.bind(this), valueLabelDisplay: "auto", "aria-labelledby": "non-linear-slider" }));
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_15__["default"], { title: 'Years of Expirience', controlComponent: slider, isEnabled: this.props.controlStore.expirienceFilterActive, enable: (event, value) => { this.props.controlStore.setExpirienceFilterActive(value); } }));
+        const slider = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_9__["default"], { style: { width: '90%', minWidth: '200px' }, value: this.valuesForExp, min: 0, step: 1, max: 40, onChange: this.handleChange.bind(this), valueLabelDisplay: "auto", "aria-labelledby": "non-linear-slider" }));
+        const experienceCount = _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_17__.AbstractCsvRowMapper.years.size;
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_19__["default"], { title: 'Years of Expirience', controlComponent: slider, isEnabled: this.props.controlStore.expirienceFilterActive, enable: (event, value) => { this.props.controlStore.setExpirienceFilterActive(value); }, count: experienceCount }));
     }
     get countries() {
-        const filterdValues = Array.from(_mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_13__.AbstractCsvRowMapper.countries)
-            .filter(([k, v]) => v > 10)
-            .map(([k, v]) => k);
-        const autoCompleteComponent = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_12__["default"], { multiple: true, id: "checkboxes-tags-demo", options: filterdValues, disableCloseOnSelect: true, value: this.props.controlStore.countries, onChange: this.handleChangesForCountries.bind(this), renderOption: (props, option, state) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("li", { ...props, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_5__["default"], { style: { marginRight: 8 }, checked: state.selected }), option] })), style: { width: 250 }, renderInput: (params) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_6__["default"], { style: { padding: '10px' }, ...params, label: "USA, Japan, Germany etc." })) }));
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_15__["default"], { title: 'Countries', controlComponent: autoCompleteComponent, isEnabled: this.props.controlStore.countriesFilterActive, enable: (event, value) => { this.props.controlStore.setCountriesFilterActive(value); } }));
+        const allCountries = Array.from(_mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_17__.AbstractCsvRowMapper.countries).map(([k, v]) => ({ key: k, count: v }));
+        const filterdValues = allCountries.map(a => a.key);
+        const autoCompleteComponent = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_16__["default"], { multiple: true, id: "checkboxes-tags-demo", options: filterdValues, disableCloseOnSelect: true, value: this.props.controlStore.countries, onChange: this.handleChangesForCountries.bind(this), renderOption: (props, option, state) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("li", { ...props, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__["default"], { style: { marginRight: 8 }, checked: state.selected }), option] })), style: { width: 250 }, renderInput: (params) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_8__["default"], { style: { padding: '10px' }, ...params, label: "USA, Japan, Germany etc." })) }));
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_19__["default"], { title: 'Countries', controlComponent: autoCompleteComponent, isEnabled: this.props.controlStore.countriesFilterActive, enable: (event, value) => { this.props.controlStore.setCountriesFilterActive(value); }, count: allCountries.length }));
     }
     get degrees() {
-        const filterdValues = Array.from(_mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_13__.AbstractCsvRowMapper.educations)
-            .filter(([k, v]) => v > 10)
-            .map(([k, v]) => k);
-        const autoCompleteComponent = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_12__["default"], { multiple: true, id: "checkboxes-tags-demo", options: filterdValues, disableCloseOnSelect: true, value: this.props.controlStore.degrees, onChange: this.handleChangesForDegree.bind(this), renderOption: (props, option, state) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("li", { ...props, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_5__["default"], { style: { marginRight: 8 }, checked: state.selected }), option] })), style: { width: 250 }, renderInput: (params) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_6__["default"], { style: { padding: '10px' }, ...params, label: "Bachelor, Master, etc." })) }));
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_15__["default"], { title: 'Highest Degree', controlComponent: autoCompleteComponent, isEnabled: this.props.controlStore.degreeFilterActive, enable: (event, value) => { this.props.controlStore.setDegreeFilterActive(value); } }));
+        const allDegrees = Array.from(_mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_17__.AbstractCsvRowMapper.educations).map(([k, v]) => ({ key: k, count: v }));
+        const filterdValues = allDegrees.map(a => a.key);
+        const autoCompleteComponent = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_16__["default"], { multiple: true, id: "checkboxes-tags-demo", options: filterdValues, disableCloseOnSelect: true, value: this.props.controlStore.degrees, onChange: this.handleChangesForDegree.bind(this), renderOption: (props, option, state) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("li", { ...props, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__["default"], { style: { marginRight: 8 }, checked: state.selected }), option] })), style: { width: 250 }, renderInput: (params) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_8__["default"], { style: { padding: '10px' }, ...params, label: "Bachelor, Master, etc." })) }));
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_19__["default"], { title: 'Highest Degree', controlComponent: autoCompleteComponent, isEnabled: this.props.controlStore.degreeFilterActive, enable: (event, value) => { this.props.controlStore.setDegreeFilterActive(value); }, count: allDegrees.length }));
     }
     get valuesForExp() {
         return this.props.controlStore.expirienceInYears;
     }
     get gender() {
         const values = this.props.controlStore.genders;
-        const checkboxes = this.getCheckboxesForValues(values, Object.values(_model_gender__WEBPACK_IMPORTED_MODULE_14__.Gender).filter((v) => typeof v === 'string'));
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_15__["default"], { title: 'Gender', controlComponent: checkboxes, isEnabled: this.props.controlStore.gendersFilterActive, enable: (event, value) => { this.props.controlStore.setGendersFilterActive(value); } }));
+        const checkboxes = this.getCheckboxesForValues(values, Object.values(_model_gender__WEBPACK_IMPORTED_MODULE_18__.Gender).filter((v) => typeof v === 'string'));
+        const genderCount = _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_17__.AbstractCsvRowMapper.genders.size;
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_19__["default"], { title: 'Gender', controlComponent: checkboxes, isEnabled: this.props.controlStore.gendersFilterActive, enable: (event, value) => { this.props.controlStore.setGendersFilterActive(value); }, count: genderCount }));
     }
     getCheckboxesForValues(selectedValues, enumKeys) {
         const values = enumKeys.map(g => g.toString());
         const checkboxes = values.map(value => {
-            const check = selectedValues.includes(_model_gender__WEBPACK_IMPORTED_MODULE_14__.Gender[value]);
-            return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_8__["default"], { control: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_5__["default"], { checked: check, onChange: () => { this.props.controlStore.setGenders(_model_gender__WEBPACK_IMPORTED_MODULE_14__.Gender[value]); } }), label: value }, this.key++));
+            const check = selectedValues.includes(_model_gender__WEBPACK_IMPORTED_MODULE_18__.Gender[value]);
+            return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_10__["default"], { control: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__["default"], { checked: check, onChange: () => { this.props.controlStore.setGenders(_model_gender__WEBPACK_IMPORTED_MODULE_18__.Gender[value]); } }), label: value }, this.key++));
         });
         return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { children: checkboxes }));
     }
-    get sliderForCompanySize() {
+    get companySizeInputs() {
+        const currentMin = this.props.controlStore.companySize[0];
+        const currentMax = this.props.controlStore.companySize[1];
         const values = this.props.controlStore.companySizeValues;
-        const slider = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_7__["default"], { style: { width: '90%', minWidth: '200px' }, value: this.props.controlStore?.companySize, min: values.min, step: values.steps, max: values.max, onChange: this.handleChangeForCompanySize.bind(this), valueLabelDisplay: "auto", "aria-labelledby": "non-linear-slider" }));
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_15__["default"], { title: 'Company Size', controlComponent: slider, isEnabled: this.props.controlStore.companySizeFilterActive, enable: (event, value) => { this.props.controlStore.setCompanySizeFilterActive(value); } }));
+        const allCompanySizes = _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_17__.AbstractCsvRowMapper.companySize ?? new Map();
+        const inputs = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_8__["default"], { label: "From", type: "number", value: currentMin ?? '', onChange: this.handleMinCompanySizeChange.bind(this), inputProps: { min: values.min, max: values.max, step: 1 }, style: { width: 120 } }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_8__["default"], { label: "To", type: "number", value: currentMax ?? '', onChange: this.handleMaxCompanySizeChange.bind(this), inputProps: { min: values.min, max: values.max, step: 1 }, style: { width: 120 } })] }));
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_19__["default"], { title: 'Company Size', controlComponent: inputs, isEnabled: this.props.controlStore.companySizeFilterActive, enable: (event, value) => { this.props.controlStore.setCompanySizeFilterActive(value); }, count: allCompanySizes.size }));
     }
+    get salaryFilter() {
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_19__["default"], { title: 'Salary Threshold Filter', controlComponent: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_5__["default"], { variant: "body2", style: { padding: '10px', color: '#666', fontSize: '0.85em' }, children: "When disabled: consider all salaries. When enabled: filter 10k-250k" }), isEnabled: this.props.controlStore.enableSalaryFilter, enable: (event, value) => { this.props.controlStore.setEnableSalaryFilter(value); } }));
+    }
+    handleMinCompanySizeChange = (event) => {
+        const value = event.target.value === '' ? null : parseInt(event.target.value, 10);
+        this.props.controlStore.setCompanySizeFromMin(value);
+    };
+    handleMaxCompanySizeChange = (event) => {
+        const value = event.target.value === '' ? null : parseInt(event.target.value, 10);
+        this.props.controlStore.setCompanySizeFromMax(value);
+    };
     handleChangesForCountries(event, value) {
         this.props.controlStore.setCountries(value);
     }
@@ -406056,12 +406618,10 @@ class ControlPane extends react__WEBPACK_IMPORTED_MODULE_1__.Component {
     handleChange(event, value) {
         this.props.controlStore.setExp(value);
     }
-    handleChangeForCompanySize(event, value) {
-        this.props.controlStore.setCompanySize(value);
-    }
     handleSaveToSession = () => {
         const state = this.props.controlStore.getSessionState();
         sessionStorage.setItem('controlPaneSettings', JSON.stringify(state, null, 2));
+        this.handleMenuClose();
     };
     handleLoadFromSession = () => {
         const saved = sessionStorage.getItem('controlPaneSettings');
@@ -406070,6 +406630,7 @@ class ControlPane extends react__WEBPACK_IMPORTED_MODULE_1__.Component {
             this.props.controlStore.loadFromSessionState(parsed);
             this.setState({ refreshKey: this.state.refreshKey + 1 });
         }
+        this.handleMenuClose();
     };
     handleDownloadJson = () => {
         const state = this.props.controlStore.getSessionState();
@@ -406081,6 +406642,7 @@ class ControlPane extends react__WEBPACK_IMPORTED_MODULE_1__.Component {
         a.download = 'control-pane-settings.json';
         a.click();
         URL.revokeObjectURL(url);
+        this.handleMenuClose();
     };
     handleUploadJson = () => {
         const input = document.createElement('input');
@@ -406099,6 +406661,7 @@ class ControlPane extends react__WEBPACK_IMPORTED_MODULE_1__.Component {
             }
         };
         input.click();
+        this.handleMenuClose();
     };
     handleShareLink = () => {
         const state = this.props.controlStore.getSessionState();
@@ -406107,12 +406670,10 @@ class ControlPane extends react__WEBPACK_IMPORTED_MODULE_1__.Component {
         navigator.clipboard.writeText(url).then(() => {
             alert('Share link copied to clipboard!');
         });
+        this.handleMenuClose();
     };
-    get sessionButtons() {
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_material_ui_core__WEBPACK_IMPORTED_MODULE_2__["default"], { style: { display: 'flex', gap: '8px', marginTop: '16px', flexWrap: 'wrap' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_9__["default"], { variant: "contained", size: "small", onClick: this.handleSaveToSession, children: "Save to Session" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_9__["default"], { variant: "contained", size: "small", onClick: this.handleLoadFromSession, children: "Load from Session" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_9__["default"], { variant: "contained", size: "small", onClick: this.handleDownloadJson, children: "Download JSON" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_9__["default"], { variant: "contained", size: "small", onClick: this.handleUploadJson, children: "Upload JSON" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_material_ui_core__WEBPACK_IMPORTED_MODULE_9__["default"], { variant: "contained", size: "small", onClick: this.handleShareLink, children: "Share Link" })] }));
-    }
 }
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,mobx_react__WEBPACK_IMPORTED_MODULE_10__.inject)(..._stores_storeHelper__WEBPACK_IMPORTED_MODULE_11__.injectClause)((0,mobx_react__WEBPACK_IMPORTED_MODULE_10__.observer)(ControlPane)));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,mobx_react__WEBPACK_IMPORTED_MODULE_14__.inject)(..._stores_storeHelper__WEBPACK_IMPORTED_MODULE_15__.injectClause)((0,mobx_react__WEBPACK_IMPORTED_MODULE_14__.observer)(ControlPane)));
 
 
 /***/ },
@@ -406289,6 +406850,7 @@ class AbstractCsvRowMapper {
     static genders = new Set();
     static years = new Set();
     static abilities = new Map();
+    static companySize = new Map();
     map(csvRow) {
         const result = new _model_surveyEntry__WEBPACK_IMPORTED_MODULE_2__["default"]();
         this.setSalary(csvRow, result);
@@ -406330,6 +406892,7 @@ class AbstractCsvRowMapper {
         AbstractCsvRowMapper.genders.clear();
         AbstractCsvRowMapper.years.clear();
         AbstractCsvRowMapper.abilities.clear();
+        AbstractCsvRowMapper.companySize.clear();
     }
     addKeyAndupdateKeyCount(key, targetList) {
         if (key == null) {
@@ -406423,6 +406986,13 @@ class AbstractCsvRowMapper {
             // When column is not defined it is null.
             return;
         }
+        const id = this.valueAsId(companySize);
+        const invalidValues = ['response', '', 'none', 'other', 'others', 'otherpleasespecify'];
+        if (invalidValues.indexOf(id) !== -1) {
+            return;
+        }
+        const newValue = (AbstractCsvRowMapper.companySize.get(id) ?? 0) + 1;
+        AbstractCsvRowMapper.companySize.set(id, newValue);
         let mappedResult;
         // https://stackoverflow.com/questions/10003683/how-can-i-extract-a-number-from-a-string-in-javascript
         // thenum = "foo3bar5".match(/\d+/)[0] // "3"
@@ -406476,35 +407046,79 @@ class AbstractCsvRowMapper {
         const salary = csvRow[this.SALARY_KEY];
         if (salary != null) {
             const salaryValue = this.getSalaryValue(salary);
-            if (salaryValue < 10000) {
-                return;
+            if (salaryValue !== -1 && Math.abs(salaryValue) > 0) {
+                result._salary = Math.abs(salaryValue);
             }
-            result._salary = salaryValue;
         }
         const currency = csvRow[this.CURRENCY_KEY];
         if (currency != null) {
             result.currency = this.getCurrency(currency);
         }
-        if (result.salary > 250000) {
-            // console.error('Bad ratio: ' + currency + ' with value ' + result._salary)
-            result._salary = -1;
-        }
     }
     getCurrency(value) {
-        if (this.containsValue(value, 'EUR')) {
+        const upperValue = value.toUpperCase();
+        if (upperValue.includes('EUR'))
             return _model_currency__WEBPACK_IMPORTED_MODULE_0__.Currency.EUR;
-        }
-        if (this.containsValue(value, 'YEN')) {
+        if (upperValue.includes('YEN') || upperValue.includes('JPY'))
             return _model_currency__WEBPACK_IMPORTED_MODULE_0__.Currency.JPY;
-        }
-        if (this.containsValue(value, 'POUNDS')) {
+        if (upperValue.includes('POUNDS') || upperValue.includes('GBP'))
             return _model_currency__WEBPACK_IMPORTED_MODULE_0__.Currency.GBP;
-        }
-        if (this.containsValue(value, 'US DOLLAR')) {
+        if (upperValue.includes('US DOLLAR') || upperValue.includes('USD'))
             return _model_currency__WEBPACK_IMPORTED_MODULE_0__.Currency.USD;
-        }
-        // TODO: Add all currencies
-        // console.error('Cannot map ' + value + ' to currency. Setting to default USD.')
+        if (upperValue.includes('CAD'))
+            return _model_currency__WEBPACK_IMPORTED_MODULE_0__.Currency.CAD;
+        if (upperValue.includes('AUD'))
+            return _model_currency__WEBPACK_IMPORTED_MODULE_0__.Currency.AUD;
+        if (upperValue.includes('CHF'))
+            return _model_currency__WEBPACK_IMPORTED_MODULE_0__.Currency.CHF;
+        if (upperValue.includes('CNY'))
+            return _model_currency__WEBPACK_IMPORTED_MODULE_0__.Currency.CNY;
+        if (upperValue.includes('INR'))
+            return _model_currency__WEBPACK_IMPORTED_MODULE_0__.Currency.INR;
+        if (upperValue.includes('SEK'))
+            return _model_currency__WEBPACK_IMPORTED_MODULE_0__.Currency.SEK;
+        if (upperValue.includes('NZD'))
+            return _model_currency__WEBPACK_IMPORTED_MODULE_0__.Currency.NZD;
+        if (upperValue.includes('BRL'))
+            return _model_currency__WEBPACK_IMPORTED_MODULE_0__.Currency.BRL;
+        if (upperValue.includes('SGD'))
+            return _model_currency__WEBPACK_IMPORTED_MODULE_0__.Currency.SGD;
+        if (upperValue.includes('HKD'))
+            return _model_currency__WEBPACK_IMPORTED_MODULE_0__.Currency.HKD;
+        if (upperValue.includes('NOK'))
+            return _model_currency__WEBPACK_IMPORTED_MODULE_0__.Currency.NOK;
+        if (upperValue.includes('ZAR'))
+            return _model_currency__WEBPACK_IMPORTED_MODULE_0__.Currency.ZAR;
+        if (upperValue.includes('RUB'))
+            return _model_currency__WEBPACK_IMPORTED_MODULE_0__.Currency.RUB;
+        if (upperValue.includes('TRY'))
+            return _model_currency__WEBPACK_IMPORTED_MODULE_0__.Currency.TRY;
+        if (upperValue.includes('KRW'))
+            return _model_currency__WEBPACK_IMPORTED_MODULE_0__.Currency.KRW;
+        if (upperValue.includes('IDR'))
+            return _model_currency__WEBPACK_IMPORTED_MODULE_0__.Currency.IDR;
+        if (upperValue.includes('MYR'))
+            return _model_currency__WEBPACK_IMPORTED_MODULE_0__.Currency.MYR;
+        if (upperValue.includes('PHP'))
+            return _model_currency__WEBPACK_IMPORTED_MODULE_0__.Currency.PHP;
+        if (upperValue.includes('THB'))
+            return _model_currency__WEBPACK_IMPORTED_MODULE_0__.Currency.THB;
+        if (upperValue.includes('PLN'))
+            return _model_currency__WEBPACK_IMPORTED_MODULE_0__.Currency.PLN;
+        if (upperValue.includes('CZK'))
+            return _model_currency__WEBPACK_IMPORTED_MODULE_0__.Currency.CZK;
+        if (upperValue.includes('ILS'))
+            return _model_currency__WEBPACK_IMPORTED_MODULE_0__.Currency.ILS;
+        if (upperValue.includes('CLP'))
+            return _model_currency__WEBPACK_IMPORTED_MODULE_0__.Currency.CLP;
+        if (upperValue.includes('AED'))
+            return _model_currency__WEBPACK_IMPORTED_MODULE_0__.Currency.AED;
+        if (upperValue.includes('SAR'))
+            return _model_currency__WEBPACK_IMPORTED_MODULE_0__.Currency.SAR;
+        if (upperValue.includes('TWD'))
+            return _model_currency__WEBPACK_IMPORTED_MODULE_0__.Currency.TWD;
+        if (upperValue.includes('MXN'))
+            return _model_currency__WEBPACK_IMPORTED_MODULE_0__.Currency.MXN;
         return _model_currency__WEBPACK_IMPORTED_MODULE_0__.Currency.USD;
     }
     containsValue(value, find) {
@@ -407133,7 +407747,7 @@ class ControlState {
     expirienceInYears;
     genders;
     abilities;
-    companySize = [1, 100000];
+    companySize = [null, null];
     countries = [];
     degrees = [];
     gendersFilterActive = false;
@@ -407142,16 +407756,25 @@ class ControlState {
     companySizeFilterActive = false;
     degreeFilterActive = false;
     countriesFilterActive = false;
+    enableSalaryFilter = true;
     constructor(partial) {
         Object.assign(this, partial);
     }
     filterByState(entry) {
-        return this.filterByExpierience(entry)
+        return this.filterBySalary(entry)
+            && this.filterByExpierience(entry)
             && this.filterByAbilities(entry)
             && this.filterByGender(entry)
             && this.filterByCompanySize(entry)
             && this.filterByCountries(entry)
             && this.filterByDegree(entry);
+    }
+    filterBySalary(entry) {
+        if (!this.enableSalaryFilter) {
+            return true;
+        }
+        const salary = entry.salary;
+        return salary >= 10000 && salary <= 250000;
     }
     filterByAbilities(entry) {
         if (this.abilities.length === 0 || this.abilitiesFilterActive === false) {
@@ -407198,11 +407821,21 @@ class ControlState {
         }
         const companySize = entry.companySize;
         if (companySize != null) {
-            const max = this.companySize[1];
-            const min = this.companySize[0];
-            if (companySize.max <= max
-                || companySize.min >= min) {
+            const filterMin = this.companySize[0];
+            const filterMax = this.companySize[1];
+            const entryMin = companySize.min;
+            const entryMax = companySize.max;
+            if (filterMin === null && filterMax === null) {
                 return true;
+            }
+            else if (filterMin !== null && filterMax !== null) {
+                return entryMax >= filterMin && entryMin <= filterMax;
+            }
+            else if (filterMin !== null && filterMax === null) {
+                return entryMax >= filterMin;
+            }
+            else if (filterMin === null && filterMax !== null) {
+                return entryMin <= filterMax;
             }
         }
         return false;
@@ -407231,7 +407864,32 @@ var Currency;
     Currency["JPY"] = "JPY";
     Currency["MXN"] = "MXN";
     Currency["GBP"] = "GBP";
-    // TODO: Complete..
+    Currency["CAD"] = "CAD";
+    Currency["AUD"] = "AUD";
+    Currency["CHF"] = "CHF";
+    Currency["CNY"] = "CNY";
+    Currency["INR"] = "INR";
+    Currency["SEK"] = "SEK";
+    Currency["NZD"] = "NZD";
+    Currency["BRL"] = "BRL";
+    Currency["SGD"] = "SGD";
+    Currency["HKD"] = "HKD";
+    Currency["NOK"] = "NOK";
+    Currency["ZAR"] = "ZAR";
+    Currency["RUB"] = "RUB";
+    Currency["TRY"] = "TRY";
+    Currency["KRW"] = "KRW";
+    Currency["IDR"] = "IDR";
+    Currency["MYR"] = "MYR";
+    Currency["PHP"] = "PHP";
+    Currency["THB"] = "THB";
+    Currency["PLN"] = "PLN";
+    Currency["CZK"] = "CZK";
+    Currency["ILS"] = "ILS";
+    Currency["CLP"] = "CLP";
+    Currency["AED"] = "AED";
+    Currency["SAR"] = "SAR";
+    Currency["TWD"] = "TWD";
 })(Currency || (Currency = {}));
 
 
@@ -407433,6 +408091,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (/* binding */ CurrencyService)
 /* harmony export */ });
 /* harmony import */ var _model_currencyValues__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../model/currencyValues */ "./src/model/currencyValues.ts");
+/* harmony import */ var _model_currency__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../model/currency */ "./src/model/currency.ts");
+
 
 // Default currency values (USD = 1, EUR = 0.9, GBP = 0.8, etc.)
 const DEFAULT_CURRENCY_VALUES = {
@@ -407441,46 +408101,63 @@ const DEFAULT_CURRENCY_VALUES = {
         timestamp: Math.floor(Date.now() / 1000)
     },
     data: {
-        USD: 1,
-        EUR: 0.9,
-        GBP: 0.8,
-        CAD: 1.3,
-        AUD: 1.4,
-        JPY: 110,
-        CHF: 0.9,
-        CNY: 6.5,
-        INR: 75
-        // Add more as needed
+        [_model_currency__WEBPACK_IMPORTED_MODULE_1__.Currency.USD]: 1,
+        [_model_currency__WEBPACK_IMPORTED_MODULE_1__.Currency.EUR]: 0.9,
+        [_model_currency__WEBPACK_IMPORTED_MODULE_1__.Currency.GBP]: 0.8,
+        [_model_currency__WEBPACK_IMPORTED_MODULE_1__.Currency.CAD]: 1.3,
+        [_model_currency__WEBPACK_IMPORTED_MODULE_1__.Currency.AUD]: 1.4,
+        [_model_currency__WEBPACK_IMPORTED_MODULE_1__.Currency.JPY]: 110,
+        [_model_currency__WEBPACK_IMPORTED_MODULE_1__.Currency.CHF]: 0.9,
+        [_model_currency__WEBPACK_IMPORTED_MODULE_1__.Currency.CNY]: 6.5,
+        [_model_currency__WEBPACK_IMPORTED_MODULE_1__.Currency.INR]: 75,
+        [_model_currency__WEBPACK_IMPORTED_MODULE_1__.Currency.SEK]: 11,
+        [_model_currency__WEBPACK_IMPORTED_MODULE_1__.Currency.NZD]: 1.6,
+        [_model_currency__WEBPACK_IMPORTED_MODULE_1__.Currency.BRL]: 5.2,
+        [_model_currency__WEBPACK_IMPORTED_MODULE_1__.Currency.SGD]: 1.35,
+        [_model_currency__WEBPACK_IMPORTED_MODULE_1__.Currency.HKD]: 7.8,
+        [_model_currency__WEBPACK_IMPORTED_MODULE_1__.Currency.NOK]: 10.5,
+        [_model_currency__WEBPACK_IMPORTED_MODULE_1__.Currency.ZAR]: 18,
+        [_model_currency__WEBPACK_IMPORTED_MODULE_1__.Currency.RUB]: 90,
+        [_model_currency__WEBPACK_IMPORTED_MODULE_1__.Currency.TRY]: 30,
+        [_model_currency__WEBPACK_IMPORTED_MODULE_1__.Currency.KRW]: 1300,
+        [_model_currency__WEBPACK_IMPORTED_MODULE_1__.Currency.IDR]: 15000,
+        [_model_currency__WEBPACK_IMPORTED_MODULE_1__.Currency.MYR]: 4.2,
+        [_model_currency__WEBPACK_IMPORTED_MODULE_1__.Currency.PHP]: 55,
+        [_model_currency__WEBPACK_IMPORTED_MODULE_1__.Currency.THB]: 35,
+        [_model_currency__WEBPACK_IMPORTED_MODULE_1__.Currency.PLN]: 4.2,
+        [_model_currency__WEBPACK_IMPORTED_MODULE_1__.Currency.CZK]: 22,
+        [_model_currency__WEBPACK_IMPORTED_MODULE_1__.Currency.ILS]: 3.7,
+        [_model_currency__WEBPACK_IMPORTED_MODULE_1__.Currency.CLP]: 850,
+        [_model_currency__WEBPACK_IMPORTED_MODULE_1__.Currency.AED]: 3.7,
+        [_model_currency__WEBPACK_IMPORTED_MODULE_1__.Currency.SAR]: 3.75,
+        [_model_currency__WEBPACK_IMPORTED_MODULE_1__.Currency.TWD]: 31
     },
     getRatioByCode(currency) {
-        return this.data[currency] || 1;
+        return this.data[currency] ?? 1;
     }
 };
 // https://freecurrencyapi.net/api/v2/latest?apikey=d3626290-68c5-11ec-abd0-4f2669673a10&base_currency=USD
-// TODO: Get average 2019-01-01 and 2019-12-31
-// https://freecurrencyapi.net/api/v2/historical?date_from=2019-12-31&date_to=2019-12-31&apikey=d3626290-68c5-11ec-abd0-4f2669673a10
+// Note: For CORS in development, use a proxy or browser extension. In production, consider server-side proxy.
 class CurrencyService {
-    baseUrl = 'https://freecurrencyapi.net/api/v2/';
+    baseUrl = 'https://api.freecurrencyapi.com/v1/latest?apikey=d3626290-68c5-11ec-abd0-4f2669673a10&base_currency=USD';
     getCurrencies() {
-        return fetch(this.baseUrl + 'latest?apikey=d3626290-68c5-11ec-abd0-4f2669673a10&base_currency=USD')
+        return fetch(this.baseUrl)
             .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             return response.json().then(data => {
                 const cur = new _model_currencyValues__WEBPACK_IMPORTED_MODULE_0__["default"]();
-                // Assign the response data to the currency values object
                 cur.query = {
-                    base_currency: data.query.base_currency,
-                    timestamp: data.query.timestamp
+                    base_currency: data.query?.base_currency ?? 'USD',
+                    timestamp: data.query?.timestamp ?? Math.floor(Date.now() / 1000)
                 };
-                cur.data = data.data;
+                cur.data = data.data ?? {};
                 return cur;
             });
         })
             .catch(error => {
             console.warn('Failed to fetch currency data, using default values:', error);
-            // Return default values instead of failing
             return DEFAULT_CURRENCY_VALUES;
         });
     }
@@ -407614,7 +408291,7 @@ class ControlStore {
     expirienceInYears = [4, 20];
     genders = [_model_gender__WEBPACK_IMPORTED_MODULE_2__.Gender.MALE, _model_gender__WEBPACK_IMPORTED_MODULE_2__.Gender.FEMALE, _model_gender__WEBPACK_IMPORTED_MODULE_2__.Gender.OTHER];
     abilities = [];
-    companySize = [1, 100000];
+    companySize = [null, null];
     countries = [];
     degrees = [];
     gendersFilterActive = false;
@@ -407623,6 +408300,7 @@ class ControlStore {
     companySizeFilterActive = false;
     degreeFilterActive = false;
     countriesFilterActive = false;
+    enableSalaryFilter = true;
     pendingState = null;
     constructor() {
         (0,mobx__WEBPACK_IMPORTED_MODULE_0__.makeAutoObservable)(this);
@@ -407644,6 +408322,7 @@ class ControlStore {
         const companySizeFilterActive = this.companySizeFilterActive;
         const degreeFilterActive = this.degreeFilterActive;
         const countriesFilterActive = this.countriesFilterActive;
+        const enableSalaryFilter = this.enableSalaryFilter;
         return new _model_controlState__WEBPACK_IMPORTED_MODULE_1__["default"]({
             selectedYear,
             expirienceInYears,
@@ -407657,7 +408336,8 @@ class ControlStore {
             expirienceFilterActive,
             companySizeFilterActive,
             degreeFilterActive,
-            countriesFilterActive
+            countriesFilterActive,
+            enableSalaryFilter
         });
     }
     get companySizeValues() {
@@ -407692,8 +408372,11 @@ class ControlStore {
     setAbilities(abilities) {
         this.abilities = abilities;
     }
-    setCompanySize(values) {
-        this.companySize = [values[0], values[1]];
+    setCompanySizeFromMin(min) {
+        this.companySize = [min, this.companySize[1]];
+    }
+    setCompanySizeFromMax(max) {
+        this.companySize = [this.companySize[0], max];
     }
     setCountries(countries) {
         this.countries = countries;
@@ -407718,6 +408401,9 @@ class ControlStore {
     }
     setCountriesFilterActive(countriesFilterActive) {
         this.countriesFilterActive = countriesFilterActive;
+    }
+    setEnableSalaryFilter(enableSalaryFilter) {
+        this.enableSalaryFilter = enableSalaryFilter;
     }
     loadPendingState() {
         if (this.pendingState) {
@@ -407748,6 +408434,8 @@ class ControlStore {
                 this.degreeFilterActive = state.degreeFilterActive;
             if (state.countriesFilterActive !== undefined)
                 this.countriesFilterActive = state.countriesFilterActive;
+            if (state.enableSalaryFilter !== undefined)
+                this.enableSalaryFilter = state.enableSalaryFilter;
         }
     }
     getSessionState() {
@@ -407764,7 +408452,8 @@ class ControlStore {
             expirienceFilterActive: this.expirienceFilterActive,
             companySizeFilterActive: this.companySizeFilterActive,
             degreeFilterActive: this.degreeFilterActive,
-            countriesFilterActive: this.countriesFilterActive
+            countriesFilterActive: this.countriesFilterActive,
+            enableSalaryFilter: this.enableSalaryFilter
         };
     }
     loadFromSessionState(state) {
@@ -407795,6 +408484,8 @@ class ControlStore {
             this.degreeFilterActive = state.degreeFilterActive;
         if (state.countriesFilterActive !== undefined)
             this.countriesFilterActive = state.countriesFilterActive;
+        if (state.enableSalaryFilter !== undefined)
+            this.enableSalaryFilter = state.enableSalaryFilter;
     }
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (new ControlStore());
@@ -407961,13 +408652,25 @@ class UiStore {
         this.initReactions();
     }
     initReactions() {
-        // Create a debounced reaction that only updates when overallEntryCount changes
+        // Create a debounced reaction that updates when data or filter state changes
         this.reactionDisposer = (0,mobx__WEBPACK_IMPORTED_MODULE_0__.reaction)(() => {
-            // Return a summary that only changes when counts change
             const years = Object.keys(this.entryStore.parsedDataByYear);
+            const cs = this.controlStore;
             return years.map(y => ({
                 year: parseInt(y, 10),
-                overallEntryCount: this.entryStore.parsedDataByYear[parseInt(y, 10)].overallEntryCount
+                overallEntryCount: this.entryStore.parsedDataByYear[parseInt(y, 10)].overallEntryCount,
+                expirienceInYears: cs.expirienceInYears,
+                companySize: cs.companySize,
+                gendersFilterActive: cs.gendersFilterActive,
+                genders: cs.genders,
+                abilitiesFilterActive: cs.abilitiesFilterActive,
+                abilities: cs.abilities,
+                countriesFilterActive: cs.countriesFilterActive,
+                countries: cs.countries,
+                degreeFilterActive: cs.degreeFilterActive,
+                degrees: cs.degrees,
+                companySizeFilterActive: cs.companySizeFilterActive,
+                enableSalaryFilter: cs.enableSalaryFilter
             }));
         }, () => {
             const now = Date.now();
