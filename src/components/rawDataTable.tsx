@@ -3,14 +3,13 @@ import { observer } from 'mobx-react'
 import { DataGrid, GridColDef } from '@mui/x-data-grid'
 import Loader from 'react-loader-spinner'
 import entryStore from '../stores/entryStore'
-import controlStore from '../stores/controlStore'
 import { FormLabel } from '@material-ui/core'
 
 const RawDataTable = observer(() => {
-    const selectedYearNum = parseInt(controlStore.selectedYear, 10)
+    const selectedYearNum = parseInt(entryStore.selectedYear, 10)
     const selectedYearData = entryStore.parsedDataByYear[selectedYearNum]
     const rawData = selectedYearData?.rawCsvRows ?? []
-    
+
     if (rawData.length === 0) {
         return (
             <div style={{textAlign: 'center', padding: '40px'}}>

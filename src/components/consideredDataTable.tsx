@@ -5,42 +5,43 @@ import Loader from 'react-loader-spinner'
 import { uiStore } from '../stores/uiStore'
 import controlStore from '../stores/controlStore'
 import entryStore from '../stores/entryStore'
-import { FormLabel, Tabs, Tab, Typography } from '@material-ui/core'
+import { FormLabel, Tabs, Tab } from '@material-ui/core'
 
-const formatValueForDisplay = (value: any): string => {
+const formatValueForDisplay = (value: unknown): string => {
     if (value === null || value === undefined) {
         return ''
     }
-   
+
     if (typeof value === 'object') {
         if (value instanceof Date) {
             return value.toLocaleDateString()
         }
-     
-        if (value.min !== undefined && value.max !== undefined) {
-            return `${value.min}-${value.max === null ? '∞' : value.max}`
+
+        if (typeof value === 'object' && value !== null && 'min' in value && 'max' in value) {
+            const obj = value as { min: number; max: number | null }
+            return `${obj.min}-${obj.max === null ? '∞' : obj.max}`
         }
-     
+
         if (Array.isArray(value)) {
             return value.join(', ')
         }
-     
-        if (Object.prototype.hasOwnProperty.call(value, 'name') && typeof value.name === 'string') {
-            return value.name
+
+        if (typeof value === 'object' && value !== null && Object.prototype.hasOwnProperty.call(value, 'name') && typeof (value as { name?: unknown }).name === 'string') {
+            return (value as { name: string }).name
         }
-     
+
         try {
-            const entries = Object.entries(value)
+            const entries = Object.entries(value as object)
             if (entries.length <= 2) {
                 return entries.map(([k, v]) => `${k}: ${v}`).join(', ')
             }
         } catch (e) {
             // ignore
         }
-     
+
         return '[Object]'
     }
-   
+
     return String(value)
 }
 
@@ -48,14 +49,14 @@ const ConsideredDataTable = observer(() => {
     const [tabIndex, setTabIndex] = React.useState(0)
     const selectedYearNum = parseInt(controlStore.selectedYear, 10)
     const selectedYearData = entryStore.parsedDataByYear[selectedYearNum]
-    
+
     const rawCsvRows = selectedYearData?.rawCsvRows ?? []
     const mappedData = selectedYearData?.resultSet ?? []
     const filteredData = uiStore.filteredData[selectedYearNum] ?? []
 
     const isLoading = mappedData.length === 0
 
-    const changeTab = (event: React.ChangeEvent<{}>, newValue: number) => {
+    const changeTab = (_event: React.SyntheticEvent<Element>, newValue: number) => {
         setTabIndex(newValue)
     }
 
@@ -70,9 +71,7 @@ const ConsideredDataTable = observer(() => {
 
     const renderRawCsvTable = () => {
         if (rawCsvRows.length === 0) {
-            return (
-                <Typography style={{padding: '20px'}}>No raw CSV data available</Typography>
-            )
+            return <p style={{padding: '20px'}}>No raw CSV data available</p>
         }
         const rowsWithId = rawCsvRows.map((entry, index) => ({
             ...entry,

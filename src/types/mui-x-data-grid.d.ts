@@ -9,7 +9,6 @@ declare module '@mui/x-data-grid' {
     minWidth?: number | string;
     flex?: number;
     sortable?: boolean;
-    sortable?: boolean;
     resizable?: boolean;
     suppressMenu?: boolean;
     suppressMovable?: boolean;
@@ -68,8 +67,6 @@ declare module '@mui/x-data-grid' {
     disableVirtualization?: boolean;
     /** If true, the grid will have a checkbox column for selection. */
     checkboxSelection?: boolean;
-    /** If true, clicking a row will not select it. */
-    disableSelectionOnClick?: boolean;
     /** Callback fired when the page changes. */
     onPageChange?: (newPage: number, pageSize: number) => void;
     /** Callback fired when the page size changes. */

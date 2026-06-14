@@ -12,7 +12,6 @@ import controlStore from '../stores/controlStore'
 import { Tab, Tabs } from '@mui/material'
 import { StoreProps } from '../stores/storeHelper'
 import SurveyEntry from '../model/surveyEntry'
-import RawDataTable from './rawDataTable'
 import ConsideredDataTable from './consideredDataTable'
 import { uiStore } from '../stores/uiStore'
 import CurrencyConversionTable from './currencyConversionTable'
@@ -84,7 +83,6 @@ class App extends React.Component<Record<string, unknown>, AppState> {
                                                     }}>
                                                     <Tab label="Salary" />
                                                     <Tab label="Participation" />
-                                                    <Tab label="Raw Data" />
                                                     <Tab label="Considered Data" />
                                                     <Tab label="Currency Rates" />
                                                 </Tabs>
@@ -93,9 +91,8 @@ class App extends React.Component<Record<string, unknown>, AppState> {
                                                 <div style={{width: '100%', height: '100%'}}>
                                                     {this.state.tabIndex === 0 ? <BoxPlot></BoxPlot> :
                                                         this.state.tabIndex === 1 ? <BarPlot></BarPlot> :
-                                                            this.state.tabIndex === 2 ? <RawDataTable></RawDataTable> :
-                                                                this.state.tabIndex === 3 ? <ConsideredDataTable></ConsideredDataTable> :
-                                                                    <CurrencyConversionTable></CurrencyConversionTable>}
+                                                            this.state.tabIndex === 2 ? <ConsideredDataTable></ConsideredDataTable> :
+                                                                <CurrencyConversionTable></CurrencyConversionTable>}
                                                 </div>
                                             </div>
                                         </Allotment.Pane>
@@ -115,7 +112,7 @@ class App extends React.Component<Record<string, unknown>, AppState> {
         )
     }
 
-    private changeTab = (event: React.ChangeEvent<{}>, newValue: number | string) => {
+    private changeTab = (event: React.ChangeEvent<unknown>, newValue: number | string): void => {
         this.setState({tabIndex: Number(newValue)})
     }
 
