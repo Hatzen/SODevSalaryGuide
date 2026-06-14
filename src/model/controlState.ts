@@ -1,5 +1,6 @@
 import { Gender } from './gender'
 import SurveyEntry from './surveyEntry'
+import { Currency } from './currency'
 
 export default class ControlState {
     selectedYear!: string
@@ -9,6 +10,7 @@ export default class ControlState {
     companySize: [min: number | null, max: number | null] = [null, null]
     countries: string[] = []
     degrees: string[] = []
+    selectedCurrency: Currency = Currency.EUR
 
     gendersFilterActive = false
     abilitiesFilterActive = false

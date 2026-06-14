@@ -34,6 +34,9 @@ class BoxPlot extends React.Component<StoreProps> {
                     onInitialized={this.handleInit}
                     onUpdate={this.handleUpdate}
                 />
+                <div style={{ position: 'absolute', top: '10px', right: '10px', backgroundColor: 'rgba(255,255,255,0.9)', padding: '8px 12px', borderRadius: '4px', fontSize: '12px' }}>
+                    {this.statisticsHint}
+                </div>
             </div>
         )
     }
@@ -73,6 +76,8 @@ class BoxPlot extends React.Component<StoreProps> {
         const resultList = this.props.uiStore!.filteredData
         const selectedYearStr = this.props.controlStore!.controlState.selectedYear
         const selectedYearNum = parseInt(selectedYearStr, 10)
+        const selectedCurrency = this.props.controlStore!.controlState.selectedCurrency
+        const currencyValues = this.props.entryStore!.currencyValues
 
         const yearData = resultList[selectedYearNum]
 
@@ -83,11 +88,19 @@ class BoxPlot extends React.Component<StoreProps> {
         const trace: Data = {
             type: 'box',
             boxmean: 'sd',
+            boxpoints: 'all',
             name: 'Year ' + selectedYearStr,
             marker: {
                 color: '#F48024'
             },
-            y: yearData.map((entry: SurveyEntry) => entry.salary),
+            y: yearData.map((entry: SurveyEntry) => {
+                const rawSalary = entry._salary
+                const entryCurrencyRatio = currencyValues?.getRatioByCode(entry.currency) ?? 1
+                const usdSalary = rawSalary / entryCurrencyRatio
+                const targetCurrencyRatio = currencyValues?.getRatioByCode(selectedCurrency) ?? 1
+                return usdSalary * targetCurrencyRatio
+            }),
+            hovertemplate: 'Median: %{median}<br>Mean: %{mean}<br>Std: %{sd}<extra></extra>'
         }
         return [trace]
     }
@@ -102,6 +115,32 @@ class BoxPlot extends React.Component<StoreProps> {
             paper_bgcolor: '#FF000000',
             plot_bgcolor: '#FF000000',
         }
+    }
+
+    private get statisticsHint(): string {
+        const resultList = this.props.uiStore!.filteredData
+        const selectedYearStr = this.props.controlStore!.controlState.selectedYear
+        const selectedYearNum = parseInt(selectedYearStr, 10)
+        const selectedCurrency = this.props.controlStore!.controlState.selectedCurrency
+        const currencyValues = this.props.entryStore!.currencyValues
+
+        const yearData = resultList[selectedYearNum]
+        if (!yearData || yearData.length === 0) return 'No data available'
+
+        const salaries = yearData.map((entry: SurveyEntry) => {
+            const rawSalary = entry._salary
+            const entryCurrencyRatio = currencyValues?.getRatioByCode(entry.currency) ?? 1
+            const usdSalary = rawSalary / entryCurrencyRatio
+            const targetCurrencyRatio = currencyValues?.getRatioByCode(selectedCurrency) ?? 1
+            return usdSalary * targetCurrencyRatio
+        })
+        const sorted = [...salaries].sort((a, b) => a - b)
+        const median = sorted[Math.floor(sorted.length / 2)]
+        const mean = salaries.reduce((a, b) => a + b, 0) / salaries.length
+        const variance = salaries.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / salaries.length
+        const std = Math.sqrt(variance)
+
+        return `Median: ${Math.round(median).toLocaleString()} ${selectedCurrency} | Mean: ${Math.round(mean).toLocaleString()} ${selectedCurrency} | Std: ${Math.round(std).toLocaleString()} ${selectedCurrency}`
     }
 }
 

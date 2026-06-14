@@ -1,6 +1,7 @@
 import { makeAutoObservable } from 'mobx'
 import ControlState from '../model/controlState'
 import { Gender } from '../model/gender'
+import { Currency } from '../model/currency'
 
 // https://devlinduldulao.pro/mobx-in-a-nutshell/
 export class ControlStore {
@@ -12,11 +13,12 @@ export class ControlStore {
     companySize: [min: number | null, max: number | null] = [null, null]
     countries: string[] = []
     degrees: string[] = []
-    
+    selectedCurrency: Currency = Currency.EUR
+
     gendersFilterActive = false
     abilitiesFilterActive = false
     expirienceFilterActive = false
-     
+
     companySizeFilterActive = false
     degreeFilterActive = false
     countriesFilterActive = false
@@ -42,10 +44,11 @@ export class ControlStore {
         const degrees = this.degrees
         const companySize = this.companySize
         const countries = this.countries
+        const selectedCurrency = this.selectedCurrency
 
         const gendersFilterActive = this.gendersFilterActive
         const abilitiesFilterActive = this.abilitiesFilterActive
-        const expirienceFilterActive= this.expirienceFilterActive
+        const expirienceFilterActive = this.expirienceFilterActive
 
         const companySizeFilterActive = this.companySizeFilterActive
         const degreeFilterActive = this.degreeFilterActive
@@ -60,6 +63,7 @@ export class ControlStore {
             degrees,
             companySize,
             countries,
+            selectedCurrency,
             gendersFilterActive,
             abilitiesFilterActive,
             expirienceFilterActive,
@@ -102,11 +106,11 @@ export class ControlStore {
             this.genders.push(convertedValue)
         }
     }
-    
+
     setAbilities(abilities: string[]): void {
         this.abilities = abilities
     }
-    
+
     setCompanySizeFromMin(min: number | null): void {
         this.companySize = [min, this.companySize[1]]
     }
@@ -130,7 +134,7 @@ export class ControlStore {
     setAbilitiesFilterActive(abilitiesFilterActive: boolean): void {
         this.abilitiesFilterActive = abilitiesFilterActive
     }
-    
+
     setExpirienceFilterActive(expirienceFilterActive: boolean): void {
         this.expirienceFilterActive = expirienceFilterActive
     }
@@ -151,6 +155,10 @@ export class ControlStore {
         this.enableSalaryFilter = enableSalaryFilter
     }
 
+    setSelectedCurrency(currency: Currency): void {
+        this.selectedCurrency = currency
+    }
+
     loadPendingState(): void {
         if (this.pendingState) {
             const state = this.pendingState
@@ -162,6 +170,7 @@ export class ControlStore {
             if (state.companySize !== undefined) this.companySize = state.companySize
             if (state.countries !== undefined) this.countries = state.countries
             if (state.degrees !== undefined) this.degrees = state.degrees
+            if (state.selectedCurrency !== undefined) this.selectedCurrency = state.selectedCurrency
             if (state.gendersFilterActive !== undefined) this.gendersFilterActive = state.gendersFilterActive
             if (state.abilitiesFilterActive !== undefined) this.abilitiesFilterActive = state.abilitiesFilterActive
             if (state.expirienceFilterActive !== undefined) this.expirienceFilterActive = state.expirienceFilterActive
@@ -181,6 +190,7 @@ export class ControlStore {
             companySize: this.companySize,
             countries: this.countries,
             degrees: this.degrees,
+            selectedCurrency: this.selectedCurrency,
             gendersFilterActive: this.gendersFilterActive,
             abilitiesFilterActive: this.abilitiesFilterActive,
             expirienceFilterActive: this.expirienceFilterActive,
@@ -201,6 +211,7 @@ export class ControlStore {
         if (state.companySize !== undefined) this.companySize = state.companySize
         if (state.countries !== undefined) this.countries = state.countries
         if (state.degrees !== undefined) this.degrees = state.degrees
+        if (state.selectedCurrency !== undefined) this.selectedCurrency = state.selectedCurrency
         if (state.gendersFilterActive !== undefined) this.gendersFilterActive = state.gendersFilterActive
         if (state.abilitiesFilterActive !== undefined) this.abilitiesFilterActive = state.abilitiesFilterActive
         if (state.expirienceFilterActive !== undefined) this.expirienceFilterActive = state.expirienceFilterActive

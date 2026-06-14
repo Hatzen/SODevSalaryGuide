@@ -30,6 +30,7 @@ const RawDataTable = observer(() => {
         headerName: key,
         flex: 1,
         minWidth: 100,
+        resizable: true,
     }))
 
     return (

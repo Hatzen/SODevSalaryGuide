@@ -5,7 +5,8 @@ import Loader from 'react-loader-spinner'
 import { uiStore } from '../stores/uiStore'
 import controlStore from '../stores/controlStore'
 import entryStore from '../stores/entryStore'
-import { FormLabel, Tabs, Tab } from '@material-ui/core'
+import { FormLabel } from '@material-ui/core'
+import { Tabs, Tab } from '@mui/material'
 
 const formatValueForDisplay = (value: unknown): string => {
     if (value === null || value === undefined) {
@@ -19,7 +20,7 @@ const formatValueForDisplay = (value: unknown): string => {
 
         if (typeof value === 'object' && value !== null && 'min' in value && 'max' in value) {
             const obj = value as { min: number; max: number | null }
-            return `${obj.min}-${obj.max === null ? '∞' : obj.max}`
+            return `${obj.min}-${obj.max === null ? '\u221e' : obj.max}`
         }
 
         if (Array.isArray(value)) {
@@ -49,6 +50,7 @@ const ConsideredDataTable = observer(() => {
     const [tabIndex, setTabIndex] = React.useState(0)
     const selectedYearNum = parseInt(controlStore.selectedYear, 10)
     const selectedYearData = entryStore.parsedDataByYear[selectedYearNum]
+    const selectedCurrency = controlStore.selectedCurrency
 
     const rawCsvRows = selectedYearData?.rawCsvRows ?? []
     const mappedData = selectedYearData?.resultSet ?? []
@@ -56,7 +58,7 @@ const ConsideredDataTable = observer(() => {
 
     const isLoading = mappedData.length === 0
 
-    const changeTab = (_event: React.SyntheticEvent<Element>, newValue: number) => {
+    const changeTab = (_event: React.ChangeEvent<unknown>, newValue: number): void => {
         setTabIndex(newValue)
     }
 
@@ -69,7 +71,7 @@ const ConsideredDataTable = observer(() => {
         )
     }
 
-    const renderRawCsvTable = () => {
+    const renderRawCsvTable = (): JSX.Element => {
         if (rawCsvRows.length === 0) {
             return <p style={{padding: '20px'}}>No raw CSV data available</p>
         }
@@ -83,6 +85,7 @@ const ConsideredDataTable = observer(() => {
             headerName: key,
             flex: 1,
             minWidth: 100,
+            resizable: true,
         }))
         return (
             <div style={{flex: 1, minHeight: 0}}>
@@ -98,34 +101,43 @@ const ConsideredDataTable = observer(() => {
         )
     }
 
-    const renderMappedTable = () => {
-        const rowsWithId = mappedData.map((entry, index) => ({
-            ...entry,
-            id: `mapped-${index}`,
-            convertedSalary: entry._salary / (entryStore.currencyValues?.getRatioByCode(entry.currency) ?? 1),
-            salary: entry._salary
-        }))
+    const renderMappedTable = (): JSX.Element => {
+        const rowsWithId = mappedData.map((entry, index) => {
+            const rawSalary = entry._salary
+            const entryCurrencyRatio = entryStore.currencyValues?.getRatioByCode(entry.currency) ?? 1
+            const usdSalary = rawSalary / entryCurrencyRatio
+            const targetCurrencyRatio = entryStore.currencyValues?.getRatioByCode(selectedCurrency) ?? 1
+            const convertedSalary = usdSalary * targetCurrencyRatio
+            return {
+                ...entry,
+                id: `mapped-${index}`,
+                convertedSalary,
+                salary: rawSalary
+            }
+        })
 
         const columns: GridColDef[] = [
-            { field: 'salary', headerName: 'Salary (raw)', flex: 1, minWidth: 100 },
+            { field: 'salary', headerName: 'Salary (raw)', flex: 1, minWidth: 100, resizable: true },
             {
                 field: 'convertedSalary',
-                headerName: 'Salary (converted)',
+                headerName: `Salary (${selectedCurrency})`,
                 flex: 1,
                 minWidth: 120,
+                resizable: true,
                 valueFormatter: (params) => {
                     const value = params.value as number
                     return value ? Math.round(value).toLocaleString() : ''
                 }
             },
-            { field: 'gender', headerName: 'Gender', flex: 1, minWidth: 80 },
-            { field: 'country', headerName: 'Country', flex: 1, minWidth: 100 },
-            { field: 'highestDegree', headerName: 'Highest Degree', flex: 1, minWidth: 120 },
+            { field: 'gender', headerName: 'Gender', flex: 1, minWidth: 80, resizable: true },
+            { field: 'country', headerName: 'Country', flex: 1, minWidth: 100, resizable: true },
+            { field: 'highestDegree', headerName: 'Highest Degree', flex: 1, minWidth: 120, resizable: true },
             {
                 field: 'expirienceInYears',
                 headerName: 'Experience',
                 flex: 1,
                 minWidth: 120,
+                resizable: true,
                 valueFormatter: (params) => formatValueForDisplay(params.value)
             },
             {
@@ -133,6 +145,7 @@ const ConsideredDataTable = observer(() => {
                 headerName: 'Abilities',
                 flex: 1,
                 minWidth: 200,
+                resizable: true,
                 valueFormatter: (params) => formatValueForDisplay(params.value)
             },
             {
@@ -140,6 +153,7 @@ const ConsideredDataTable = observer(() => {
                 headerName: 'Company Size',
                 flex: 1,
                 minWidth: 120,
+                resizable: true,
                 valueFormatter: (params) => formatValueForDisplay(params.value)
             }
         ]
@@ -158,34 +172,43 @@ const ConsideredDataTable = observer(() => {
         )
     }
 
-    const renderFilteredTable = () => {
-        const rowsWithId = filteredData.map((entry, index) => ({
-            ...entry,
-            id: `filtered-${index}`,
-            convertedSalary: entry._salary / (entryStore.currencyValues?.getRatioByCode(entry.currency) ?? 1),
-            salary: entry._salary
-        }))
+    const renderFilteredTable = (): JSX.Element => {
+        const rowsWithId = filteredData.map((entry, index) => {
+            const rawSalary = entry._salary
+            const entryCurrencyRatio = entryStore.currencyValues?.getRatioByCode(entry.currency) ?? 1
+            const usdSalary = rawSalary / entryCurrencyRatio
+            const targetCurrencyRatio = entryStore.currencyValues?.getRatioByCode(selectedCurrency) ?? 1
+            const convertedSalary = usdSalary * targetCurrencyRatio
+            return {
+                ...entry,
+                id: `filtered-${index}`,
+                convertedSalary,
+                salary: rawSalary
+            }
+        })
 
         const columns: GridColDef[] = [
-            { field: 'salary', headerName: 'Salary (raw)', flex: 1, minWidth: 100 },
+            { field: 'salary', headerName: 'Salary (raw)', flex: 1, minWidth: 100, resizable: true },
             {
                 field: 'convertedSalary',
-                headerName: 'Salary (converted)',
+                headerName: `Salary (${selectedCurrency})`,
                 flex: 1,
                 minWidth: 120,
+                resizable: true,
                 valueFormatter: (params) => {
                     const value = params.value as number
                     return value ? Math.round(value).toLocaleString() : ''
                 }
             },
-            { field: 'gender', headerName: 'Gender', flex: 1, minWidth: 80 },
-            { field: 'country', headerName: 'Country', flex: 1, minWidth: 100 },
-            { field: 'highestDegree', headerName: 'Highest Degree', flex: 1, minWidth: 120 },
+            { field: 'gender', headerName: 'Gender', flex: 1, minWidth: 80, resizable: true },
+            { field: 'country', headerName: 'Country', flex: 1, minWidth: 100, resizable: true },
+            { field: 'highestDegree', headerName: 'Highest Degree', flex: 1, minWidth: 120, resizable: true },
             {
                 field: 'expirienceInYears',
                 headerName: 'Experience',
                 flex: 1,
                 minWidth: 120,
+                resizable: true,
                 valueFormatter: (params) => formatValueForDisplay(params.value)
             },
             {
@@ -193,6 +216,7 @@ const ConsideredDataTable = observer(() => {
                 headerName: 'Abilities',
                 flex: 1,
                 minWidth: 200,
+                resizable: true,
                 valueFormatter: (params) => formatValueForDisplay(params.value)
             },
             {
@@ -200,6 +224,7 @@ const ConsideredDataTable = observer(() => {
                 headerName: 'Company Size',
                 flex: 1,
                 minWidth: 120,
+                resizable: true,
                 valueFormatter: (params) => formatValueForDisplay(params.value)
             }
         ]

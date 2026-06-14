@@ -5,9 +5,11 @@ import Loader from 'react-loader-spinner'
 import entryStore from '../stores/entryStore'
 import CurrencyValues from '../model/currencyValues'
 import { FormLabel, Typography } from '@material-ui/core'
+import controlStore from '../stores/controlStore'
 
 const CurrencyConversionTable = observer(() => {
     const currencyValues = entryStore.currencyValues as CurrencyValues | undefined
+    const selectedCurrency = controlStore.selectedCurrency
     
     if (!currencyValues) {
         return (
@@ -22,22 +24,30 @@ const CurrencyConversionTable = observer(() => {
         ? `Source: FreeCurrencyAPI (base: ${currencyValues.query?.base_currency}, fetched: ${new Date(currencyValues.query?.timestamp * 1000).toLocaleDateString()})`
         : 'Using default values (API unavailable)'
 
+    const baseRatio = currencyValues.getRatioByCode(selectedCurrency)
+    
     const currencies = Object.entries(currencyValues.data || {}) as [string, number][]
     
-    const rows = currencies.map(([currency, rate], index) => ({
-        id: index.toString(),
-        currency,
-        rateToUSD: rate,
-        rateFromUSD: rate > 0 ? (1 / rate) : 0
-    }))
+    const rows = currencies.map(([currency, rate], index) => {
+        const rateToSelected = rate * (baseRatio ?? 1)
+        return {
+            id: index.toString(),
+            currency,
+            rateToUSD: rate,
+            rateFromUSD: rate > 0 ? (1 / rate) : 0,
+            rateToSelected: rateToSelected,
+            rateFromSelected: rateToSelected > 0 ? (1 / rateToSelected) : 0
+        }
+    })
 
     const columns: GridColDef[] = [
-        { field: 'currency', headerName: 'Currency', flex: 1, minWidth: 100 },
+        { field: 'currency', headerName: 'Currency', flex: 1, minWidth: 100, resizable: true },
         {
             field: 'rateToUSD',
             headerName: 'Rate (1 USD = X)',
             flex: 1,
             minWidth: 150,
+            resizable: true,
             valueFormatter: (params) => {
                 const value = params.value as number
                 return value ? value.toFixed(4) : 'N/A'
@@ -48,6 +58,29 @@ const CurrencyConversionTable = observer(() => {
             headerName: 'Inverse Rate (1 X = USD)',
             flex: 1,
             minWidth: 180,
+            resizable: true,
+            valueFormatter: (params) => {
+                const value = params.value as number
+                return value ? value.toFixed(6) : 'N/A'
+            }
+        },
+        {
+            field: 'rateToSelected',
+            headerName: `Rate (1 ${selectedCurrency} = X)`,
+            flex: 1,
+            minWidth: 150,
+            resizable: true,
+            valueFormatter: (params) => {
+                const value = params.value as number
+                return value ? value.toFixed(4) : 'N/A'
+            }
+        },
+        {
+            field: 'rateFromSelected',
+            headerName: `Inverse (1 X = ${selectedCurrency})`,
+            flex: 1,
+            minWidth: 180,
+            resizable: true,
             valueFormatter: (params) => {
                 const value = params.value as number
                 return value ? value.toFixed(6) : 'N/A'
