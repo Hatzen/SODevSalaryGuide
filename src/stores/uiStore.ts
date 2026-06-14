@@ -8,12 +8,11 @@ import entryStore from './entryStore'
 export class UiStore {
 
     filteredData: { [year: number]: SurveyEntry[] } = {}
+    lastFilterUpdateTime = 0
 
     private readonly controlStore: ControlStore
     private readonly entryStore: EntryStore
     private reactionDisposer: (() => void) | null = null
-    private lastFilterUpdateTime = 0
-    private static readonly minUpdateIntervalMs = 500
 
     constructor(controlStore: ControlStore, entryStore: EntryStore) {
         this.controlStore = controlStore
@@ -21,6 +20,7 @@ export class UiStore {
         
         makeObservable(this, {
             filteredData: observable,
+            lastFilterUpdateTime: observable,
             updateFilteredData: action,
         })
 
@@ -28,14 +28,15 @@ export class UiStore {
     }
 
     private initReactions(): void {
-        // Create a debounced reaction that updates when data or filter state changes
         this.reactionDisposer = reaction(
             () => {
                 const years = Object.keys(this.entryStore.parsedDataByYear)
                 const cs = this.controlStore
-                return years.map(y => ({
-                    year: parseInt(y, 10),
-                    overallEntryCount: this.entryStore.parsedDataByYear[parseInt(y, 10)].overallEntryCount,
+                const selectedYear = this.entryStore.selectedYear
+                return {
+                    years,
+                    selectedYear,
+                    overallEntryCount: this.entryStore.parsedDataByYear[parseInt(selectedYear, 10)]?.overallEntryCount ?? 0,
                     expirienceInYears: cs.expirienceInYears,
                     companySize: cs.companySize,
                     gendersFilterActive: cs.gendersFilterActive,
@@ -48,27 +49,28 @@ export class UiStore {
                     degrees: cs.degrees,
                     companySizeFilterActive: cs.companySizeFilterActive,
                     enableSalaryFilter: cs.enableSalaryFilter
-                }))
+                }
             },
             () => {
-                const now = Date.now()
-                if (now - this.lastFilterUpdateTime > UiStore.minUpdateIntervalMs) {
-                    this.lastFilterUpdateTime = now
-                    this.updateFilteredData()
-                }
+                this.lastFilterUpdateTime = Date.now()
+                console.log('[DEBUG] UiStore filtering triggered at', new Date(this.lastFilterUpdateTime).toISOString())
+                this.updateFilteredData()
             },
             { fireImmediately: true }
         )
     }
 
     updateFilteredData = (): void => {
-        Object.keys(this.entryStore.parsedDataByYear).forEach((yearStr: string) => {
-            const year = parseInt(yearStr, 10)
-            const parsedData = this.entryStore.parsedDataByYear[year]
-            const controlState = this.controlStore.controlState
-            this.filteredData[year] = parsedData.resultSet
+        const selectedYearNum = parseInt(this.entryStore.selectedYear, 10)
+        const parsedData = this.entryStore.parsedDataByYear[selectedYearNum]
+        const controlState = this.controlStore.controlState
+        
+        if (parsedData?.resultSet) {
+            this.filteredData[selectedYearNum] = [...parsedData.resultSet]
                 .filter(controlState.filterByState.bind(controlState))
-        })
+        } else {
+            this.filteredData[selectedYearNum] = []
+        }
     }
 
     destroy(): void {

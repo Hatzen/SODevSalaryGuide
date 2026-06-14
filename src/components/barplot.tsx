@@ -16,13 +16,13 @@ class BarPlot extends React.Component<StoreProps> {
     render(): JSX.Element {
         return (
             <div ref={this.plotRef} style={{position: 'absolute', top: 0, bottom: 0, left:0, right: 0, overflow: 'auto'}}>
-                 <Plot
-                     data={this.data}
-                     layout={this.layout}
-                     style={{width: '100%', height: '100%'}}
-                     onInitialized={this.handleInit}
-                     onUpdate={this.handleResize}
-                 />
+                <Plot
+                    data={this.data}
+                    layout={this.layout}
+                    style={{width: '100%', height: '100%'}}
+                    onInitialized={this.handleInit}
+                    onUpdate={this.handleResize}
+                />
             </div>
         )
     }
@@ -71,8 +71,8 @@ class BarPlot extends React.Component<StoreProps> {
     
     get layout(): Partial<Layout> {
         return {
-            barmode: 'group', 
-            showlegend: true, 
+            barmode: 'group',
+            showlegend: true,
             paper_bgcolor: '#FF000000',
             plot_bgcolor: '#FF000000'
         }

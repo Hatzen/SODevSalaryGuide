@@ -10,10 +10,10 @@ export default class ControlState {
     countries: string[] = []
     degrees: string[] = []
 
-gendersFilterActive = false
+    gendersFilterActive = false
     abilitiesFilterActive = false
     expirienceFilterActive = false
-     
+      
     companySizeFilterActive = false
     degreeFilterActive = false
     countriesFilterActive = false
@@ -79,8 +79,8 @@ gendersFilterActive = false
         if (expirienceInYears != null) {
             const max = this.expirienceInYears[1]
             const min = this.expirienceInYears[0]
-            if (expirienceInYears.max <= max
-                || expirienceInYears.min >= min) {
+            if (expirienceInYears.min >= min
+                && expirienceInYears.max <= max) {
                 return true
             }
         }

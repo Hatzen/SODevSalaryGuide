@@ -1,5 +1,5 @@
 declare module '@mui/x-data-grid' {
-  import * as React from 'react';
+  import * as React from 'react'
 
   export interface GridColDef {
     field: string;
@@ -98,5 +98,5 @@ declare module '@mui/x-data-grid' {
     onFilterModelChange?: (filterModel: any) => void;
   }
 
-  export const DataGrid: React.ComponentType<GridProps>;
+  export const DataGrid: React.ComponentType<GridProps>
 }

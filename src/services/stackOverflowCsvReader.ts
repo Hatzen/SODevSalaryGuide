@@ -34,6 +34,7 @@ Uncaught DataCloneError: Failed to execute 'postMessage' on 'Worker': function (
         let validRows: SurveyEntry[] = []
         let invalidCount = 0
         let totalCount = 0
+        let rawRows: CsvRow[] = []
         
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const config = {
@@ -47,6 +48,8 @@ Uncaught DataCloneError: Failed to execute 'postMessage' on 'Worker': function (
                     invalidCount++
                 }
                 totalCount++
+                // Store raw CSV row for raw data table
+                rawRows.push(row.data)
                 consumer(row)
             },
             complete: () => {
@@ -54,10 +57,12 @@ Uncaught DataCloneError: Failed to execute 'postMessage' on 'Worker': function (
                 transaction(() => {
                     // Replace array entirely to avoid multiple MobX notifications
                     resultsetForYear.resultSet = [...resultsetForYear.resultSet, ...validRows]
+                    resultsetForYear.rawCsvRows = [...resultsetForYear.rawCsvRows, ...rawRows]
                     resultsetForYear.invalidEntryCount += invalidCount
                     resultsetForYear.overallEntryCount += totalCount
                 })
                 validRows = []
+                rawRows = []
                 invalidCount = 0
                 totalCount = 0
                 

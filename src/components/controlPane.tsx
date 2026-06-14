@@ -1,5 +1,5 @@
 import React from 'react'
-import { Checkbox, FormGroup, FormControl, FormControlLabel, Slider, Box, TextField, Button, Typography, IconButton } from '@material-ui/core'
+import { Checkbox, FormGroup, FormControl, FormControlLabel, Slider, Box, TextField, Typography, IconButton } from '@material-ui/core'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
@@ -10,6 +10,7 @@ import { AbstractCsvRowMapper } from '../mapper/AbstractCsvRowMapper'
 import { Gender } from '../model/gender'
 import ControlComponentWrapper from './controlComponentWrapper'
 import { AVAILABLE_YEARS } from '../model/constantMetaData'
+import { uiStore } from '../stores/uiStore'
 
 interface ControlPaneState {
     refreshKey: number
@@ -55,9 +56,15 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
     }
 
     render(): JSX.Element {
+        const lastUpdate = uiStore.lastFilterUpdateTime
+        const lastUpdateTime = lastUpdate > 0 ? new Date(lastUpdate).toLocaleTimeString() : 'Not yet updated'
+        
         return (
             <div key={this.state.refreshKey} style={{padding: 50, overflow: 'scroll', position: 'relative', top: 0, left: 0, right: 0, maxHeight: 'calc(100% - 100px)'}}>
                 {this.headerWithMenu}
+                <Typography variant="caption" style={{fontSize: '0.7em', color: '#888', display: 'block', marginBottom: '10px'}}>
+                    Last filter update: {lastUpdateTime}
+                </Typography>
                 <Box sx={{ display: 'flex' }}>
                     <FormControl focused={false} component="fieldset" variant="standard">
                         <FormGroup key={1}>
@@ -142,6 +149,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
     
     handleYearChange = (event: React.SyntheticEvent<Element, Event>, value: string | null, reason: any, details: any) => {
         if (value !== null) {
+            console.log('[DEBUG] Year changed to:', value)
             this.props.controlStore!.setSelectedYear(value)
             AbstractCsvRowMapper.clearDistinctValues()
             this.props.entryStore!.initParser(value)
@@ -381,12 +389,12 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
 
     handleSaveToSession = (): void => {
         const state = this.props.controlStore!.getSessionState()
-        sessionStorage.setItem('controlPaneSettings', JSON.stringify(state, null, 2))
+        localStorage.setItem('controlPaneSettings', JSON.stringify(state, null, 2))
         this.handleMenuClose()
     }
 
     handleLoadFromSession = (): void => {
-        const saved = sessionStorage.getItem('controlPaneSettings')
+        const saved = localStorage.getItem('controlPaneSettings')
         if (saved) {
             const parsed = JSON.parse(saved)
             this.props.controlStore!.loadFromSessionState(parsed)

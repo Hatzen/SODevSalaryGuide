@@ -13,7 +13,7 @@ export class ControlStore {
     countries: string[] = []
     degrees: string[] = []
     
-gendersFilterActive = false
+    gendersFilterActive = false
     abilitiesFilterActive = false
     expirienceFilterActive = false
      
