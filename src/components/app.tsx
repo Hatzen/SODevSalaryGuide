@@ -12,9 +12,9 @@ import controlStore from '../stores/controlStore'
 import { Tab, Tabs } from '@mui/material'
 import { StoreProps } from '../stores/storeHelper'
 import SurveyEntry from '../model/surveyEntry'
-import RawDataTable from './rawDataTable'
 import ConsideredDataTable from './consideredDataTable'
 import { uiStore } from '../stores/uiStore'
+import CurrencyConversionTable from './currencyConversionTable'
 
 interface AppState {
     components: number[],
@@ -65,36 +65,36 @@ class App extends React.Component<Record<string, unknown>, AppState> {
                                 if (pane === 0) {
                                     return (
                                         <Allotment.Pane key={pane}>
-                                             <div style={{position: 'relative', top: 0, left: 0, right: 0}} >
-                                                  <Tabs
-                                                      value={this.state.tabIndex}
-                                                      onChange={this.changeTab}
-                                                      sx={{ 
-                                                        '& .MuiTabs-indicator': { 
-                                                          backgroundColor: '#F48024' 
+                                            <div style={{position: 'relative', top: 0, left: 0, right: 0}} >
+                                                <Tabs
+                                                    value={this.state.tabIndex}
+                                                    onChange={this.changeTab}
+                                                    sx={{
+                                                        '& .MuiTabs-indicator': {
+                                                            backgroundColor: '#F48024'
                                                         },
                                                         '& .MuiTab-root': {
-                                                          color: '#F48024',
-                                                          '&.Mui-selected': {
                                                             color: '#F48024',
-                                                            fontWeight: 500
-                                                          }
+                                                            '&.Mui-selected': {
+                                                                color: '#F48024',
+                                                                fontWeight: 500
+                                                            }
                                                         }
-                                                      }}>
-                                                      <Tab label="Salary" />
-                                                      <Tab label="Participation" />
-                                                      <Tab label="Raw Data" />
-                                                      <Tab label="Considered Data" />
-                                                  </Tabs>
-                                             </div>
-                                             <div style={{position: 'relative', top: 0, left: 0, right: 0, height: 'calc(100% - 48px)', width: '100%'}}>
-                                                 <div style={{width: '100%', height: '100%'}}>
-                                                     {this.state.tabIndex === 0 ? <BoxPlot></BoxPlot> :
-                                                      this.state.tabIndex === 1 ? <BarPlot></BarPlot> :
-                                                      this.state.tabIndex === 2 ? <RawDataTable></RawDataTable> :
-                                                      <ConsideredDataTable></ConsideredDataTable>}
-                                                 </div>
-                                             </div>
+                                                    }}>
+                                                    <Tab label="Salary" />
+                                                    <Tab label="Participation" />
+                                                    <Tab label="Table Data" />
+                                                    <Tab label="Currency Rates" />
+                                                </Tabs>
+                                            </div>
+                                            <div style={{position: 'relative', top: 0, left: 0, right: 0, height: 'calc(100% - 48px)', width: '100%'}}>
+                                                <div style={{width: '100%', height: '100%'}}>
+                                                    {this.state.tabIndex === 0 ? <BoxPlot></BoxPlot> :
+                                                        this.state.tabIndex === 1 ? <BarPlot></BarPlot> :
+                                                            this.state.tabIndex === 2 ? <ConsideredDataTable></ConsideredDataTable> :
+                                                                <CurrencyConversionTable></CurrencyConversionTable>}
+                                                </div>
+                                            </div>
                                         </Allotment.Pane>
                                     )
                                 } else {
@@ -112,9 +112,9 @@ class App extends React.Component<Record<string, unknown>, AppState> {
         )
     }
 
-    private changeTab = (event: React.ChangeEvent<{}>, newValue: number | string) => {
-        this.setState({tabIndex: Number(newValue)});
-    };
+    private changeTab = (event: React.ChangeEvent<unknown>, newValue: number | string): void => {
+        this.setState({tabIndex: Number(newValue)})
+    }
 
     private toggleControls(): void {
         if (this.state.components.length === 1) {

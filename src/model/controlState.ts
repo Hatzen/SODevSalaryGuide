@@ -1,5 +1,6 @@
 import { Gender } from './gender'
 import SurveyEntry from './surveyEntry'
+import { Currency } from './currency'
 
 export default class ControlState {
     selectedYear!: string
@@ -9,11 +10,12 @@ export default class ControlState {
     companySize: [min: number | null, max: number | null] = [null, null]
     countries: string[] = []
     degrees: string[] = []
+    selectedCurrency: Currency = Currency.EUR
 
-gendersFilterActive = false
+    gendersFilterActive = false
     abilitiesFilterActive = false
     expirienceFilterActive = false
-     
+      
     companySizeFilterActive = false
     degreeFilterActive = false
     countriesFilterActive = false
@@ -79,8 +81,8 @@ gendersFilterActive = false
         if (expirienceInYears != null) {
             const max = this.expirienceInYears[1]
             const min = this.expirienceInYears[0]
-            if (expirienceInYears.max <= max
-                || expirienceInYears.min >= min) {
+            if (expirienceInYears.min >= min
+                && expirienceInYears.max <= max) {
                 return true
             }
         }

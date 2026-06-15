@@ -259,7 +259,7 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
         result.gender = mappedGender
     }
 
-protected setSalary(csvRow: CsvRow, result: SurveyEntry): void {
+    protected setSalary(csvRow: CsvRow, result: SurveyEntry): void {
         const salary = csvRow[this.SALARY_KEY]
         if (salary != null) {
             const salaryValue = this.getSalaryValue(salary)
@@ -322,13 +322,13 @@ protected setSalary(csvRow: CsvRow, result: SurveyEntry): void {
         if (typeof value === 'string') {
             if (value.indexOf('<') !== -1) {
                 return 10000 // <20k consider as 10k in average
-        } else if (value.indexOf('$') !== -1 && value.indexOf('-') !== -1) {
-            const firstValue = value
-                .split('$').join('')
-                .split(',').join('')
-                .substring(0, value.indexOf('-'))
-            return parseInt(firstValue) + 10000 // 20-40k => average 30k
-        }
+            } else if (value.indexOf('$') !== -1 && value.indexOf('-') !== -1) {
+                const firstValue = value
+                    .split('$').join('')
+                    .split(',').join('')
+                    .substring(0, value.indexOf('-'))
+                return parseInt(firstValue) + 10000 // 20-40k => average 30k
+            }
         }
         try {
             let result = parseInt(value)

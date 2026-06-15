@@ -42,7 +42,7 @@ const DEFAULT_CURRENCY_VALUES: CurrencyValues = {
     getRatioByCode(currency: Currency): number {
         return this.data[currency] ?? 1
     }
-};
+}
 
 // https://freecurrencyapi.net/api/v2/latest?apikey=d3626290-68c5-11ec-abd0-4f2669673a10&base_currency=USD
 // Note: For CORS in development, use a proxy or browser extension. In production, consider server-side proxy.
@@ -53,7 +53,7 @@ export default class CurrencyService {
         return fetch(this.baseUrl)
             .then(response => {
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    throw new Error(`HTTP error! status: ${response.status}`)
                 }
                 return response.json().then(data => {
                     const cur = new CurrencyValues()

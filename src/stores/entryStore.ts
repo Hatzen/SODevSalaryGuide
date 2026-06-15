@@ -32,6 +32,7 @@ export class EntryStore {
 
     currencyValues!: FreeCurrency
     reader!: StackOverflowCsvReader
+    selectedYear = AVAILABLE_YEARS[AVAILABLE_YEARS.length - 1]
 
     constructor() {
         makeAutoObservable(this)
@@ -60,15 +61,15 @@ export class EntryStore {
     }
 
     initParser (year: string): void {
-        // TODO: Implement
-        // this.reader.cancleCurrentloading
-
+        this.selectedYear = year
+        
         // Clear previous data to prevent memory accumulation
         this.parsedData = new ResultSetForYear()
         AbstractCsvRowMapper.clearDistinctValues()
         // Clear all cached year data - we only keep the currently loading year
         for (const y of AVAILABLE_YEARS) {
             this.parsedDataByYear[parseInt(y)].resultSet = []
+            this.parsedDataByYear[parseInt(y)].rawCsvRows = []
             this.parsedDataByYear[parseInt(y)].invalidEntryCount = 0
             this.parsedDataByYear[parseInt(y)].overallEntryCount = 0
         }

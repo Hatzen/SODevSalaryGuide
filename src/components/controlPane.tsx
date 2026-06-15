@@ -1,5 +1,5 @@
 import React from 'react'
-import { Checkbox, FormGroup, FormControl, FormControlLabel, Slider, Box, TextField, Button, Typography, IconButton } from '@material-ui/core'
+import { Checkbox, FormGroup, FormControl, FormControlLabel, Slider, Box, TextField, Typography, IconButton } from '@material-ui/core'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
@@ -8,12 +8,18 @@ import { injectClause, StoreProps } from '../stores/storeHelper'
 import Autocomplete from '@mui/material/Autocomplete'
 import { AbstractCsvRowMapper } from '../mapper/AbstractCsvRowMapper'
 import { Gender } from '../model/gender'
+import { Currency } from '../model/currency'
 import ControlComponentWrapper from './controlComponentWrapper'
 import { AVAILABLE_YEARS } from '../model/constantMetaData'
+import { uiStore } from '../stores/uiStore'
 
 interface ControlPaneState {
     refreshKey: number
     anchorEl: HTMLElement | null
+}
+
+interface CurrencyChangeEvent {
+    selected: boolean
 }
 
 class ControlPane extends React.Component<StoreProps, ControlPaneState> {
@@ -55,13 +61,20 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
     }
 
     render(): JSX.Element {
+        const lastUpdate = uiStore.lastFilterUpdateTime
+        const lastUpdateTime = lastUpdate > 0 ? new Date(lastUpdate).toLocaleTimeString() : 'Not yet updated'
+        
         return (
             <div key={this.state.refreshKey} style={{padding: 50, overflow: 'scroll', position: 'relative', top: 0, left: 0, right: 0, maxHeight: 'calc(100% - 100px)'}}>
                 {this.headerWithMenu}
+                <Typography variant="caption" style={{fontSize: '0.7em', color: '#888', display: 'block', marginBottom: '10px'}}>
+                    Last filter update: {lastUpdateTime}
+                </Typography>
                 <Box sx={{ display: 'flex' }}>
                     <FormControl focused={false} component="fieldset" variant="standard">
                         <FormGroup key={1}>
                             {this.years}
+                            {this.currency}
                             {this.gender}
                             {this.slider}
                             {this.abilities}
@@ -123,7 +136,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
             options={filteredValues}
             value={selectedYear}
             onChange={this.handleYearChange.bind(this)}
-            renderOption={(props, option, { selected }) => (
+            renderOption={(props, option, { selected }: CurrencyChangeEvent) => (
                 <li {...props}>
                     <Checkbox
                         style={{ marginRight: 8 }}
@@ -139,15 +152,45 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
         />)
         return autoCompleteComponent
     }
-    
-    handleYearChange = (event: React.SyntheticEvent<Element, Event>, value: string | null, reason: any, details: any) => {
+
+    get currency(): JSX.Element {
+        const allCurrencies = Object.values(Currency)
+        const autoCompleteComponent = (<Autocomplete
+            options={allCurrencies}
+            value={this.props.controlStore!.selectedCurrency}
+            onChange={this.handleCurrencyChange.bind(this)}
+            renderOption={(props, option, { selected }: CurrencyChangeEvent) => (
+                <li {...props}>
+                    <Checkbox
+                        style={{ marginRight: 8 }}
+                        checked={selected}
+                    />
+                    {option}
+                </li>
+            )}
+            style={{ width: 250 }}
+            renderInput={(params) => (
+                <TextField style={{ padding: '10px' }} {...params} label="Currency" />
+            )}
+        />)
+        return (<ControlComponentWrapper
+            title='Display Currency'
+            controlComponent={autoCompleteComponent}
+            isEnabled={true}
+            enable={() => { /* no-op */ }}
+            count={allCurrencies.length}>
+        </ControlComponentWrapper>)
+    }
+
+    handleYearChange = (event: React.SyntheticEvent<Element, Event>, value: string | null): void => {
         if (value !== null) {
+            console.log('[DEBUG] Year changed to:', value)
             this.props.controlStore!.setSelectedYear(value)
             AbstractCsvRowMapper.clearDistinctValues()
             this.props.entryStore!.initParser(value)
         }
     }
-    
+
     get abilities(): JSX.Element {
         const allAbilities = Array.from(AbstractCsvRowMapper.abilities).map(([k, v]) => ({ key: k as string, count: v }))
         const filterdValues = allAbilities.map(a => a.key)
@@ -204,7 +247,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
             count={experienceCount}>
         </ControlComponentWrapper>)
     }
-    
+
     get countries(): JSX.Element {
         const allCountries = Array.from(AbstractCsvRowMapper.countries).map(([k, v]) => ({ key: k as string, count: v }))
         const filterdValues = allCountries.map(a => a.key)
@@ -237,7 +280,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
             count={allCountries.length}>
         </ControlComponentWrapper>)
     }
-    
+
     get degrees(): JSX.Element {
         const allDegrees = Array.from(AbstractCsvRowMapper.educations).map(([k, v]) => ({ key: k as string, count: v }))
         const filterdValues = allDegrees.map(a => a.key)
@@ -274,7 +317,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
     get valuesForExp(): number[] {
         return this.props.controlStore!.expirienceInYears
     }
-    
+
     get gender(): JSX.Element {
         const values = this.props.controlStore!.genders
         const checkboxes = this.getCheckboxesForValues(values, Object.values(Gender).filter((v): v is Gender => typeof v === 'string'))
@@ -309,7 +352,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
             </div>
         )
     }
-    
+
     get companySizeInputs(): JSX.Element {
         const currentMin = this.props.controlStore!.companySize[0]
         const currentMax = this.props.controlStore!.companySize[1]
@@ -379,14 +422,20 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
         this.props.controlStore!.setExp(value as number[])
     }
 
+    handleCurrencyChange = (event: React.SyntheticEvent<Element, Event>, value: Currency | null): void => {
+        if (value !== null) {
+            this.props.controlStore!.setSelectedCurrency(value)
+        }
+    }
+
     handleSaveToSession = (): void => {
         const state = this.props.controlStore!.getSessionState()
-        sessionStorage.setItem('controlPaneSettings', JSON.stringify(state, null, 2))
+        localStorage.setItem('controlPaneSettings', JSON.stringify(state, null, 2))
         this.handleMenuClose()
     }
 
     handleLoadFromSession = (): void => {
-        const saved = sessionStorage.getItem('controlPaneSettings')
+        const saved = localStorage.getItem('controlPaneSettings')
         if (saved) {
             const parsed = JSON.parse(saved)
             this.props.controlStore!.loadFromSessionState(parsed)

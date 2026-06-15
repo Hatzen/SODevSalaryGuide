@@ -1,5 +1,5 @@
 declare module '@mui/x-data-grid' {
-  import * as React from 'react';
+  import * as React from 'react'
 
   export interface GridColDef {
     field: string;
@@ -8,7 +8,6 @@ declare module '@mui/x-data-grid' {
     width?: number | string;
     minWidth?: number | string;
     flex?: number;
-    sortable?: boolean;
     sortable?: boolean;
     resizable?: boolean;
     suppressMenu?: boolean;
@@ -68,8 +67,6 @@ declare module '@mui/x-data-grid' {
     disableVirtualization?: boolean;
     /** If true, the grid will have a checkbox column for selection. */
     checkboxSelection?: boolean;
-    /** If true, clicking a row will not select it. */
-    disableSelectionOnClick?: boolean;
     /** Callback fired when the page changes. */
     onPageChange?: (newPage: number, pageSize: number) => void;
     /** Callback fired when the page size changes. */
@@ -98,5 +95,5 @@ declare module '@mui/x-data-grid' {
     onFilterModelChange?: (filterModel: any) => void;
   }
 
-  export const DataGrid: React.ComponentType<GridProps>;
+  export const DataGrid: React.ComponentType<GridProps>
 }

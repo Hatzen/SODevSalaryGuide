@@ -55,23 +55,23 @@ class MenuAppBar extends React.Component<MenuAppBarProps> {
         }
         
         // Get the currently selected year
-        const selectedYearStr = this.props.controlStore.controlState.selectedYear;
+        const selectedYearStr = this.props.controlStore.controlState.selectedYear
         if (!selectedYearStr) {
             return <div></div>
         }
         
         // Get max chunks for the selected year
-        const maxChunks = CHUNK_COUNT_PER_YEAR[selectedYearStr] || 0;
+        const maxChunks = CHUNK_COUNT_PER_YEAR[selectedYearStr] || 0
         if (maxChunks === 0) {
             return <div></div>
         }
         
         // Get chunks parsed for the selected year
-        const yearData = this.props.entryStore.parsedDataByYear[parseInt(selectedYearStr, 10)];
-        const chunksDownloaded = yearData ? yearData.chunksParsed : 0;
+        const yearData = this.props.entryStore.parsedDataByYear[parseInt(selectedYearStr, 10)]
+        const chunksDownloaded = yearData ? yearData.chunksParsed : 0
         
         // Calculate loading percentage
-        const loadingPercentage = Math.round((chunksDownloaded / maxChunks) * 100);
+        const loadingPercentage = Math.round((chunksDownloaded / maxChunks) * 100)
         
         // Hide loader when loading is complete
         if (loadingPercentage >= 100) {
