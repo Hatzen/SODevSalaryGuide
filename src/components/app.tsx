@@ -83,7 +83,7 @@ class App extends React.Component<Record<string, unknown>, AppState> {
                                                     }}>
                                                     <Tab label="Salary" />
                                                     <Tab label="Participation" />
-                                                    <Tab label="Considered Data" />
+                                                    <Tab label="Table Data" />
                                                     <Tab label="Currency Rates" />
                                                 </Tabs>
                                             </div>

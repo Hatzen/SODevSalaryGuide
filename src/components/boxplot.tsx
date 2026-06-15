@@ -34,7 +34,7 @@ class BoxPlot extends React.Component<StoreProps> {
                     onInitialized={this.handleInit}
                     onUpdate={this.handleUpdate}
                 />
-                <div style={{ position: 'absolute', top: '10px', right: '10px', backgroundColor: 'rgba(255,255,255,0.9)', padding: '8px 12px', borderRadius: '4px', fontSize: '12px' }}>
+                <div style={{ position: 'absolute', top: '10px', left: '10px', backgroundColor: 'rgba(255,255,255,0.9)', padding: '8px 12px', borderRadius: '4px', fontSize: '12px' }}>
                     {this.statisticsHint}
                 </div>
             </div>
@@ -88,7 +88,7 @@ class BoxPlot extends React.Component<StoreProps> {
         const trace: Data = {
             type: 'box',
             boxmean: 'sd',
-            boxpoints: 'all',
+            // boxpoints: 'all',
             name: 'Year ' + selectedYearStr,
             marker: {
                 color: '#F48024'

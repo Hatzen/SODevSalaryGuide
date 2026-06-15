@@ -258,13 +258,13 @@ const ConsideredDataTable = observer(() => {
                     }
                 }}
             >
-                <Tab label={`Raw CSV (${rawCsvRows.length})`} />
                 <Tab label={`Mapped All (${mappedData.length})`} />
                 <Tab label={`Filtered (${filteredData.length})`} />
+                <Tab label={`Raw CSV (${rawCsvRows.length})`} />
             </Tabs>
-            {tabIndex === 0 && renderRawCsvTable()}
-            {tabIndex === 1 && renderMappedTable()}
-            {tabIndex === 2 && renderFilteredTable()}
+            {tabIndex === 0 && renderMappedTable()}
+            {tabIndex === 1 && renderFilteredTable()}
+            {tabIndex === 2 && renderRawCsvTable()}
         </div>
     )
 })
