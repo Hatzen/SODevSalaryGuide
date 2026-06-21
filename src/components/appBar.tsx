@@ -45,8 +45,8 @@ class MenuAppBar extends React.Component<MenuAppBarProps> {
                         <Typography variant='h5'>
                             {t.title}
                         </Typography>
-                        {this.languageSelector}
                         {this.loader}
+                        {this.languageSelector}
                     </Toolbar>
                 </AppBar>
             </div>
@@ -56,23 +56,25 @@ class MenuAppBar extends React.Component<MenuAppBarProps> {
     get languageSelector(): JSX.Element {
         const t = translationStore.t
         return (
-            <Autocomplete
-                options={['en', 'de']}
-                value={controlStore.language ?? 'en'}
-                onChange={(_event, value) => {
-                    if (value) {
-                        controlStore.setLanguage(value as 'en' | 'de')
-                    }
-                }}
-                renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        label={t.language}
-                        size="small"
-                        style={{ width: 120, marginLeft: 'auto', marginRight: '10px' }}
-                    />
-                )}
-            />
+            <div style={{padding: 'auto', position: 'absolute', right: '125px'}}>
+                <Autocomplete
+                    options={['en', 'de']}
+                    value={controlStore.language ?? 'en'}
+                    onChange={(_event, value) => {
+                        if (value) {
+                            controlStore.setLanguage(value as 'en' | 'de')
+                        }
+                    }}
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            label={t.language}
+                            size="small"
+                            style={{ width: 120, marginLeft: 'auto', marginRight: '10px' }}
+                        />
+                    )}
+                />
+            </div>
         )
     }
 
