@@ -15,6 +15,7 @@ import SurveyEntry from '../model/surveyEntry'
 import ConsideredDataTable from './consideredDataTable'
 import { uiStore } from '../stores/uiStore'
 import CurrencyConversionTable from './currencyConversionTable'
+import translationStore from '../stores/translationStore'
 
 interface AppState {
     components: number[],
@@ -23,7 +24,7 @@ interface AppState {
 
 class App extends React.Component<Record<string, unknown>, AppState> {
     private controlPane: React.RefObject<AllotmentHandle>
-    
+
     constructor(props: Record<string, unknown>) {
         super(props)
         this.controlPane = React.createRef<AllotmentHandle>()
@@ -44,6 +45,7 @@ class App extends React.Component<Record<string, unknown>, AppState> {
     }
 
     render(): JSX.Element {
+        const t = translationStore.t
         const fitAll: React.CSSProperties = {position: 'absolute', top:0, left:0, bottom: 0, right:0}
         const stores: StoreProps = {
             entryStore,
@@ -81,10 +83,10 @@ class App extends React.Component<Record<string, unknown>, AppState> {
                                                             }
                                                         }
                                                     }}>
-                                                    <Tab label="Salary" />
-                                                    <Tab label="Participation" />
-                                                    <Tab label="Table Data" />
-                                                    <Tab label="Currency Rates" />
+                                                    <Tab label={t.salaryTab} />
+                                                    <Tab label={t.participationTab} />
+                                                    <Tab label={t.consideredDataTab} />
+                                                    <Tab label={t.currencyRatesTab} />
                                                 </Tabs>
                                             </div>
                                             <div style={{position: 'relative', top: 0, left: 0, right: 0, height: 'calc(100% - 48px)', width: '100%'}}>
@@ -128,7 +130,7 @@ class App extends React.Component<Record<string, unknown>, AppState> {
             })
         }
     }
-    
+
 }
 
 export default App

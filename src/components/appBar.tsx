@@ -8,9 +8,13 @@ import { CHUNK_COUNT_PER_YEAR } from '../model/constantMetaData'
 import { injectClause, StoreProps } from '../stores/storeHelper'
 import { inject, observer } from 'mobx-react'
 import Loader from 'react-loader-spinner'
+import Autocomplete from '@mui/material/Autocomplete'
+import TextField from '@mui/material/TextField'
+import controlStore from '../stores/controlStore'
+import translationStore from '../stores/translationStore'
 
 export interface MenuAppBarProps extends StoreProps {
-  menuClicked: () => void
+    menuClicked: () => void
 }
 
 interface NetworkState {
@@ -29,8 +33,8 @@ interface NetworkState {
 class MenuAppBar extends React.Component<MenuAppBarProps> {
 
     render(): JSX.Element {
-        // TODO: Info Button explain all relevant aspects to consider the salary which are not matched by the survey..
-        //   CompanyBranch (Banks, Resellers), How old the company is (Backup money), etc.
+        const t = translationStore.t
+
         return (
             <div>
                 <AppBar position='static'>
@@ -39,12 +43,36 @@ class MenuAppBar extends React.Component<MenuAppBarProps> {
                             <MenuIcon />
                         </IconButton>
                         <Typography variant='h5'>
-                            Stackoverflow Developer Salary Guide
+                            {t.title}
                         </Typography>
+                        {this.languageSelector}
                         {this.loader}
                     </Toolbar>
                 </AppBar>
             </div>
+        )
+    }
+
+    get languageSelector(): JSX.Element {
+        const t = translationStore.t
+        return (
+            <Autocomplete
+                options={['en', 'de']}
+                value={controlStore.language ?? 'en'}
+                onChange={(_event, value) => {
+                    if (value) {
+                        controlStore.setLanguage(value as 'en' | 'de')
+                    }
+                }}
+                renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        label={t.language}
+                        size="small"
+                        style={{ width: 120, marginLeft: 'auto', marginRight: '10px' }}
+                    />
+                )}
+            />
         )
     }
 
@@ -53,31 +81,31 @@ class MenuAppBar extends React.Component<MenuAppBarProps> {
         if (!this.props.entryStore || !this.props.controlStore) {
             return <div></div>
         }
-        
+
         // Get the currently selected year
         const selectedYearStr = this.props.controlStore.controlState.selectedYear
         if (!selectedYearStr) {
             return <div></div>
         }
-        
+
         // Get max chunks for the selected year
         const maxChunks = CHUNK_COUNT_PER_YEAR[selectedYearStr] || 0
         if (maxChunks === 0) {
             return <div></div>
         }
-        
+
         // Get chunks parsed for the selected year
         const yearData = this.props.entryStore.parsedDataByYear[parseInt(selectedYearStr, 10)]
         const chunksDownloaded = yearData ? yearData.chunksParsed : 0
-        
+
         // Calculate loading percentage
         const loadingPercentage = Math.round((chunksDownloaded / maxChunks) * 100)
-        
+
         // Hide loader when loading is complete
         if (loadingPercentage >= 100) {
             return <div></div>
         }
-        
+
         return (
             <div style={{padding: 'auto', position: 'absolute', right: '25px'}}>
                 <div style={{}}>

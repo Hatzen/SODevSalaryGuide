@@ -14,6 +14,7 @@ export class ControlStore {
     countries: string[] = []
     degrees: string[] = []
     selectedCurrency: Currency = Currency.EUR
+    language: 'en' | 'de' = 'en'
 
     gendersFilterActive = false
     abilitiesFilterActive = false
@@ -159,6 +160,10 @@ export class ControlStore {
         this.selectedCurrency = currency
     }
 
+    setLanguage(language: 'en' | 'de'): void {
+        this.language = language
+    }
+
     loadPendingState(): void {
         if (this.pendingState) {
             const state = this.pendingState
@@ -171,6 +176,7 @@ export class ControlStore {
             if (state.countries !== undefined) this.countries = state.countries
             if (state.degrees !== undefined) this.degrees = state.degrees
             if (state.selectedCurrency !== undefined) this.selectedCurrency = state.selectedCurrency
+            if (state.language !== undefined) this.language = state.language
             if (state.gendersFilterActive !== undefined) this.gendersFilterActive = state.gendersFilterActive
             if (state.abilitiesFilterActive !== undefined) this.abilitiesFilterActive = state.abilitiesFilterActive
             if (state.expirienceFilterActive !== undefined) this.expirienceFilterActive = state.expirienceFilterActive
@@ -191,6 +197,7 @@ export class ControlStore {
             countries: this.countries,
             degrees: this.degrees,
             selectedCurrency: this.selectedCurrency,
+            language: this.language,
             gendersFilterActive: this.gendersFilterActive,
             abilitiesFilterActive: this.abilitiesFilterActive,
             expirienceFilterActive: this.expirienceFilterActive,
@@ -212,6 +219,7 @@ export class ControlStore {
         if (state.countries !== undefined) this.countries = state.countries
         if (state.degrees !== undefined) this.degrees = state.degrees
         if (state.selectedCurrency !== undefined) this.selectedCurrency = state.selectedCurrency
+        if (state.language !== undefined) this.language = state.language
         if (state.gendersFilterActive !== undefined) this.gendersFilterActive = state.gendersFilterActive
         if (state.abilitiesFilterActive !== undefined) this.abilitiesFilterActive = state.abilitiesFilterActive
         if (state.expirienceFilterActive !== undefined) this.expirienceFilterActive = state.expirienceFilterActive
