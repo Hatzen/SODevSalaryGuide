@@ -7,15 +7,15 @@ import 'allotment/dist/style.css'
 import ControlPane from './controlPane'
 import DisclaimerModal from './disclaimerModal'
 import MenuAppBar from './appBar'
-import { Provider } from 'mobx-react'
-import controlStore from '../stores/controlStore'
+import { Provider, observer } from 'mobx-react'
 import { Tab, Tabs } from '@mui/material'
 import { StoreProps } from '../stores/storeHelper'
 import SurveyEntry from '../model/surveyEntry'
 import ConsideredDataTable from './consideredDataTable'
-import { uiStore } from '../stores/uiStore'
 import CurrencyConversionTable from './currencyConversionTable'
 import translationStore from '../stores/translationStore'
+import controlStore from '../stores/controlStore'
+import { uiStore } from '../stores/uiStore'
 
 interface AppState {
     components: number[],
@@ -133,4 +133,4 @@ class App extends React.Component<Record<string, unknown>, AppState> {
 
 }
 
-export default App
+export default observer(App)

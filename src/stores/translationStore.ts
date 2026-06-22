@@ -19,6 +19,9 @@ const translations = {
         yearLabel: 'Show data for year',
         currencyLabel: 'Currency',
         genderLabel: 'Gender',
+        genderMale: 'Male',
+        genderFemale: 'Female',
+        genderOther: 'Other',
         experienceLabel: 'Years of Expirience',
         abilitiesLabel: 'Tools and Technologies',
         companySizeLabel: 'Company Size',
@@ -45,6 +48,9 @@ const translations = {
 
         // BoxPlot
         noDataAvailable: 'No data available',
+        medianLabel: 'Median',
+        meanLabel: 'Mean',
+        stdLabel: 'Std',
 
         // CurrencyConversionTable
         currencyRates: 'Currency Conversion Rates',
@@ -52,6 +58,7 @@ const translations = {
         usingDefaults: 'Using default values (API unavailable)',
         rateToUSD: 'Rate (1 USD = X)',
         rateFromUSD: 'Inverse Rate (1 X = USD)',
+        showingRates: 'Showing {count} currency conversion rates',
 
         // Modal
         disclaimer: 'Disclaimer',
@@ -74,6 +81,9 @@ const translations = {
         yearLabel: 'Daten für Jahr anzeigen',
         currencyLabel: 'Währung',
         genderLabel: 'Geschlecht',
+        genderMale: 'Männlich',
+        genderFemale: 'Weiblich',
+        genderOther: 'Andere',
         experienceLabel: 'Jahre Erfahrung',
         abilitiesLabel: 'Tools und Technologien',
         companySizeLabel: 'Firmengröße',
@@ -100,6 +110,9 @@ const translations = {
 
         // BoxPlot
         noDataAvailable: 'Keine Daten verfügbar',
+        medianLabel: 'Median',
+        meanLabel: 'Mittel',
+        stdLabel: 'Std',
 
         // CurrencyConversionTable
         currencyRates: 'Währungskurse',
@@ -107,6 +120,7 @@ const translations = {
         usingDefaults: 'Verwende Standardwerte (API nicht verfügbar)',
         rateToUSD: 'Kurs (1 USD = X)',
         rateFromUSD: 'Umgekehrt (1 X = USD)',
+        showingRates: '{count} Währungskurse werden angezeigt',
 
         // Modal
         disclaimer: 'Hinweis',

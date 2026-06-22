@@ -47,6 +47,15 @@ const formatValueForDisplay = (value: unknown): string => {
     return String(value)
 }
 
+const formatGenderValue = (value: unknown, t: typeof translationStore.t): string => {
+    const genderTranslations: Record<string, string> = {
+        MALE: t.genderMale,
+        FEMALE: t.genderFemale,
+        OTHER: t.genderOther
+    }
+    return genderTranslations[value as string] || String(value)
+}
+
 const ConsideredDataTable = observer(() => {
     const [tabIndex, setTabIndex] = React.useState(0)
     const selectedYearNum = parseInt(controlStore.selectedYear, 10)
@@ -130,7 +139,7 @@ const ConsideredDataTable = observer(() => {
                     return value ? Math.round(value).toLocaleString() : ''
                 }
             },
-            { field: 'gender', headerName: t.genderLabel, flex: 1, minWidth: 80, resizable: true },
+            { field: 'gender', headerName: t.genderLabel, flex: 1, minWidth: 80, resizable: true, valueFormatter: (params) => formatGenderValue(params.value, t) },
             { field: 'country', headerName: t.countriesLabel, flex: 1, minWidth: 100, resizable: true },
             { field: 'highestDegree', headerName: t.degreeLabel, flex: 1, minWidth: 120, resizable: true },
             {
@@ -200,7 +209,7 @@ const ConsideredDataTable = observer(() => {
                     return value ? Math.round(value).toLocaleString() : ''
                 }
             },
-            { field: 'gender', headerName: t.genderLabel, flex: 1, minWidth: 80, resizable: true },
+            { field: 'gender', headerName: t.genderLabel, flex: 1, minWidth: 80, resizable: true, valueFormatter: (params) => formatGenderValue(params.value, t) },
             { field: 'country', headerName: t.countriesLabel, flex: 1, minWidth: 100, resizable: true },
             { field: 'highestDegree', headerName: t.degreeLabel, flex: 1, minWidth: 120, resizable: true },
             {

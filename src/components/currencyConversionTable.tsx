@@ -43,7 +43,7 @@ const CurrencyConversionTable = observer(() => {
     })
 
     const columns: GridColDef[] = [
-        { field: 'currency', headerName: 'Currency', flex: 1, minWidth: 100, resizable: true },
+        { field: 'currency', headerName: t.currencyLabel, flex: 1, minWidth: 100, resizable: true },
         {
             field: 'rateToUSD',
             headerName: t.rateToUSD,
@@ -106,7 +106,7 @@ const CurrencyConversionTable = observer(() => {
                 />
             </div>
             <div style={{marginTop: '10px', fontSize: '0.9em', color: '#666'}}>
-                Showing {rows.length} currency conversion rates
+                {translationStore.translate('showingRates', { count: rows.length.toString() })}
             </div>
         </div>
     )

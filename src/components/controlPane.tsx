@@ -335,6 +335,12 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
     }
 
     getCheckboxesForValues(selectedValues: Gender[], enumKeys: Gender[]): JSX.Element {
+        const t = translationStore.t
+        const genderTranslations: Record<string, string> = {
+            MALE: t.genderMale,
+            FEMALE: t.genderFemale,
+            OTHER: t.genderOther
+        }
         const values = enumKeys.map(g => g.toString())
         const checkboxes = values.map(value => {
             const check = selectedValues.includes(Gender[value as keyof typeof Gender])
@@ -345,7 +351,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
                         checked={check}
                         onChange={() => { this.props.controlStore!.setGenders(Gender[value as keyof typeof Gender]) }}
                     />}
-                    label={value}
+                    label={genderTranslations[value] || value}
                 />
             )
         })
