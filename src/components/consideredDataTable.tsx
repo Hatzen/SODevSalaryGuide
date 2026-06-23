@@ -77,7 +77,7 @@ const ConsideredDataTable = observer(() => {
         return (
             <div style={{textAlign: 'center', padding: '40px'}}>
                 <Loader type="ThreeDots" height={80} width={80} color="#F48024" />
-                <p>{t.noDataAvailable || 'Loading...'}...</p>
+                <p>{t.noDataAvailable || t.salaryTab}... <br/>Loading large dataset, please wait.</p>
             </div>
         )
     }
@@ -267,13 +267,13 @@ const ConsideredDataTable = observer(() => {
                     }
                 }}
             >
-                <Tab label={`${t.rawCsvTab} (${rawCsvRows.length})`} />
-                <Tab label={`${t.mappedTab} (${mappedData.length})`} />
                 <Tab label={`${t.filteredTab} (${filteredData.length})`} />
+                <Tab label={`${t.mappedTab} (${mappedData.length})`} />
+                <Tab label={`${t.rawCsvTab} (${rawCsvRows.length})`} />
             </Tabs>
-            {tabIndex === 0 && renderRawCsvTable()}
+            {tabIndex === 0 && renderFilteredTable()}
             {tabIndex === 1 && renderMappedTable()}
-            {tabIndex === 2 && renderFilteredTable()}
+            {tabIndex === 2 && renderRawCsvTable()}
         </div>
     )
 })
