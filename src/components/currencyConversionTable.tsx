@@ -22,9 +22,11 @@ const CurrencyConversionTable = observer(() => {
         )
     }
 
-    const sourceInfo = currencyValues.query?.base_currency === 'USD' && Object.keys(currencyValues.data || {}).length > 0
-        ? `${t.sourceApi} (base: ${currencyValues.query?.base_currency}, fetched: ${new Date(currencyValues.query?.timestamp * 1000).toLocaleDateString()})`
-        : t.usingDefaults
+    const sourceInfo = currencyValues.isFallback
+        ? `${t.usingDefaults}`
+        : (currencyValues.query?.base_currency === 'USD' && Object.keys(currencyValues.data || {}).length > 0
+            ? `${t.sourceApi} (base: ${currencyValues.query?.base_currency}, fetched: ${new Date(currencyValues.query?.timestamp * 1000).toLocaleDateString()})`
+            : t.usingDefaults)
 
     const baseRatio = currencyValues.getRatioByCode(selectedCurrency)
 

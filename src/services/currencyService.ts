@@ -39,6 +39,7 @@ const DEFAULT_CURRENCY_VALUES: CurrencyValues = {
         [Currency.SAR]: 3.75,
         [Currency.TWD]: 31
     },
+    isFallback: true,
     getRatioByCode(currency: Currency): number {
         return this.data[currency] ?? 1
     }
