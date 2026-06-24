@@ -1,7 +1,7 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
+import ReactDOM from 'react-dom/client'
 import App from './components/app'
-import { createTheme , MuiThemeProvider } from '@material-ui/core'
+import { createTheme , ThemeProvider } from '@mui/material/styles'
 import { configure } from 'mobx'
 
 // Disable strict mode for better performance with frequent observable updates
@@ -18,11 +18,12 @@ const theme = createTheme ({
     }
 })
 
-ReactDOM.render(
-    <MuiThemeProvider theme={theme}>
+ReactDOM.createRoot(
+    document.getElementById('app-root') as HTMLElement
+).render(
+    <ThemeProvider theme={theme}>
         <App/>
-    </MuiThemeProvider>,
-    document.getElementById('app-root'),
+    </ThemeProvider>
 )
 
 // Check config is working for observable non instantiated attributes.

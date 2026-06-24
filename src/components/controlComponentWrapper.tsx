@@ -1,5 +1,5 @@
-import { Checkbox, FormControlLabel } from '@material-ui/core'
-import { Typography } from '@material-ui/core'
+import { Checkbox, FormControlLabel } from '@mui/material'
+import { Typography } from '@mui/material'
 import React from 'react'
 
 interface ControlComponentWrapperProps {
@@ -8,6 +8,7 @@ interface ControlComponentWrapperProps {
     isEnabled: boolean
     enable: (event: React.ChangeEvent<HTMLInputElement>, isEnabled: boolean) => void
     count?: number
+    children?: React.ReactNode
 }
 
 export default class ControlComponentWrapper extends React.Component<ControlComponentWrapperProps> {

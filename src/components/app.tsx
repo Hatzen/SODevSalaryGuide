@@ -58,9 +58,8 @@ class App extends React.Component<Record<string, unknown>, AppState> {
         return (
             <div style={fitAll}>
                 <Provider {...stores}>
-                    <DisclaimerModal fullScreen={false}></DisclaimerModal>
-                    <MenuAppBar menuClicked={this.toggleControls.bind(this)}>
-                    </MenuAppBar>
+                    <DisclaimerModal fullScreen={false} />
+                    <MenuAppBar menuClicked={this.toggleControls.bind(this)} />
                     <div style={{position: 'absolute', top: 64, bottom: 0, left: 0, right:0}}>
                         <Allotment ref={this.controlPane}>
                             {panes.map((pane: number) => {
@@ -91,10 +90,10 @@ class App extends React.Component<Record<string, unknown>, AppState> {
                                             </div>
                                             <div style={{position: 'relative', top: 0, left: 0, right: 0, height: 'calc(100% - 48px)', width: '100%'}}>
                                                 <div style={{width: '100%', height: '100%'}}>
-                                                    {this.state.tabIndex === 0 ? <BoxPlot></BoxPlot> :
-                                                        this.state.tabIndex === 1 ? <BarPlot></BarPlot> :
-                                                            this.state.tabIndex === 2 ? <ConsideredDataTable></ConsideredDataTable> :
-                                                                <CurrencyConversionTable></CurrencyConversionTable>}
+                                                    {this.state.tabIndex === 0 ? <BoxPlot /> :
+                                                        this.state.tabIndex === 1 ? <BarPlot /> :
+                                                            this.state.tabIndex === 2 ? <ConsideredDataTable /> :
+                                                                <CurrencyConversionTable />}
                                                 </div>
                                             </div>
                                         </Allotment.Pane>
@@ -102,7 +101,7 @@ class App extends React.Component<Record<string, unknown>, AppState> {
                                 } else {
                                     return (
                                         <Allotment.Pane  key={pane} snap maxSize={400}>
-                                            <ControlPane></ControlPane>
+                                            <ControlPane />
                                         </Allotment.Pane>
                                     )
                                 }

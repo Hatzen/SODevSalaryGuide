@@ -4,7 +4,7 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid'
 import Loader from 'react-loader-spinner'
 import entryStore from '../stores/entryStore'
 import CurrencyValues from '../model/currencyValues'
-import { FormLabel, Typography } from '@material-ui/core'
+import { FormLabel, Typography } from '@mui/material'
 import controlStore from '../stores/controlStore'
 import translationStore from '../stores/translationStore'
 
@@ -45,15 +45,13 @@ const CurrencyConversionTable = observer(() => {
     })
 
     const columns: GridColDef[] = [
-        { field: 'currency', headerName: t.currencyLabel, flex: 1, minWidth: 100, resizable: true },
+        { field: 'currency', headerName: t.currencyLabel, flex: 1, minWidth: 100 },
         {
             field: 'rateToUSD',
             headerName: t.rateToUSD,
             flex: 1,
             minWidth: 150,
-            resizable: true,
-            valueFormatter: (params) => {
-                const value = params.value as number
+            valueFormatter: (value: number) => {
                 return value ? value.toFixed(4) : 'N/A'
             }
         },
@@ -62,9 +60,7 @@ const CurrencyConversionTable = observer(() => {
             headerName: t.rateFromUSD,
             flex: 1,
             minWidth: 180,
-            resizable: true,
-            valueFormatter: (params) => {
-                const value = params.value as number
+            valueFormatter: (value: number) => {
                 return value ? value.toFixed(6) : 'N/A'
             }
         },
@@ -73,9 +69,7 @@ const CurrencyConversionTable = observer(() => {
             headerName: `1 ${selectedCurrency} = X`,
             flex: 1,
             minWidth: 150,
-            resizable: true,
-            valueFormatter: (params) => {
-                const value = params.value as number
+            valueFormatter: (value: number) => {
                 return value ? value.toFixed(4) : 'N/A'
             }
         },
@@ -84,9 +78,7 @@ const CurrencyConversionTable = observer(() => {
             headerName: `1 X = ${selectedCurrency}`,
             flex: 1,
             minWidth: 180,
-            resizable: true,
-            valueFormatter: (params) => {
-                const value = params.value as number
+            valueFormatter: (value: number) => {
                 return value ? value.toFixed(6) : 'N/A'
             }
         }
@@ -103,8 +95,8 @@ const CurrencyConversionTable = observer(() => {
                     rows={rows}
                     columns={columns}
                     pageSizeOptions={[10, 25, 50, 100]}
-                    pageSize={20}
-                    disableSelectionOnClick
+                    paginationModel={{ page: 0, pageSize: 20 }}
+                    disableRowSelectionOnClick
                 />
             </div>
             <div style={{marginTop: '10px', fontSize: '0.9em', color: '#666'}}>

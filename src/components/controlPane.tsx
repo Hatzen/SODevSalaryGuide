@@ -1,8 +1,8 @@
 import React from 'react'
-import { Checkbox, FormGroup, FormControl, FormControlLabel, Slider, Box, TextField, Typography, IconButton } from '@material-ui/core'
-import MoreVertIcon from '@material-ui/icons/MoreVert'
-import Menu from '@material-ui/core/Menu'
-import MenuItem from '@material-ui/core/MenuItem'
+import { Checkbox, FormGroup, FormControl, FormControlLabel, Slider, Box, TextField, Typography, IconButton } from '@mui/material'
+import MoreVertIcon from '@mui/icons-material/MoreVert'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
 import { inject, observer } from 'mobx-react'
 import { injectClause, StoreProps } from '../stores/storeHelper'
 import Autocomplete from '@mui/material/Autocomplete'
@@ -429,7 +429,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
         this.props.controlStore!.setAbilities(value)
     }
 
-    handleChange(event: React.ChangeEvent<unknown>, value: number | number[]): void {
+    handleChange(_event: Event | React.SyntheticEvent, value: number | number[]): void {
         this.props.controlStore!.setExp(value as number[])
     }
 
