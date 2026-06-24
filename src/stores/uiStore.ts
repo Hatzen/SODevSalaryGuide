@@ -4,6 +4,25 @@ import type { EntryStore } from './entryStore'
 import SurveyEntry from '../model/surveyEntry'
 import controlStore from './controlStore'
 import entryStore from './entryStore'
+import { Gender } from '../model/gender'
+
+type ReactionData = {
+    years: string[]
+    selectedYear: string
+    overallEntryCount: number
+    expirienceInYears: [min: number, max: number]
+    companySize: [min: number | null, max: number | null]
+    gendersFilterActive: boolean
+    genders: Gender[]
+    abilitiesFilterActive: boolean
+    abilities: string[]
+    countriesFilterActive: boolean
+    countries: string[]
+    degreeFilterActive: boolean
+    degrees: string[]
+    companySizeFilterActive: boolean
+    enableSalaryFilter: boolean
+}
 
 export class UiStore {
 
@@ -13,6 +32,8 @@ export class UiStore {
     private readonly controlStore: ControlStore
     private readonly entryStore: EntryStore
     private reactionDisposer: (() => void) | null = null
+    private debounceTimer: ReturnType<typeof setTimeout> | null = null
+    private latestReactionData: ReactionData | null = null
 
     constructor(controlStore: ControlStore, entryStore: EntryStore) {
         this.controlStore = controlStore
@@ -51,10 +72,21 @@ export class UiStore {
                     enableSalaryFilter: cs.enableSalaryFilter
                 }
             },
-            () => {
-                this.lastFilterUpdateTime = Date.now()
-                console.log('[DEBUG] UiStore filtering triggered at', new Date(this.lastFilterUpdateTime).toISOString())
-                this.updateFilteredData()
+            (data) => {
+                // Debounce UI updates to at most once per second (1000ms)
+                // This prevents UI freezing during rapid data parsing
+                this.latestReactionData = data
+                if (this.debounceTimer) {
+                    clearTimeout(this.debounceTimer)
+                }
+                this.debounceTimer = setTimeout(() => {
+                    if (this.latestReactionData) {
+                        this.lastFilterUpdateTime = Date.now()
+                        console.log('[DEBUG] UiStore filtering triggered at', new Date(this.lastFilterUpdateTime).toISOString())
+                        this.updateFilteredData()
+                    }
+                    this.debounceTimer = null
+                }, 100) // 100ms throttle - responsive but not freezing
             },
             { fireImmediately: true }
         )
@@ -76,6 +108,9 @@ export class UiStore {
     destroy(): void {
         if (this.reactionDisposer) {
             this.reactionDisposer()
+        }
+        if (this.debounceTimer) {
+            clearTimeout(this.debounceTimer)
         }
     }
 }

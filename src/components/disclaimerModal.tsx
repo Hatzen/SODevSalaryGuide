@@ -1,18 +1,15 @@
 import React from 'react'
-import Button from '@material-ui/core/Button'
-import Dialog from '@material-ui/core/Dialog'
-import DialogActions from '@material-ui/core/DialogActions'
-import DialogContent from '@material-ui/core/DialogContent'
-import DialogContentText from '@material-ui/core/DialogContentText'
-import DialogTitle from '@material-ui/core/DialogTitle'
-import withMobileDialog from '@material-ui/core/withMobileDialog'
+import Button from '@mui/material/Button'
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogContentText from '@mui/material/DialogContentText'
+import DialogTitle from '@mui/material/DialogTitle'
 
 interface IDisclaimerModalProps {
-  fullScreen: boolean
+    fullScreen?: boolean
 }
 
-// TODO: Move from material-ui to mui https://stackoverflow.com/questions/69219552/what-is-the-difference-between-material-ui-and-mui
-// https://v1.mui.com/demos/dialogs/
 export default class DisclaimerModal extends React.Component<IDisclaimerModalProps> {
     state = {
         visible: !this.alreadyStoredConfirmation
@@ -23,7 +20,7 @@ export default class DisclaimerModal extends React.Component<IDisclaimerModalPro
 
         localStorage.setItem('alreadyAgreed', 'true')
     }
-  
+   
     get alreadyStoredConfirmation (): boolean {
         return localStorage.getItem('alreadyAgreed') === 'true'
     }
@@ -34,7 +31,7 @@ export default class DisclaimerModal extends React.Component<IDisclaimerModalPro
         return (
             <div>
                 <Dialog
-                    fullScreen={fullScreen}
+                    fullScreen={fullScreen ?? false}
                     open={this.state.visible}
                     aria-labelledby="responsive-dialog-title"
                 >
@@ -59,4 +56,4 @@ export default class DisclaimerModal extends React.Component<IDisclaimerModalPro
 }
 
 
-export const mobileDialog =  withMobileDialog()(DisclaimerModal)
+export const mobileDialog = (DisclaimerModal)

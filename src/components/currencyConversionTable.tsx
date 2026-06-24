@@ -4,85 +4,81 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid'
 import Loader from 'react-loader-spinner'
 import entryStore from '../stores/entryStore'
 import CurrencyValues from '../model/currencyValues'
-import { FormLabel, Typography } from '@material-ui/core'
+import { FormLabel, Typography } from '@mui/material'
 import controlStore from '../stores/controlStore'
+import translationStore from '../stores/translationStore'
 
 const CurrencyConversionTable = observer(() => {
     const currencyValues = entryStore.currencyValues as CurrencyValues | undefined
     const selectedCurrency = controlStore.selectedCurrency
-    
+    const t = translationStore.t
+
     if (!currencyValues) {
         return (
             <div style={{textAlign: 'center', padding: '40px'}}>
                 <Loader type="ThreeDots" height={80} width={80} color="#F48024" />
-                <p>Loading currency conversion rates...</p>
+                <p>{t.currencyRates}...</p>
             </div>
         )
     }
 
-    const sourceInfo = currencyValues.query?.base_currency === 'USD' && Object.keys(currencyValues.data || {}).length > 0
-        ? `Source: FreeCurrencyAPI (base: ${currencyValues.query?.base_currency}, fetched: ${new Date(currencyValues.query?.timestamp * 1000).toLocaleDateString()})`
-        : 'Using default values (API unavailable)'
+    const sourceInfo = currencyValues.isFallback
+        ? `${t.usingDefaults}`
+        : (currencyValues.query?.base_currency === 'USD' && Object.keys(currencyValues.data || {}).length > 0
+            ? `${t.sourceApi} (base: ${currencyValues.query?.base_currency}, fetched: ${new Date(currencyValues.query?.timestamp * 1000).toLocaleDateString()})`
+            : t.usingDefaults)
 
     const baseRatio = currencyValues.getRatioByCode(selectedCurrency)
-    
+
     const currencies = Object.entries(currencyValues.data || {}) as [string, number][]
-    
+
     const rows = currencies.map(([currency, rate], index) => {
-        const rateToSelected = rate * (baseRatio ?? 1)
+        const rateToSelected = rate / baseRatio
         return {
             id: index.toString(),
             currency,
             rateToUSD: rate,
             rateFromUSD: rate > 0 ? (1 / rate) : 0,
             rateToSelected: rateToSelected,
-            rateFromSelected: rateToSelected > 0 ? (1 / rateToSelected) : 0
+            rateFromSelected: rate > 0 && baseRatio > 0 ? (baseRatio / rate) : 0
         }
     })
 
     const columns: GridColDef[] = [
-        { field: 'currency', headerName: 'Currency', flex: 1, minWidth: 100, resizable: true },
+        { field: 'currency', headerName: t.currencyLabel, flex: 1, minWidth: 100 },
         {
             field: 'rateToUSD',
-            headerName: 'Rate (1 USD = X)',
+            headerName: t.rateToUSD,
             flex: 1,
             minWidth: 150,
-            resizable: true,
-            valueFormatter: (params) => {
-                const value = params.value as number
+            valueFormatter: (value: number) => {
                 return value ? value.toFixed(4) : 'N/A'
             }
         },
         {
             field: 'rateFromUSD',
-            headerName: 'Inverse Rate (1 X = USD)',
+            headerName: t.rateFromUSD,
             flex: 1,
             minWidth: 180,
-            resizable: true,
-            valueFormatter: (params) => {
-                const value = params.value as number
+            valueFormatter: (value: number) => {
                 return value ? value.toFixed(6) : 'N/A'
             }
         },
         {
             field: 'rateToSelected',
-            headerName: `Rate (1 ${selectedCurrency} = X)`,
+            headerName: `1 ${selectedCurrency} = X`,
             flex: 1,
             minWidth: 150,
-            resizable: true,
-            valueFormatter: (params) => {
-                const value = params.value as number
+            valueFormatter: (value: number) => {
                 return value ? value.toFixed(4) : 'N/A'
             }
         },
         {
             field: 'rateFromSelected',
-            headerName: `Inverse (1 X = ${selectedCurrency})`,
+            headerName: `1 X = ${selectedCurrency}`,
             flex: 1,
             minWidth: 180,
-            resizable: true,
-            valueFormatter: (params) => {
-                const value = params.value as number
+            valueFormatter: (value: number) => {
                 return value ? value.toFixed(6) : 'N/A'
             }
         }
@@ -90,7 +86,7 @@ const CurrencyConversionTable = observer(() => {
 
     return (
         <div style={{padding: '20px', height: '100%', display: 'flex', flexDirection: 'column'}}>
-            <h2><FormLabel>Currency Conversion Rates</FormLabel></h2>
+            <h2><FormLabel>{t.currencyRates}</FormLabel></h2>
             <Typography variant="body2" style={{ marginBottom: '10px', color: '#666', fontSize: '0.85em' }}>
                 {sourceInfo}
             </Typography>
@@ -99,12 +95,12 @@ const CurrencyConversionTable = observer(() => {
                     rows={rows}
                     columns={columns}
                     pageSizeOptions={[10, 25, 50, 100]}
-                    pageSize={20}
-                    disableSelectionOnClick
+                    paginationModel={{ page: 0, pageSize: 20 }}
+                    disableRowSelectionOnClick
                 />
             </div>
             <div style={{marginTop: '10px', fontSize: '0.9em', color: '#666'}}>
-                Showing {rows.length} currency conversion rates
+                {translationStore.translate('showingRates', { count: rows.length.toString() })}
             </div>
         </div>
     )

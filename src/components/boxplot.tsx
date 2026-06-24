@@ -4,6 +4,7 @@ import { Data, Layout } from 'plotly.js'
 import { inject, observer } from 'mobx-react'
 import SurveyEntry from '../model/surveyEntry'
 import { injectClause, StoreProps } from '../stores/storeHelper'
+import translationStore from '../stores/translationStore'
 
 // 1. Explicitly type the exact signature of Plotly's internal Fx module
 interface PlotlyFxModule {
@@ -118,6 +119,7 @@ class BoxPlot extends React.Component<StoreProps> {
     }
 
     private get statisticsHint(): string {
+        const t = translationStore.t
         const resultList = this.props.uiStore!.filteredData
         const selectedYearStr = this.props.controlStore!.controlState.selectedYear
         const selectedYearNum = parseInt(selectedYearStr, 10)
@@ -125,7 +127,7 @@ class BoxPlot extends React.Component<StoreProps> {
         const currencyValues = this.props.entryStore!.currencyValues
 
         const yearData = resultList[selectedYearNum]
-        if (!yearData || yearData.length === 0) return 'No data available'
+        if (!yearData || yearData.length === 0) return t.noDataAvailable
 
         const salaries = yearData.map((entry: SurveyEntry) => {
             const rawSalary = entry._salary
@@ -140,7 +142,7 @@ class BoxPlot extends React.Component<StoreProps> {
         const variance = salaries.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / salaries.length
         const std = Math.sqrt(variance)
 
-        return `Median: ${Math.round(median).toLocaleString()} ${selectedCurrency} | Mean: ${Math.round(mean).toLocaleString()} ${selectedCurrency} | Std: ${Math.round(std).toLocaleString()} ${selectedCurrency}`
+        return `${t.medianLabel}: ${Math.round(median).toLocaleString()} ${selectedCurrency} | ${t.meanLabel}: ${Math.round(mean).toLocaleString()} ${selectedCurrency} | ${t.stdLabel}: ${Math.round(std).toLocaleString()} ${selectedCurrency}`
     }
 }
 

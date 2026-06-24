@@ -1,8 +1,8 @@
 import React from 'react'
-import { Checkbox, FormGroup, FormControl, FormControlLabel, Slider, Box, TextField, Typography, IconButton } from '@material-ui/core'
-import MoreVertIcon from '@material-ui/icons/MoreVert'
-import Menu from '@material-ui/core/Menu'
-import MenuItem from '@material-ui/core/MenuItem'
+import { Checkbox, FormGroup, FormControl, FormControlLabel, Slider, Box, TextField, Typography, IconButton } from '@mui/material'
+import MoreVertIcon from '@mui/icons-material/MoreVert'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
 import { inject, observer } from 'mobx-react'
 import { injectClause, StoreProps } from '../stores/storeHelper'
 import Autocomplete from '@mui/material/Autocomplete'
@@ -12,14 +12,11 @@ import { Currency } from '../model/currency'
 import ControlComponentWrapper from './controlComponentWrapper'
 import { AVAILABLE_YEARS } from '../model/constantMetaData'
 import { uiStore } from '../stores/uiStore'
+import translationStore from '../stores/translationStore'
 
 interface ControlPaneState {
     refreshKey: number
     anchorEl: HTMLElement | null
-}
-
-interface CurrencyChangeEvent {
-    selected: boolean
 }
 
 class ControlPane extends React.Component<StoreProps, ControlPaneState> {
@@ -47,7 +44,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
         if (cs.pendingState) {
             const targetYear = cs.pendingState.selectedYear
             const dataReady = AbstractCsvRowMapper.abilities.size > 0 && AbstractCsvRowMapper.countries.size > 0
-            
+
             if (dataReady && !this.loadedPendingState) {
                 this.loadedPendingState = true
                 cs.loadPendingState()
@@ -61,14 +58,15 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
     }
 
     render(): JSX.Element {
+        const t = translationStore.t
         const lastUpdate = uiStore.lastFilterUpdateTime
         const lastUpdateTime = lastUpdate > 0 ? new Date(lastUpdate).toLocaleTimeString() : 'Not yet updated'
-        
+
         return (
             <div key={this.state.refreshKey} style={{padding: 50, overflow: 'scroll', position: 'relative', top: 0, left: 0, right: 0, maxHeight: 'calc(100% - 100px)'}}>
                 {this.headerWithMenu}
                 <Typography variant="caption" style={{fontSize: '0.7em', color: '#888', display: 'block', marginBottom: '10px'}}>
-                    Last filter update: {lastUpdateTime}
+                    {t.lastFilterUpdate}: {lastUpdateTime}
                 </Typography>
                 <Box sx={{ display: 'flex' }}>
                     <FormControl focused={false} component="fieldset" variant="standard">
@@ -90,10 +88,11 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
     }
 
     get headerWithMenu(): JSX.Element {
+        const t = translationStore.t
         return (
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
                 <Typography variant="h6" style={{ fontFamily: 'Roboto, Helvetica, Arial, sans-serif' }}>
-                    Filters
+                    {t.filters}
                 </Typography>
                 <IconButton onClick={this.handleMenuClick.bind(this)} size="small">
                     <MoreVertIcon />
@@ -112,6 +111,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
     }
 
     get menu(): JSX.Element | null {
+        const t = translationStore.t
         const anchorEl = this.state.anchorEl
         return (
             <Menu
@@ -119,16 +119,17 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
                 open={Boolean(anchorEl)}
                 onClose={this.handleMenuClose}
             >
-                <MenuItem onClick={this.handleSaveToSession}>Save to Session</MenuItem>
-                <MenuItem onClick={this.handleLoadFromSession}>Load from Session</MenuItem>
-                <MenuItem onClick={this.handleDownloadJson}>Download JSON</MenuItem>
-                <MenuItem onClick={this.handleUploadJson}>Upload JSON</MenuItem>
-                <MenuItem onClick={this.handleShareLink}>Share Link</MenuItem>
+                <MenuItem onClick={this.handleSaveToSession}>{t.saveToSession}</MenuItem>
+                <MenuItem onClick={this.handleLoadFromSession}>{t.loadFromSession}</MenuItem>
+                <MenuItem onClick={this.handleDownloadJson}>{t.downloadJson}</MenuItem>
+                <MenuItem onClick={this.handleUploadJson}>{t.uploadJson}</MenuItem>
+                <MenuItem onClick={this.handleShareLink}>{t.shareLink}</MenuItem>
             </Menu>
         )
     }
 
     get years(): JSX.Element {
+        const t = translationStore.t
         const config = this.props.controlStore!
         const selectedYear: string | null = config.controlState.selectedYear
         const filteredValues = AVAILABLE_YEARS
@@ -136,7 +137,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
             options={filteredValues}
             value={selectedYear}
             onChange={this.handleYearChange.bind(this)}
-            renderOption={(props, option, { selected }: CurrencyChangeEvent) => (
+            renderOption={(props, option, { selected }) => (
                 <li {...props}>
                     <Checkbox
                         style={{ marginRight: 8 }}
@@ -147,34 +148,31 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
             )}
             style={{ width: 250 }}
             renderInput={(params) => (
-                <TextField style={{ padding: '10px' }} {...params} label="Show data for year" />
+                <TextField style={{ padding: '10px' }} {...params} label={t.yearLabel} />
             )}
         />)
         return autoCompleteComponent
     }
 
     get currency(): JSX.Element {
+        const t = translationStore.t
         const allCurrencies = Object.values(Currency)
         const autoCompleteComponent = (<Autocomplete
             options={allCurrencies}
             value={this.props.controlStore!.selectedCurrency}
             onChange={this.handleCurrencyChange.bind(this)}
-            renderOption={(props, option, { selected }: CurrencyChangeEvent) => (
+            renderOption={(props, option) => (
                 <li {...props}>
-                    <Checkbox
-                        style={{ marginRight: 8 }}
-                        checked={selected}
-                    />
                     {option}
                 </li>
             )}
             style={{ width: 250 }}
             renderInput={(params) => (
-                <TextField style={{ padding: '10px' }} {...params} label="Currency" />
+                <TextField style={{ padding: '10px' }} {...params} label={t.currencyLabel} />
             )}
         />)
         return (<ControlComponentWrapper
-            title='Display Currency'
+            title={t.currencyLabel}
             controlComponent={autoCompleteComponent}
             isEnabled={true}
             enable={() => { /* no-op */ }}
@@ -192,6 +190,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
     }
 
     get abilities(): JSX.Element {
+        const t = translationStore.t
         const allAbilities = Array.from(AbstractCsvRowMapper.abilities).map(([k, v]) => ({ key: k as string, count: v }))
         const filterdValues = allAbilities.map(a => a.key)
         const autoCompleteComponent = (<Autocomplete
@@ -212,11 +211,11 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
             )}
             style={{ width: 250 }}
             renderInput={(params) => (
-                <TextField style={{ padding: '10px' }} {...params} label="SQL, Java, etc." />
+                <TextField style={{ padding: '10px' }} {...params} label={t.abilitiesLabel} />
             )}
         />)
         return (<ControlComponentWrapper
-            title='Tools and Technologies'
+            title={t.abilitiesLabel}
             controlComponent={autoCompleteComponent}
             isEnabled={this.props.controlStore!.abilitiesFilterActive}
             enable={(event, value) => { this.props.controlStore!.setAbilitiesFilterActive(value)}}
@@ -225,6 +224,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
     }
 
     get slider(): JSX.Element {
+        const t = translationStore.t
         const slider =
             (
                 <Slider
@@ -240,7 +240,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
             )
         const experienceCount = AbstractCsvRowMapper.years.size
         return (<ControlComponentWrapper
-            title='Years of Expirience'
+            title={t.experienceLabel}
             controlComponent={slider}
             isEnabled={this.props.controlStore!.expirienceFilterActive}
             enable={(event, value) => { this.props.controlStore!.setExpirienceFilterActive(value)}}
@@ -249,6 +249,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
     }
 
     get countries(): JSX.Element {
+        const t = translationStore.t
         const allCountries = Array.from(AbstractCsvRowMapper.countries).map(([k, v]) => ({ key: k as string, count: v }))
         const filterdValues = allCountries.map(a => a.key)
         const autoCompleteComponent = (<Autocomplete
@@ -269,11 +270,11 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
             )}
             style={{ width: 250 }}
             renderInput={(params) => (
-                <TextField style={{ padding: '10px' }} {...params} label="USA, Japan, Germany etc." />
+                <TextField style={{ padding: '10px' }} {...params} label={t.countriesLabel} />
             )}
         />)
         return (<ControlComponentWrapper
-            title='Countries'
+            title={t.countriesLabel}
             controlComponent={autoCompleteComponent}
             isEnabled={this.props.controlStore!.countriesFilterActive}
             enable={(event, value) => { this.props.controlStore!.setCountriesFilterActive(value)}}
@@ -282,6 +283,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
     }
 
     get degrees(): JSX.Element {
+        const t = translationStore.t
         const allDegrees = Array.from(AbstractCsvRowMapper.educations).map(([k, v]) => ({ key: k as string, count: v }))
         const filterdValues = allDegrees.map(a => a.key)
         const autoCompleteComponent = (<Autocomplete
@@ -302,11 +304,11 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
             )}
             style={{ width: 250 }}
             renderInput={(params) => (
-                <TextField style={{ padding: '10px' }} {...params} label="Bachelor, Master, etc." />
+                <TextField style={{ padding: '10px' }} {...params} label={t.degreeLabel} />
             )}
         />)
         return (<ControlComponentWrapper
-            title='Highest Degree'
+            title={t.degreeLabel}
             controlComponent={autoCompleteComponent}
             isEnabled={this.props.controlStore!.degreeFilterActive}
             enable={(event, value) => { this.props.controlStore!.setDegreeFilterActive(value)}}
@@ -319,11 +321,12 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
     }
 
     get gender(): JSX.Element {
+        const t = translationStore.t
         const values = this.props.controlStore!.genders
         const checkboxes = this.getCheckboxesForValues(values, Object.values(Gender).filter((v): v is Gender => typeof v === 'string'))
         const genderCount = AbstractCsvRowMapper.genders.size
         return (<ControlComponentWrapper
-            title='Gender'
+            title={t.genderLabel}
             controlComponent={checkboxes}
             isEnabled={this.props.controlStore!.gendersFilterActive}
             enable={(event, value) => { this.props.controlStore!.setGendersFilterActive(value)}}
@@ -332,6 +335,12 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
     }
 
     getCheckboxesForValues(selectedValues: Gender[], enumKeys: Gender[]): JSX.Element {
+        const t = translationStore.t
+        const genderTranslations: Record<string, string> = {
+            MALE: t.genderMale,
+            FEMALE: t.genderFemale,
+            OTHER: t.genderOther
+        }
         const values = enumKeys.map(g => g.toString())
         const checkboxes = values.map(value => {
             const check = selectedValues.includes(Gender[value as keyof typeof Gender])
@@ -342,7 +351,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
                         checked={check}
                         onChange={() => { this.props.controlStore!.setGenders(Gender[value as keyof typeof Gender]) }}
                     />}
-                    label={value}
+                    label={genderTranslations[value] || value}
                 />
             )
         })
@@ -354,6 +363,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
     }
 
     get companySizeInputs(): JSX.Element {
+        const t = translationStore.t
         const currentMin = this.props.controlStore!.companySize[0]
         const currentMax = this.props.controlStore!.companySize[1]
         const values = this.props.controlStore!.companySizeValues
@@ -361,7 +371,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
         const inputs = (
             <div>
                 <TextField
-                    label="From"
+                    label={t.companySizeFrom}
                     type="number"
                     value={currentMin ?? ''}
                     onChange={this.handleMinCompanySizeChange.bind(this)}
@@ -369,7 +379,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
                     style={{ width: 120 }}
                 />
                 <TextField
-                    label="To"
+                    label={t.companySizeTo}
                     type="number"
                     value={currentMax ?? ''}
                     onChange={this.handleMaxCompanySizeChange.bind(this)}
@@ -379,7 +389,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
             </div>
         )
         return (<ControlComponentWrapper
-            title='Company Size'
+            title={t.companySizeLabel}
             controlComponent={inputs}
             isEnabled={this.props.controlStore!.companySizeFilterActive}
             enable={(event, value) => { this.props.controlStore!.setCompanySizeFilterActive(value)}}
@@ -388,9 +398,10 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
     }
 
     get salaryFilter(): JSX.Element {
+        const t = translationStore.t
         return (<ControlComponentWrapper
-            title='Salary Threshold Filter'
-            controlComponent={<Typography variant="body2" style={{ padding: '10px', color: '#666', fontSize: '0.85em' }}>When disabled: consider all salaries. When enabled: filter 10k-250k</Typography>}
+            title={t.salaryFilterLabel}
+            controlComponent={<Typography variant="body2" style={{ padding: '10px', color: '#666', fontSize: '0.85em' }}>{t.salaryFilterHint}</Typography>}
             isEnabled={this.props.controlStore!.enableSalaryFilter}
             enable={(event, value) => { this.props.controlStore!.setEnableSalaryFilter(value)}}>
         </ControlComponentWrapper>)
@@ -418,7 +429,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
         this.props.controlStore!.setAbilities(value)
     }
 
-    handleChange(event: React.ChangeEvent<unknown>, value: number | number[]): void {
+    handleChange(_event: Event | React.SyntheticEvent, value: number | number[]): void {
         this.props.controlStore!.setExp(value as number[])
     }
 
@@ -478,11 +489,12 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
     }
 
     handleShareLink = (): void => {
+        const t = translationStore.t
         const state = this.props.controlStore!.getSessionState()
         const encoded = encodeURIComponent(JSON.stringify(state))
         const url = `${window.location.origin}${window.location.pathname}?settings=${encoded}`
         navigator.clipboard.writeText(url).then(() => {
-            alert('Share link copied to clipboard!')
+            alert(t.shareLinkSuccess)
         })
         this.handleMenuClose()
     }

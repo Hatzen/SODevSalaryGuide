@@ -1,7 +1,6 @@
-import ControlState from '../model/controlState'
+import controlStore from './controlStore'
 
 describe('ControlStore', () => {
-    const controlStore = require('../stores/controlStore').default
 
     beforeEach(() => {
         controlStore.pendingState = null

@@ -3,7 +3,7 @@ import { observer } from 'mobx-react'
 import { DataGrid, GridColDef } from '@mui/x-data-grid'
 import Loader from 'react-loader-spinner'
 import entryStore from '../stores/entryStore'
-import { FormLabel } from '@material-ui/core'
+import { FormLabel } from '@mui/material'
 
 const RawDataTable = observer(() => {
     const selectedYearNum = parseInt(entryStore.selectedYear, 10)
@@ -30,7 +30,6 @@ const RawDataTable = observer(() => {
         headerName: key,
         flex: 1,
         minWidth: 100,
-        resizable: true,
     }))
 
     return (
@@ -41,9 +40,9 @@ const RawDataTable = observer(() => {
                     rows={rowsWithId}
                     columns={columns}
                     pageSizeOptions={[10, 25, 50, 100]}
-                    pageSize={10}
+                    paginationModel={{ page: 0, pageSize: 10 }}
                     checkboxSelection
-                    disableSelectionOnClick
+                    disableRowSelectionOnClick
                 />
             </div>
             <div style={{marginTop: '10px', fontSize: '0.9em', color: '#666'}}>

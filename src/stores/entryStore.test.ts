@@ -1,5 +1,4 @@
 import ResultSetForYear from '../model/resultSetForYear'
-import { CHUNK_COUNT_PER_YEAR } from '../model/constantMetaData'
 
 describe('ResultSetForYear', () => {
     it('should have properties that can be updated', () => {

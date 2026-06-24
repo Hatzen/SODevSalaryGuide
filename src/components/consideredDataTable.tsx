@@ -5,8 +5,9 @@ import Loader from 'react-loader-spinner'
 import { uiStore } from '../stores/uiStore'
 import controlStore from '../stores/controlStore'
 import entryStore from '../stores/entryStore'
-import { FormLabel } from '@material-ui/core'
+import { FormLabel } from '@mui/material'
 import { Tabs, Tab } from '@mui/material'
+import translationStore from '../stores/translationStore'
 
 const formatValueForDisplay = (value: unknown): string => {
     if (value === null || value === undefined) {
@@ -46,11 +47,21 @@ const formatValueForDisplay = (value: unknown): string => {
     return String(value)
 }
 
+const formatGenderValue = (value: unknown, t: typeof translationStore.t): string => {
+    const genderTranslations: Record<string, string> = {
+        MALE: t.genderMale,
+        FEMALE: t.genderFemale,
+        OTHER: t.genderOther
+    }
+    return genderTranslations[value as string] || String(value)
+}
+
 const ConsideredDataTable = observer(() => {
     const [tabIndex, setTabIndex] = React.useState(0)
     const selectedYearNum = parseInt(controlStore.selectedYear, 10)
     const selectedYearData = entryStore.parsedDataByYear[selectedYearNum]
     const selectedCurrency = controlStore.selectedCurrency
+    const t = translationStore.t
 
     const rawCsvRows = selectedYearData?.rawCsvRows ?? []
     const mappedData = selectedYearData?.resultSet ?? []
@@ -66,14 +77,14 @@ const ConsideredDataTable = observer(() => {
         return (
             <div style={{textAlign: 'center', padding: '40px'}}>
                 <Loader type="ThreeDots" height={80} width={80} color="#F48024" />
-                <p>Loading considered data...</p>
+                <p>{t.noDataAvailable || t.salaryTab}... <br/>Loading large dataset, please wait.</p>
             </div>
         )
     }
 
     const renderRawCsvTable = (): JSX.Element => {
         if (rawCsvRows.length === 0) {
-            return <p style={{padding: '20px'}}>No raw CSV data available</p>
+            return <p style={{padding: '20px'}}>{t.noDataAvailable || 'No raw CSV data available'}</p>
         }
         const rowsWithId = rawCsvRows.map((entry, index) => ({
             ...entry,
@@ -85,7 +96,6 @@ const ConsideredDataTable = observer(() => {
             headerName: key,
             flex: 1,
             minWidth: 100,
-            resizable: true,
         }))
         return (
             <div style={{flex: 1, minHeight: 0}}>
@@ -93,9 +103,9 @@ const ConsideredDataTable = observer(() => {
                     rows={rowsWithId}
                     columns={columns}
                     pageSizeOptions={[10, 25, 50, 100]}
-                    pageSize={10}
+                    paginationModel={{ page: 0, pageSize: 10 }}
                     checkboxSelection
-                    disableSelectionOnClick
+                    disableRowSelectionOnClick
                 />
             </div>
         )
@@ -107,54 +117,48 @@ const ConsideredDataTable = observer(() => {
             const entryCurrencyRatio = entryStore.currencyValues?.getRatioByCode(entry.currency) ?? 1
             const usdSalary = rawSalary / entryCurrencyRatio
             const targetCurrencyRatio = entryStore.currencyValues?.getRatioByCode(selectedCurrency) ?? 1
-            const convertedSalary = usdSalary * targetCurrencyRatio
             return {
                 ...entry,
                 id: `mapped-${index}`,
-                convertedSalary,
+                convertedSalary: usdSalary * targetCurrencyRatio,
                 salary: rawSalary
             }
         })
 
         const columns: GridColDef[] = [
-            { field: 'salary', headerName: 'Salary (raw)', flex: 1, minWidth: 100, resizable: true },
+            { field: 'salary', headerName: t.salaryRaw, flex: 1, minWidth: 100 },
             {
                 field: 'convertedSalary',
-                headerName: `Salary (${selectedCurrency})`,
+                headerName: `${t.salaryConverted} (${selectedCurrency})`,
                 flex: 1,
                 minWidth: 120,
-                resizable: true,
-                valueFormatter: (params) => {
-                    const value = params.value as number
+                valueFormatter: (value: number) => {
                     return value ? Math.round(value).toLocaleString() : ''
                 }
             },
-            { field: 'gender', headerName: 'Gender', flex: 1, minWidth: 80, resizable: true },
-            { field: 'country', headerName: 'Country', flex: 1, minWidth: 100, resizable: true },
-            { field: 'highestDegree', headerName: 'Highest Degree', flex: 1, minWidth: 120, resizable: true },
+            { field: 'gender', headerName: t.genderLabel, flex: 1, minWidth: 80, valueFormatter: (value) => formatGenderValue(value, t) },
+            { field: 'country', headerName: t.countriesLabel, flex: 1, minWidth: 100 },
+            { field: 'highestDegree', headerName: t.degreeLabel, flex: 1, minWidth: 120 },
             {
                 field: 'expirienceInYears',
-                headerName: 'Experience',
+                headerName: t.experienceLabel,
                 flex: 1,
                 minWidth: 120,
-                resizable: true,
-                valueFormatter: (params) => formatValueForDisplay(params.value)
+                valueFormatter: (value) => formatValueForDisplay(value)
             },
             {
                 field: 'abilities',
-                headerName: 'Abilities',
+                headerName: t.abilitiesLabel,
                 flex: 1,
                 minWidth: 200,
-                resizable: true,
-                valueFormatter: (params) => formatValueForDisplay(params.value)
+                valueFormatter: (value) => formatValueForDisplay(value)
             },
             {
                 field: 'companySize',
-                headerName: 'Company Size',
+                headerName: t.companySizeLabel,
                 flex: 1,
                 minWidth: 120,
-                resizable: true,
-                valueFormatter: (params) => formatValueForDisplay(params.value)
+                valueFormatter: (value) => formatValueForDisplay(value)
             }
         ]
 
@@ -164,9 +168,9 @@ const ConsideredDataTable = observer(() => {
                     rows={rowsWithId}
                     columns={columns}
                     pageSizeOptions={[10, 25, 50, 100]}
-                    pageSize={10}
+                    paginationModel={{ page: 0, pageSize: 10 }}
                     checkboxSelection
-                    disableSelectionOnClick
+                    disableRowSelectionOnClick
                 />
             </div>
         )
@@ -178,54 +182,48 @@ const ConsideredDataTable = observer(() => {
             const entryCurrencyRatio = entryStore.currencyValues?.getRatioByCode(entry.currency) ?? 1
             const usdSalary = rawSalary / entryCurrencyRatio
             const targetCurrencyRatio = entryStore.currencyValues?.getRatioByCode(selectedCurrency) ?? 1
-            const convertedSalary = usdSalary * targetCurrencyRatio
             return {
                 ...entry,
                 id: `filtered-${index}`,
-                convertedSalary,
+                convertedSalary: usdSalary * targetCurrencyRatio,
                 salary: rawSalary
             }
         })
 
         const columns: GridColDef[] = [
-            { field: 'salary', headerName: 'Salary (raw)', flex: 1, minWidth: 100, resizable: true },
+            { field: 'salary', headerName: t.salaryRaw, flex: 1, minWidth: 100 },
             {
                 field: 'convertedSalary',
-                headerName: `Salary (${selectedCurrency})`,
+                headerName: `${t.salaryConverted} (${selectedCurrency})`,
                 flex: 1,
                 minWidth: 120,
-                resizable: true,
-                valueFormatter: (params) => {
-                    const value = params.value as number
+                valueFormatter: (value: number) => {
                     return value ? Math.round(value).toLocaleString() : ''
                 }
             },
-            { field: 'gender', headerName: 'Gender', flex: 1, minWidth: 80, resizable: true },
-            { field: 'country', headerName: 'Country', flex: 1, minWidth: 100, resizable: true },
-            { field: 'highestDegree', headerName: 'Highest Degree', flex: 1, minWidth: 120, resizable: true },
+            { field: 'gender', headerName: t.genderLabel, flex: 1, minWidth: 80, valueFormatter: (value) => formatGenderValue(value, t) },
+            { field: 'country', headerName: t.countriesLabel, flex: 1, minWidth: 100 },
+            { field: 'highestDegree', headerName: t.degreeLabel, flex: 1, minWidth: 120 },
             {
                 field: 'expirienceInYears',
-                headerName: 'Experience',
+                headerName: t.experienceLabel,
                 flex: 1,
                 minWidth: 120,
-                resizable: true,
-                valueFormatter: (params) => formatValueForDisplay(params.value)
+                valueFormatter: (value) => formatValueForDisplay(value)
             },
             {
                 field: 'abilities',
-                headerName: 'Abilities',
+                headerName: t.abilitiesLabel,
                 flex: 1,
                 minWidth: 200,
-                resizable: true,
-                valueFormatter: (params) => formatValueForDisplay(params.value)
+                valueFormatter: (value) => formatValueForDisplay(value)
             },
             {
                 field: 'companySize',
-                headerName: 'Company Size',
+                headerName: t.companySizeLabel,
                 flex: 1,
                 minWidth: 120,
-                resizable: true,
-                valueFormatter: (params) => formatValueForDisplay(params.value)
+                valueFormatter: (value) => formatValueForDisplay(value)
             }
         ]
 
@@ -235,9 +233,9 @@ const ConsideredDataTable = observer(() => {
                     rows={rowsWithId}
                     columns={columns}
                     pageSizeOptions={[10, 25, 50, 100]}
-                    pageSize={10}
+                    paginationModel={{ page: 0, pageSize: 10 }}
                     checkboxSelection
-                    disableSelectionOnClick
+                    disableRowSelectionOnClick
                 />
             </div>
         )
@@ -245,7 +243,7 @@ const ConsideredDataTable = observer(() => {
 
     return (
         <div style={{padding: '20px', height: '100%', display: 'flex', flexDirection: 'column'}}>
-            <h2><FormLabel>Data Tables</FormLabel></h2>
+            <h2><FormLabel>{t.dataTables}</FormLabel></h2>
             <Tabs
                 value={tabIndex}
                 onChange={changeTab}
@@ -258,12 +256,12 @@ const ConsideredDataTable = observer(() => {
                     }
                 }}
             >
-                <Tab label={`Mapped All (${mappedData.length})`} />
-                <Tab label={`Filtered (${filteredData.length})`} />
-                <Tab label={`Raw CSV (${rawCsvRows.length})`} />
+                <Tab label={`${t.filteredTab} (${filteredData.length})`} />
+                <Tab label={`${t.mappedTab} (${mappedData.length})`} />
+                <Tab label={`${t.rawCsvTab} (${rawCsvRows.length})`} />
             </Tabs>
-            {tabIndex === 0 && renderMappedTable()}
-            {tabIndex === 1 && renderFilteredTable()}
+            {tabIndex === 0 && renderFilteredTable()}
+            {tabIndex === 1 && renderMappedTable()}
             {tabIndex === 2 && renderRawCsvTable()}
         </div>
     )
