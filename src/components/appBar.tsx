@@ -70,6 +70,7 @@ class MenuAppBar extends React.Component<MenuAppBarProps> {
                             {...params}
                             label={t.language}
                             size="small"
+                            color="secondary"
                             style={{ width: 120, marginLeft: 'auto', marginRight: '10px' }}
                         />
                     )}
