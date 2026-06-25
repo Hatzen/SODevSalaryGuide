@@ -63,7 +63,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
         const lastUpdateTime = lastUpdate > 0 ? new Date(lastUpdate).toLocaleTimeString() : 'Not yet updated'
 
         return (
-            <div key={this.state.refreshKey} style={{padding: 50, overflow: 'scroll', position: 'relative', top: 0, left: 0, right: 0, maxHeight: 'calc(100% - 100px)'}}>
+            <div key={this.state.refreshKey} style={{padding: 20, overflow: 'scroll', position: 'relative', top: 0, left: 0, right: 0, maxHeight: 'calc(100% - 40px)'}}>
                 {this.headerWithMenu}
                 <Typography variant="caption" style={{fontSize: '0.7em', color: '#888', display: 'block', marginBottom: '10px'}}>
                     {t.lastFilterUpdate}: {lastUpdateTime}
@@ -73,12 +73,12 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
                         <FormGroup key={1}>
                             {this.years}
                             {this.currency}
-                            {this.gender}
                             {this.slider}
                             {this.abilities}
                             {this.companySizeInputs}
                             {this.countries}
                             {this.degrees}
+                            {this.gender}
                             {this.salaryFilter}
                         </FormGroup>
                     </FormControl>
@@ -142,13 +142,14 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
                     <Checkbox
                         style={{ marginRight: 8 }}
                         checked={selected}
+                        color="secondary"
                     />
                     {option}
                 </li>
             )}
             style={{ width: 250 }}
             renderInput={(params) => (
-                <TextField style={{ padding: '10px' }} {...params} label={t.yearLabel} />
+                <TextField style={{ padding: '10px' }} {...params} label={t.yearLabel} color="secondary" />
             )}
         />)
         return autoCompleteComponent
@@ -168,16 +169,24 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
             )}
             style={{ width: 250 }}
             renderInput={(params) => (
-                <TextField style={{ padding: '10px' }} {...params} label={t.currencyLabel} />
+                <TextField style={{ }} {...params} label={t.currencyLabel} color="secondary" />
             )}
         />)
-        return (<ControlComponentWrapper
-            title={t.currencyLabel}
-            controlComponent={autoCompleteComponent}
-            isEnabled={true}
-            enable={() => { /* no-op */ }}
-            count={allCurrencies.length}>
-        </ControlComponentWrapper>)
+        return (<div style={{marginTop: '8px'}}>
+                        <FormControlLabel
+                            label={
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '15px' }}>
+                                    <Typography variant="body1" color="secondary">{t.currencyLabel}</Typography>
+                                    <Typography variant="body2" style={{ color: '#666', fontSize: '0.85em' }}>
+                                        ({allCurrencies.length})
+                                    </Typography>
+                                </div>
+                            }
+                            control={<div></div>}
+                            labelPlacement="start"
+                        />
+                        {autoCompleteComponent}
+                    </div>)
     }
 
     handleYearChange = (event: React.SyntheticEvent<Element, Event>, value: string | null): void => {
@@ -211,7 +220,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
             )}
             style={{ width: 250 }}
             renderInput={(params) => (
-                <TextField style={{ padding: '10px' }} {...params} label={t.abilitiesLabel} />
+                <TextField style={{ }} {...params} label={t.abilitiesLabel} color="secondary" />
             )}
         />)
         return (<ControlComponentWrapper
@@ -236,6 +245,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
                     onChange={this.handleChange.bind(this)}
                     valueLabelDisplay="auto"
                     aria-labelledby="non-linear-slider"
+                    color="secondary"
                 />
             )
         const experienceCount = AbstractCsvRowMapper.years.size
@@ -270,7 +280,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
             )}
             style={{ width: 250 }}
             renderInput={(params) => (
-                <TextField style={{ padding: '10px' }} {...params} label={t.countriesLabel} />
+                <TextField style={{ }} {...params} label={t.countriesLabel} color="secondary" />
             )}
         />)
         return (<ControlComponentWrapper
@@ -304,7 +314,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
             )}
             style={{ width: 250 }}
             renderInput={(params) => (
-                <TextField style={{ padding: '10px' }} {...params} label={t.degreeLabel} />
+                <TextField style={{ }} {...params} label={t.degreeLabel} color="secondary" />
             )}
         />)
         return (<ControlComponentWrapper
@@ -349,6 +359,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
                     key={this.key++}
                     control={<Checkbox
                         checked={check}
+                        color="secondary"
                         onChange={() => { this.props.controlStore!.setGenders(Gender[value as keyof typeof Gender]) }}
                     />}
                     label={genderTranslations[value] || value}
@@ -377,6 +388,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
                     onChange={this.handleMinCompanySizeChange.bind(this)}
                     inputProps={{ min: values.min, max: values.max, step: 1 }}
                     style={{ width: 120 }}
+                    color="secondary"
                 />
                 <TextField
                     label={t.companySizeTo}
@@ -385,6 +397,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
                     onChange={this.handleMaxCompanySizeChange.bind(this)}
                     inputProps={{ min: values.min, max: values.max, step: 1 }}
                     style={{ width: 120 }}
+                    color="secondary"
                 />
             </div>
         )
@@ -401,7 +414,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
         const t = translationStore.t
         return (<ControlComponentWrapper
             title={t.salaryFilterLabel}
-            controlComponent={<Typography variant="body2" style={{ padding: '10px', color: '#666', fontSize: '0.85em' }}>{t.salaryFilterHint}</Typography>}
+            controlComponent={<Typography variant="body2" style={{ color: '#666', fontSize: '0.85em' }}>{t.salaryFilterHint}</Typography>}
             isEnabled={this.props.controlStore!.enableSalaryFilter}
             enable={(event, value) => { this.props.controlStore!.setEnableSalaryFilter(value)}}>
         </ControlComponentWrapper>)
