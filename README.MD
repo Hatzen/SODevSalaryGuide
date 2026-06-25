@@ -16,6 +16,6 @@ We use the raw data and try not to process the data to much. Just give some filt
 It is highly recommended to checkout the repository and run the code locally for perfomance reasons.
 
 Here you can see a full online demo of the current master deployment. 
-*WARNING: Do not open the side with Mobile Data it will Download around 2 GB of Data!*
+*WARNING: Do not open the site with Mobile Data it will Download up to 2 GB of Data!*
 
 https://hatzen.github.io/SODevSalaryGuide/
