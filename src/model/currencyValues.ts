@@ -6,6 +6,7 @@ export default class CurrencyValues {
         timestamp: number// e.g. 1632911490,
     }
     data!: { [currencyWith3Letters: string]: number }
+    isFallback = false // true if using default values instead of API data
     /*
     e.g.
         "JPY":110.432,

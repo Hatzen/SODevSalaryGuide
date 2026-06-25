@@ -1,86 +1,118 @@
-import { action, makeObservable, observable, observe } from 'mobx'
+import { action, makeObservable, observable, reaction } from 'mobx'
+import type { ControlStore } from './controlStore'
+import type { EntryStore } from './entryStore'
 import SurveyEntry from '../model/surveyEntry'
-import { ControlStore } from './controlStore'
-import {  EntryStore } from './entryStore'
+import controlStore from './controlStore'
+import entryStore from './entryStore'
+import { Gender } from '../model/gender'
+
+type ReactionData = {
+    years: string[]
+    selectedYear: string
+    overallEntryCount: number
+    expirienceInYears: [min: number, max: number]
+    companySize: [min: number | null, max: number | null]
+    gendersFilterActive: boolean
+    genders: Gender[]
+    abilitiesFilterActive: boolean
+    abilities: string[]
+    countriesFilterActive: boolean
+    countries: string[]
+    degreeFilterActive: boolean
+    degrees: string[]
+    companySizeFilterActive: boolean
+    enableSalaryFilter: boolean
+}
 
 export class UiStore {
 
     filteredData: { [year: number]: SurveyEntry[] } = {}
+    lastFilterUpdateTime = 0
 
-    private static readonly renderPeriodInMs = 3000
     private readonly controlStore: ControlStore
     private readonly entryStore: EntryStore
-    
-    private timeoutId!: number
-    private dataChanged = true
+    private reactionDisposer: (() => void) | null = null
+    private debounceTimer: ReturnType<typeof setTimeout> | null = null
+    private latestReactionData: ReactionData | null = null
 
     constructor(controlStore: ControlStore, entryStore: EntryStore) {
         this.controlStore = controlStore
         this.entryStore = entryStore
         
-        // makeAutoObservable(this)
-        this.initStore()
-
-        this.resetRenderSchedule()
-    }
-
-    private initStore(): void {
-        
         makeObservable(this, {
             filteredData: observable,
-            udpateFilteredData: action,
+            lastFilterUpdateTime: observable,
+            updateFilteredData: action,
         })
 
-        // observable(this.filteredData)
+        this.initReactions()
+    }
 
-        // observe(this.entryStore.parsedData.overallEntryCount, this.handleChanges.bind(this))
-        // observe(this.entryStore.parsedDataByYear, 2011, this.handleChanges.bind(this))
-        // observe(this.entryStore, 'parsedDataByYear', this.handleChanges) //.bind(this)
-        // observe(this.controlStore, 'controlState', this.handleChanges)
-        observe(this.entryStore.parsedDataByYear, this.handleChanges.bind(this))
-        // observe(this.controlStore.controlState, this.handleChanges.bind(this))
-        /*
-        reaction(
-            () => this.entryStore.parsedDataByYear,
-            flag => {
-                this.handleChanges()
-            }
+    private initReactions(): void {
+        this.reactionDisposer = reaction(
+            () => {
+                const years = Object.keys(this.entryStore.parsedDataByYear)
+                const cs = this.controlStore
+                const selectedYear = this.entryStore.selectedYear
+                return {
+                    years,
+                    selectedYear,
+                    overallEntryCount: this.entryStore.parsedDataByYear[parseInt(selectedYear, 10)]?.overallEntryCount ?? 0,
+                    expirienceInYears: cs.expirienceInYears,
+                    companySize: cs.companySize,
+                    gendersFilterActive: cs.gendersFilterActive,
+                    genders: cs.genders,
+                    abilitiesFilterActive: cs.abilitiesFilterActive,
+                    abilities: cs.abilities,
+                    countriesFilterActive: cs.countriesFilterActive,
+                    countries: cs.countries,
+                    degreeFilterActive: cs.degreeFilterActive,
+                    degrees: cs.degrees,
+                    companySizeFilterActive: cs.companySizeFilterActive,
+                    enableSalaryFilter: cs.enableSalaryFilter
+                }
+            },
+            (data) => {
+                // Debounce UI updates to at most once per second (1000ms)
+                // This prevents UI freezing during rapid data parsing
+                this.latestReactionData = data
+                if (this.debounceTimer) {
+                    clearTimeout(this.debounceTimer)
+                }
+                this.debounceTimer = setTimeout(() => {
+                    if (this.latestReactionData) {
+                        this.lastFilterUpdateTime = Date.now()
+                        console.log('[DEBUG] UiStore filtering triggered at', new Date(this.lastFilterUpdateTime).toISOString())
+                        this.updateFilteredData()
+                    }
+                    this.debounceTimer = null
+                }, 100) // 100ms throttle - responsive but not freezing
+            },
+            { fireImmediately: true }
         )
-        reaction(
-            () => this.controlStore.controlState,
-            flag => {
-                this.handleChanges()
-            }
-        )
-        */
-        // observe(this.controlStore.controlState, this.handleChanges.bind(this))
     }
 
-    private handleChanges(): void {
-        //
-        this.dataChanged = true
-        this.resetRenderSchedule()
-    }
-
-    private resetRenderSchedule (): void {
-        window.clearInterval(this.timeoutId)
-        this.timeoutId = window.setInterval(this.udpateFilteredData.bind(this), UiStore.renderPeriodInMs)
-    }
-
-    // TODO: Maybe do in worker? https://medium.com/launch-school/what-are-web-workers-4a0e1ded7a67
-    udpateFilteredData (): void {
-        // // TODO: this.dataChanged only changes when applying observer.. Which is failing in constructor as objects are not initialized???
-        // For better performance only render every 3 seconds (to avoid rendering every 20ms and freeze ui) and only when anything changed.
-        //if (this.dataChanged === true) {
-        this.dataChanged = false
-        Object.keys(this.entryStore.parsedDataByYear).forEach((yearStr: string) => {
-            const year = parseInt(yearStr, 10)
-            const parsedData = this.entryStore.parsedDataByYear[year]
-            const controlState = this.controlStore.controlState
-            this.filteredData[year] = parsedData.resultSet
+    updateFilteredData = (): void => {
+        const selectedYearNum = parseInt(this.entryStore.selectedYear, 10)
+        const parsedData = this.entryStore.parsedDataByYear[selectedYearNum]
+        const controlState = this.controlStore.controlState
+        
+        if (parsedData?.resultSet) {
+            this.filteredData[selectedYearNum] = [...parsedData.resultSet]
                 .filter(controlState.filterByState.bind(controlState))
-        })
-        //}
+        } else {
+            this.filteredData[selectedYearNum] = []
+        }
     }
 
+    destroy(): void {
+        if (this.reactionDisposer) {
+            this.reactionDisposer()
+        }
+        if (this.debounceTimer) {
+            clearTimeout(this.debounceTimer)
+        }
+    }
 }
+
+export const uiStore = new UiStore(controlStore, entryStore)

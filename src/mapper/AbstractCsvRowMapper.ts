@@ -29,6 +29,7 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
     static genders: Set<string> = new Set()
     static years: Set<string> = new Set()
     static abilities: Map<string, number> = new Map()
+    static companySize: Map<string, number> = new Map()
 
     abstract readonly SALARY_KEY: string
     abstract readonly CURRENCY_KEY: string
@@ -83,6 +84,7 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
         AbstractCsvRowMapper.genders.clear()
         AbstractCsvRowMapper.years.clear()
         AbstractCsvRowMapper.abilities.clear()
+        AbstractCsvRowMapper.companySize.clear()
     }
 
     private addKeyAndupdateKeyCount(key: string, targetList: string[]): void {
@@ -195,6 +197,15 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
             return
         }
 
+        const id = this.valueAsId(companySize)
+        const invalidValues = ['response', '', 'none', 'other', 'others', 'otherpleasespecify']
+        if (invalidValues.indexOf(id) !== -1) {
+            return
+        }
+
+        const newValue = (AbstractCsvRowMapper.companySize.get(id) ?? 0) + 1
+        AbstractCsvRowMapper.companySize.set(id, newValue)
+
         let mappedResult
         // https://stackoverflow.com/questions/10003683/how-can-i-extract-a-number-from-a-string-in-javascript
         // thenum = "foo3bar5".match(/\d+/)[0] // "3"
@@ -252,42 +263,52 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
         const salary = csvRow[this.SALARY_KEY]
         if (salary != null) {
             const salaryValue = this.getSalaryValue(salary)
-            if (salaryValue < 10000) {
-                return
+            if (salaryValue !== -1 && Math.abs(salaryValue) > 0) {
+                result._salary = Math.abs(salaryValue)
             }
-            result._salary = salaryValue
         }
 
         const currency = csvRow[this.CURRENCY_KEY]
         if (currency != null) {
             result.currency = this.getCurrency(currency)
         }
-        
-        if (result.salary > 250000) {
-            // console.error('Bad ratio: ' + currency + ' with value ' + result._salary)
-            result._salary = -1
-        }
     }
 
     protected getCurrency(value: string): Currency {
-        if (this.containsValue(value, 'EUR')) {
-            return Currency.EUR
-        }
-        if (this.containsValue(value, 'YEN')) {
-            return Currency.JPY
-        }
-        if (this.containsValue(value, 'POUNDS')) {
-            return Currency.GBP
-        }
-        if (this.containsValue(value, 'US DOLLAR')) {
-            return Currency.USD
-        }
-        
-        // TODO: Add all currencies
+        const upperValue = value.toUpperCase()
+        if (upperValue.includes('EUR')) return Currency.EUR
+        if (upperValue.includes('YEN') || upperValue.includes('JPY')) return Currency.JPY
+        if (upperValue.includes('POUNDS') || upperValue.includes('GBP')) return Currency.GBP
+        if (upperValue.includes('US DOLLAR') || upperValue.includes('USD')) return Currency.USD
+        if (upperValue.includes('CAD')) return Currency.CAD
+        if (upperValue.includes('AUD')) return Currency.AUD
+        if (upperValue.includes('CHF')) return Currency.CHF
+        if (upperValue.includes('CNY')) return Currency.CNY
+        if (upperValue.includes('INR')) return Currency.INR
+        if (upperValue.includes('SEK')) return Currency.SEK
+        if (upperValue.includes('NZD')) return Currency.NZD
+        if (upperValue.includes('BRL')) return Currency.BRL
+        if (upperValue.includes('SGD')) return Currency.SGD
+        if (upperValue.includes('HKD')) return Currency.HKD
+        if (upperValue.includes('NOK')) return Currency.NOK
+        if (upperValue.includes('ZAR')) return Currency.ZAR
+        if (upperValue.includes('RUB')) return Currency.RUB
+        if (upperValue.includes('TRY')) return Currency.TRY
+        if (upperValue.includes('KRW')) return Currency.KRW
+        if (upperValue.includes('IDR')) return Currency.IDR
+        if (upperValue.includes('MYR')) return Currency.MYR
+        if (upperValue.includes('PHP')) return Currency.PHP
+        if (upperValue.includes('THB')) return Currency.THB
+        if (upperValue.includes('PLN')) return Currency.PLN
+        if (upperValue.includes('CZK')) return Currency.CZK
+        if (upperValue.includes('ILS')) return Currency.ILS
+        if (upperValue.includes('CLP')) return Currency.CLP
+        if (upperValue.includes('AED')) return Currency.AED
+        if (upperValue.includes('SAR')) return Currency.SAR
+        if (upperValue.includes('TWD')) return Currency.TWD
+        if (upperValue.includes('MXN')) return Currency.MXN
 
-        // console.error('Cannot map ' + value + ' to currency. Setting to default USD.')
         return Currency.USD
-
     }
 
     protected containsValue (value: string, find: string): boolean {
@@ -301,13 +322,13 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
         if (typeof value === 'string') {
             if (value.indexOf('<') !== -1) {
                 return 10000 // <20k consider as 10k in average
-        } else if (value.indexOf('$') !== -1 && value.indexOf('-') !== -1) {
-            const firstValue = value
-                .split('$').join('')
-                .split(',').join('')
-                .substring(0, value.indexOf('-'))
-            return parseInt(firstValue) + 10000 // 20-40k => average 30k
-        }
+            } else if (value.indexOf('$') !== -1 && value.indexOf('-') !== -1) {
+                const firstValue = value
+                    .split('$').join('')
+                    .split(',').join('')
+                    .substring(0, value.indexOf('-'))
+                return parseInt(firstValue) + 10000 // 20-40k => average 30k
+            }
         }
         try {
             let result = parseInt(value)
@@ -329,4 +350,33 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
             return -1
         }
     }
+    /*
+    protected getSalaryValue (value: string): number {
+        // E.g. $60,000 - $80,000 or <20000wqe
+        if (typeof value === 'string') {
+            if (value.indexOf('<') !== -1) {
+                const match = value.match(/\d+/)
+                return match ? parseInt(match[0]) : 10000
+            } else if (value.indexOf('$') !== -1 && value.indexOf('-') !== -1) {
+                const firstValue = value
+                    .split('$').join('')
+                    .split(',').join('')
+                    .substring(0, value.indexOf('-'))
+                return parseInt(firstValue) + 10000 // 20-40k => average 30k
+            }
+        }
+        try {
+            const result = parseInt(value)
+            if (isNaN(result)) {
+                return -1
+            }
+            // If the value is greater 500k and it is "even" consider it as wrong decimal input
+            if (result > 500000 && (result % 10000 === 0)) {
+                return result / 100
+            }
+            return result
+        } catch (error) {
+            return -1
+        }
+    }*/
 }

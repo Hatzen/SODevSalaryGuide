@@ -1,35 +1,47 @@
 import { Gender } from './gender'
 import SurveyEntry from './surveyEntry'
+import { Currency } from './currency'
 
 export default class ControlState {
     selectedYear!: string
     expirienceInYears!: [min: number, max:number]
     genders!: Gender[]
     abilities!: string[]
-    companySize: [min: number, max:number] = [1, 100000]
+    companySize: [min: number | null, max: number | null] = [null, null]
     countries: string[] = []
     degrees: string[] = []
+    selectedCurrency: Currency = Currency.EUR
 
     gendersFilterActive = false
     abilitiesFilterActive = false
     expirienceFilterActive = false
-    
+      
     companySizeFilterActive = false
     degreeFilterActive = false
     countriesFilterActive = false
-    
+
+    enableSalaryFilter = true
 
     constructor (partial: ControlState) {
         Object.assign(this, partial)
     }
 
     filterByState(entry: SurveyEntry): boolean {
-        return this.filterByExpierience(entry)
+        return this.filterBySalary(entry)
+            && this.filterByExpierience(entry)
             && this.filterByAbilities(entry)
             && this.filterByGender(entry)
             && this.filterByCompanySize(entry)
             && this.filterByCountries(entry)
             && this.filterByDegree(entry)
+    }
+
+    private filterBySalary(entry: SurveyEntry): boolean {
+        if (!this.enableSalaryFilter) {
+            return true
+        }
+        const salary = entry.salary
+        return salary >= 10000 && salary <= 250000
     }
 
     private filterByAbilities(entry: SurveyEntry): boolean {
@@ -69,8 +81,8 @@ export default class ControlState {
         if (expirienceInYears != null) {
             const max = this.expirienceInYears[1]
             const min = this.expirienceInYears[0]
-            if (expirienceInYears.max <= max
-                || expirienceInYears.min >= min) {
+            if (expirienceInYears.min >= min
+                && expirienceInYears.max <= max) {
                 return true
             }
         }
@@ -83,11 +95,18 @@ export default class ControlState {
         }
         const companySize = entry.companySize
         if (companySize != null) {
-            const max = this.companySize[1]
-            const min = this.companySize[0]
-            if (companySize.max <= max
-                || companySize.min >= min) {
+            const filterMin = this.companySize[0]
+            const filterMax = this.companySize[1]
+            const entryMin = companySize.min
+            const entryMax = companySize.max
+            if (filterMin === null && filterMax === null) {
                 return true
+            } else if (filterMin !== null && filterMax !== null) {
+                return entryMax >= filterMin && entryMin <= filterMax
+            } else if (filterMin !== null && filterMax === null) {
+                return entryMax >= filterMin
+            } else if (filterMin === null && filterMax !== null) {
+                return entryMin <= filterMax
             }
         }
         return false
