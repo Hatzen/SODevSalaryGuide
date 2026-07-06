@@ -13,6 +13,7 @@ import { StoreProps } from '../stores/storeHelper'
 import SurveyEntry from '../model/surveyEntry'
 import ConsideredDataTable from './consideredDataTable'
 import CurrencyConversionTable from './currencyConversionTable'
+import SalaryEstimator from './salaryEstimator'
 import translationStore from '../stores/translationStore'
 import controlStore from '../stores/controlStore'
 import { uiStore } from '../stores/uiStore'
@@ -108,6 +109,7 @@ class App extends React.Component<Record<string, unknown>, AppState> {
                             <Tab label={t.participationTab} />
                             <Tab label={t.consideredDataTab} />
                             <Tab label={t.currencyRatesTab} />
+                            <Tab label={t.estimatorTab} />
                         </Tabs>
                     </div>
                     <div style={{position: 'relative', top: 0, left: 0, right: 0, height: 'calc(100% - 48px)', width: '100%'}}>
@@ -115,7 +117,8 @@ class App extends React.Component<Record<string, unknown>, AppState> {
                             {this.state.tabIndex === 0 ? <BoxPlot /> :
                                 this.state.tabIndex === 1 ? <BarPlot /> :
                                     this.state.tabIndex === 2 ? <ConsideredDataTable /> :
-                                        <CurrencyConversionTable />}
+                                        this.state.tabIndex === 3 ? <CurrencyConversionTable /> :
+                                            <SalaryEstimator />}
                         </div>
                     </div>
                 </Allotment.Pane>
@@ -152,6 +155,7 @@ class App extends React.Component<Record<string, unknown>, AppState> {
                         <Tab label={t.participationTab} />
                         <Tab label={t.consideredDataTab} />
                         <Tab label={t.currencyRatesTab} />
+                        <Tab label={t.estimatorTab} />
                     </Tabs>
                 </div>
                 <div style={{position: 'relative', top: 0, left: 0, right: 0, height: 'calc(100% - 48px)', width: '100%'}}>
@@ -159,7 +163,8 @@ class App extends React.Component<Record<string, unknown>, AppState> {
                         {this.state.tabIndex === 0 ? <BoxPlot /> :
                             this.state.tabIndex === 1 ? <BarPlot /> :
                                 this.state.tabIndex === 2 ? <ConsideredDataTable /> :
-                                    <CurrencyConversionTable />}
+                                    this.state.tabIndex === 3 ? <CurrencyConversionTable /> :
+                                        <SalaryEstimator />}
                     </div>
                 </div>
             </div>

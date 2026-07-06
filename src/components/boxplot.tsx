@@ -5,6 +5,9 @@ import { inject, observer } from 'mobx-react'
 import SurveyEntry from '../model/surveyEntry'
 import { injectClause, StoreProps } from '../stores/storeHelper'
 import translationStore from '../stores/translationStore'
+import IconButton from '@mui/material/IconButton'
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
+import StatisticsModal from './statisticsModal'
 
 // 1. Explicitly type the exact signature of Plotly's internal Fx module
 interface PlotlyFxModule {
@@ -20,11 +23,16 @@ class BoxPlot extends React.Component<StoreProps> {
         type: 'box',
         boxmean: 'sd',
     }
+
+    state = {
+        statsModalOpen: false
+    }
     
     // Track the explicit plot DOM layout natively
     private chartElement: HTMLElement | null = null
 
     render(): JSX.Element {
+        const isMobile = this.props.uiStore!.isMobileView
         return (
             <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, overflow: 'auto' }}>
                 <Plot
@@ -35,9 +43,22 @@ class BoxPlot extends React.Component<StoreProps> {
                     onInitialized={this.handleInit}
                     onUpdate={this.handleUpdate}
                 />
-                <div style={{ position: 'absolute', top: '10px', left: '10px', backgroundColor: 'rgba(255,255,255,0.9)', padding: '8px 12px', borderRadius: '4px', fontSize: '12px' }}>
-                    {this.statisticsHint}
+                <div style={{ position: 'absolute', top: '10px', left: '10px', backgroundColor: 'rgba(255,255,255,0.9)', padding: '8px 12px', borderRadius: '4px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span>{this.statisticsHint}</span>
+                    <IconButton
+                        size="small"
+                        onClick={() => this.setState({ statsModalOpen: true })}
+                        aria-label={translationStore.t.statisticsHelp}
+                        style={{ color: '#F48024', padding: 2 }}
+                    >
+                        <HelpOutlineIcon fontSize="small" />
+                    </IconButton>
                 </div>
+                <StatisticsModal
+                    open={this.state.statsModalOpen}
+                    onClose={() => this.setState({ statsModalOpen: false })}
+                    fullScreen={isMobile}
+                />
             </div>
         )
     }

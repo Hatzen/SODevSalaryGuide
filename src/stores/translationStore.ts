@@ -12,6 +12,7 @@ const translations = {
         participationTab: 'Participation',
         consideredDataTab: 'Considered Data',
         currencyRatesTab: 'Currency Rates',
+        estimatorTab: 'Salary Estimator',
 
         // ControlPane
         filters: 'Filters',
@@ -60,8 +61,45 @@ const translations = {
         rateFromUSD: 'Inverse Rate (1 X = USD)',
         showingRates: 'Showing {count} currency conversion rates',
 
+        // Statistics Modal
+        statisticsHelp: 'What do these numbers mean?',
+        statisticsMeanTitle: 'Mean (Average)',
+        statisticsMeanText: 'The arithmetic average of all salaries. It is pulled up by very high incomes, so the mean is often higher than what a typical developer actually earns.',
+        statisticsMedianTitle: 'Median',
+        statisticsMedianText: 'The value in the exact middle: half of the developers earn more, half earn less. The median describes a "typical" salary better than the mean because it is not distorted by extremes.',
+        statisticsStdTitle: 'Standard Deviation (Std)',
+        statisticsStdText: 'Describes how wide the salaries are spread around the mean. A small std means the values are close together (consistent data), a large std means there are big differences between developers.',
+        statisticsQualityTitle: 'How good is the data?',
+        statisticsQualityText: 'The reliability depends mainly on the sample size and the std. With only a few entries (small sample size) or a very large std, the values become unreliable. A large std also means the realistic range of salaries is wide, so your personal result can differ a lot.',
+        statisticsRealisticTitle: 'Where are realistic salaries?',
+        statisticsRealisticText: 'For a normal distribution, roughly 68% of all developers earn between "Mean − Std" and "Mean + Std". This range is a good estimate of what a realistic salary looks like.',
+
+        // Estimator
+        estimatorIntro: 'Enter your profile and we estimate the salary you could expect, based on the Stack Overflow data. You can also compare similar datasets.',
+        estimatorExperience: 'Years of experience',
+        estimatorAbilities: 'Tools and Technologies',
+        estimatorCountries: 'Countries',
+        estimatorDegree: 'Highest Degree',
+        estimatorCompanySize: 'Company Size',
+        estimatorGender: 'Gender',
+        estimatorCalculate: 'Estimate expected salary',
+        estimatorResultTitle: 'Estimated expected salary',
+        estimatorNoData: 'Not enough data for this combination of filters. Try to broaden your selection.',
+        estimatorSampleSize: 'Based on {count} data points',
+        estimatorTypicalRange: 'Typical realistic range',
+        estimatorDataQuality: 'Data quality',
+        estimatorQualityGood: 'Good - enough data and a consistent spread',
+        estimatorQualityMedium: 'Medium - the estimate is an approximation',
+        estimatorQualityLow: 'Low - too little data or very high spread, treat with caution',
+        estimatorSimilarTitle: 'Similar datasets to compare',
+        estimatorSimilarHint: 'Datasets that differ in only one criterion from your selection, so you can see its effect on the salary.',
+        estimatorDifference: 'Difference',
+        estimatorSameAsSelected: 'Your selection',
+        estimatorLoading: 'Calculating...',
+
         // Modal
         disclaimer: 'Disclaimer',
+        disclaimerGotIt: 'Got it!',
         disclaimerContent: 'This project is not affiliated with Stack Overflow. Salary data is for informational purposes only.'
     },
     de: {
@@ -74,6 +112,7 @@ const translations = {
         participationTab: 'Teilnahme',
         consideredDataTab: 'Berücksichtigte Daten',
         currencyRatesTab: 'Währungskurse',
+        estimatorTab: 'Gehaltsschätzer',
 
         // ControlPane
         filters: 'Filter',
@@ -122,8 +161,45 @@ const translations = {
         rateFromUSD: 'Umgekehrt (1 X = USD)',
         showingRates: '{count} Währungskurse werden angezeigt',
 
+        // Statistics Modal
+        statisticsHelp: 'Was bedeuten diese Zahlen?',
+        statisticsMeanTitle: 'Mittelwert (Durchschnitt)',
+        statisticsMeanText: 'Der rechnerische Durchschnitt aller Gehälter. Sehr hohe Einkommen ziehen den Wert nach oben, weshalb der Mittelwert oft höher ist als das, was ein typischer Entwickler verdient.',
+        statisticsMedianTitle: 'Median',
+        statisticsMedianText: 'Der Wert genau in der Mitte: Die Hälfte der Entwickler verdient mehr, die Hälfte weniger. Der Median beschreibt ein "typisches" Gehalt besser als der Mittelwert, da er nicht durch Extremwerte verzerrt wird.',
+        statisticsStdTitle: 'Standardabweichung (Std)',
+        statisticsStdText: 'Beschreibt, wie stark die Gehälter um den Mittelwert streuen. Ein kleiner Std bedeutet, die Werte liegen eng beieinander (konsistente Daten), ein großer Std bedeutet große Unterschiede zwischen den Entwicklern.',
+        statisticsQualityTitle: 'Wie gut sind die Daten?',
+        statisticsQualityText: 'Die Zuverlässigkeit hängt vor allem von der Stichprobengröße und dem Std ab. Bei wenigen Einträgen (kleine Stichprobe) oder sehr großem Std werden die Werte unzuverlässig. Ein großer Std bedeutet zudem, dass die Spanne realistischer Gehälter breit ist und dein persönliches Ergebnis stark abweichen kann.',
+        statisticsRealisticTitle: 'Wo liegen realistische Gehälter?',
+        statisticsRealisticText: 'Bei einer Normalverteilung liegen etwa 68% aller Entwickler zwischen "Mittelwert − Std" und "Mittelwert + Std". Dieser Bereich ist eine gute Schätzung für ein realistisches Gehalt.',
+
+        // Estimator
+        estimatorIntro: 'Gib dein Profil ein und wir schätzen das Gehalt, das du erwarten kannst, basierend auf den Stack-Overflow-Daten. Du kannst auch ähnliche Datensätze vergleichen.',
+        estimatorExperience: 'Jahre Erfahrung',
+        estimatorAbilities: 'Tools und Technologien',
+        estimatorCountries: 'Länder',
+        estimatorDegree: 'Höchster Abschluss',
+        estimatorCompanySize: 'Firmengröße',
+        estimatorGender: 'Geschlecht',
+        estimatorCalculate: 'Erwartetes Gehalt schätzen',
+        estimatorResultTitle: 'Geschätztes erwartetes Gehalt',
+        estimatorNoData: 'Nicht genug Daten für diese Filterkombination. Versuche, deine Auswahl zu erweitern.',
+        estimatorSampleSize: 'Basiert auf {count} Datenpunkten',
+        estimatorTypicalRange: 'Typischer realistischer Bereich',
+        estimatorDataQuality: 'Datenqualität',
+        estimatorQualityGood: 'Gut - genug Daten und konsistente Streuung',
+        estimatorQualityMedium: 'Mittel - die Schätzung ist eine Näherung',
+        estimatorQualityLow: 'Niedrig - zu wenig Daten oder sehr hohe Streuung, mit Vorsicht genießen',
+        estimatorSimilarTitle: 'Ähnliche Datensätze zum Vergleich',
+        estimatorSimilarHint: 'Datensätze, die sich in nur einem Kriterium von deiner Auswahl unterscheiden, damit du den Effekt auf das Gehalt siehst.',
+        estimatorDifference: 'Differenz',
+        estimatorSameAsSelected: 'Deine Auswahl',
+        estimatorLoading: 'Berechne...',
+
         // Modal
         disclaimer: 'Hinweis',
+        disclaimerGotIt: 'Verstanden!',
         disclaimerContent: 'Dieses Projekt ist nicht mit Stack Overflow verbunden. Gehaltsdaten dienen nur zu Informationszwecken.'
     }
 }
