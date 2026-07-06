@@ -2,7 +2,6 @@ import React from 'react'
 import Plot from 'react-plotly.js'
 import { Data, Layout } from 'plotly.js'
 import { inject, observer } from 'mobx-react'
-import SurveyEntry from '../model/surveyEntry'
 import { injectClause, StoreProps } from '../stores/storeHelper'
 import translationStore from '../stores/translationStore'
 import IconButton from '@mui/material/IconButton'
@@ -95,35 +94,30 @@ class BoxPlot extends React.Component<StoreProps> {
     }
 
     private get data(): Data[] {
-        const resultList = this.props.uiStore!.filteredData
+        const stats = this.props.uiStore!.boxStats
         const selectedYearStr = this.props.controlStore!.controlState.selectedYear
-        const selectedYearNum = parseInt(selectedYearStr, 10)
-        const selectedCurrency = this.props.controlStore!.controlState.selectedCurrency
-        const currencyValues = this.props.entryStore!.currencyValues
 
-        const yearData = resultList[selectedYearNum]
-
-        if (!yearData) {
+        if (!stats || stats.count === 0) {
             return []
         }
 
+        // Precomputed box from the incremental streaming statistics (keeps RAM low)
         const trace: Data = {
             type: 'box',
             boxmean: 'sd',
-            // boxpoints: 'all',
             name: 'Year ' + selectedYearStr,
             marker: {
                 color: '#F48024'
             },
-            y: yearData.map((entry: SurveyEntry) => {
-                const rawSalary = entry._salary
-                const entryCurrencyRatio = currencyValues?.getRatioByCode(entry.currency) ?? 1
-                const usdSalary = rawSalary / entryCurrencyRatio
-                const targetCurrencyRatio = currencyValues?.getRatioByCode(selectedCurrency) ?? 1
-                return usdSalary * targetCurrencyRatio
-            }),
+            q1: [stats.q1],
+            median: [stats.median],
+            q3: [stats.q3],
+            lowerfence: [stats.lowerFence],
+            upperfence: [stats.upperFence],
+            mean: [stats.mean],
+            sd: [stats.std],
             hovertemplate: 'Median: %{median}<br>Mean: %{mean}<br>Std: %{sd}<extra></extra>'
-        }
+        } as unknown as Data
         return [trace]
     }
 
@@ -141,29 +135,12 @@ class BoxPlot extends React.Component<StoreProps> {
 
     private get statisticsHint(): string {
         const t = translationStore.t
-        const resultList = this.props.uiStore!.filteredData
-        const selectedYearStr = this.props.controlStore!.controlState.selectedYear
-        const selectedYearNum = parseInt(selectedYearStr, 10)
+        const stats = this.props.uiStore!.boxStats
         const selectedCurrency = this.props.controlStore!.controlState.selectedCurrency
-        const currencyValues = this.props.entryStore!.currencyValues
 
-        const yearData = resultList[selectedYearNum]
-        if (!yearData || yearData.length === 0) return t.noDataAvailable
+        if (!stats || stats.count === 0) return t.noDataAvailable
 
-        const salaries = yearData.map((entry: SurveyEntry) => {
-            const rawSalary = entry._salary
-            const entryCurrencyRatio = currencyValues?.getRatioByCode(entry.currency) ?? 1
-            const usdSalary = rawSalary / entryCurrencyRatio
-            const targetCurrencyRatio = currencyValues?.getRatioByCode(selectedCurrency) ?? 1
-            return usdSalary * targetCurrencyRatio
-        })
-        const sorted = [...salaries].sort((a, b) => a - b)
-        const median = sorted[Math.floor(sorted.length / 2)]
-        const mean = salaries.reduce((a, b) => a + b, 0) / salaries.length
-        const variance = salaries.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / salaries.length
-        const std = Math.sqrt(variance)
-
-        return `${t.medianLabel}: ${Math.round(median).toLocaleString()} ${selectedCurrency} | ${t.meanLabel}: ${Math.round(mean).toLocaleString()} ${selectedCurrency} | ${t.stdLabel}: ${Math.round(std).toLocaleString()} ${selectedCurrency}`
+        return `${t.medianLabel}: ${Math.round(stats.median).toLocaleString()} ${selectedCurrency} | ${t.meanLabel}: ${Math.round(stats.mean).toLocaleString()} ${selectedCurrency} | ${t.stdLabel}: ${Math.round(stats.std).toLocaleString()} ${selectedCurrency}`
     }
 }
 

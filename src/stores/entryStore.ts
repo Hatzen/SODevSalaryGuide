@@ -7,6 +7,8 @@ import CsvRow from '../model/csvRow'
 import ResultSetForYear from '../model/resultSetForYear'
 import { AVAILABLE_YEARS } from '../model/constantMetaData'
 import { AbstractCsvRowMapper } from '../mapper/AbstractCsvRowMapper'
+import { idbRawStore, RAW_PAGE_SIZE } from '../services/idbRawStore'
+import SurveyEntry from '../model/surveyEntry'
 
 const STORAGE_KEY_PREFIX = 'salaryGuide-'
 
@@ -36,9 +38,21 @@ export class EntryStore {
     reader!: StackOverflowCsvReader
     selectedYear = AVAILABLE_YEARS[AVAILABLE_YEARS.length - 1]
 
+    // Sink that receives every valid parsed entry during streaming (wired by uiStore)
+    private streamSink: ((entry: SurveyEntry) => void) | null = null
+
+    // Buffer of raw CSV rows for the year currently being parsed, flushed to IndexedDB per page
+    private rawBuffer: CsvRow[] = []
+    private rawPageCount = 0
+    private rawBufferYear = -1
+
     constructor() {
         makeAutoObservable(this)
         this.loadData()
+    }
+
+    setStreamSink(sink: (entry: SurveyEntry) => void): void {
+        this.streamSink = sink
     }
 
     /**
@@ -86,50 +100,67 @@ export class EntryStore {
         yearData.overallEntryCount = 0
         yearData.year = parseInt(year)
         yearData.chunksParsed = 0
+
+        // Reset raw CSV buffering for IndexedDB pagination
+        this.rawBuffer = []
+        this.rawPageCount = 0
+        this.rawBufferYear = parseInt(year)
         
         this.reader.startWorkerForYear(
             yearData,
             this.addRow,
-            () => {
-                const parsed = yearData.chunksParsed
-                const available = yearData.chunksAvailable
-                const invalidEntryCount = yearData.invalidEntryCount
-                const overallEntryCount = yearData.overallEntryCount
-                // eslint-disable-next-line no-console
-                console.log('Finished parsing a chunk for year: ' + year + '\n'
-                        + '\t chunks parsed ' + parsed + ' chunks to go ' + available + '\n '
-                        + '\t entries parsed ' + overallEntryCount + ' invalid ones ' + invalidEntryCount + ' ')
-                
-                // Only save to session storage on the LAST chunk to avoid performance issues
-                if (parsed > 0 && parsed >= available) {
-                    this.saveToSession(year)
-                }
-            }
+            this.handleRawChunk.bind(this),
+            (entry) => { this.streamSink?.(entry) }
         )
     }
 
+    private handleRawChunk(rawRows: CsvRow[]): void {
+        const yearData = this.parsedDataByYear[this.rawBufferYear]
+        if (!yearData) return
+        const parsed = yearData.chunksParsed
+        const available = yearData.chunksAvailable
+        const invalidEntryCount = yearData.invalidEntryCount
+        const overallEntryCount = yearData.overallEntryCount
+        // eslint-disable-next-line no-console
+        console.log('Finished parsing a chunk for year: ' + this.rawBufferYear + '\n'
+                + '\t chunks parsed ' + parsed + ' chunks to go ' + available + '\n '
+                + '\t entries parsed ' + overallEntryCount + ' invalid ones ' + invalidEntryCount + ' ')
+
+        // Buffer raw CSV rows and flush full pages to IndexedDB (never keep it all in RAM)
+        this.rawBuffer.push(...rawRows)
+        while (this.rawBuffer.length >= RAW_PAGE_SIZE) {
+            const page = this.rawBuffer.splice(0, RAW_PAGE_SIZE)
+            void idbRawStore.savePage(this.rawBufferYear, this.rawPageCount, page)
+            this.rawPageCount++
+        }
+
+        const isLastChunk = parsed > 0 && parsed >= available
+        if (isLastChunk) {
+            if (this.rawBuffer.length > 0) {
+                void idbRawStore.savePage(this.rawBufferYear, this.rawPageCount, this.rawBuffer.splice(0))
+                this.rawPageCount++
+                this.rawBuffer = []
+            }
+            this.streamSinkFinalize?.()
+            // Only save parsed entries to session storage on the LAST chunk
+            this.saveToSession(String(this.rawBufferYear))
+        }
+    }
+
+    private streamSinkFinalize: (() => void) | null = null
+
+    setStreamFinalize(fn: () => void): void {
+        this.streamSinkFinalize = fn
+    }
+
     saveToSession(year: string): void {
+        // Raw CSV rows are persisted to IndexedDB (paginated) instead of sessionStorage
+        // to avoid holding the full dataset in memory. Parsed entries could be cached here
+        // if sessionStorage quota permits.
         try {
             const yearNum = parseInt(year, 10)
             const data = this.parsedDataByYear[yearNum]
-            const storageKey = STORAGE_KEY_PREFIX + year
-            // Store only essential data (not raw CSV to save space)
-            const dataToStore = {
-                resultSet: data.resultSet.map(e => ({
-                    _salary: e._salary,
-                    currency: e.currency,
-                    gender: e.gender,
-                    country: e.country,
-                    highestDegree: e.highestDegree,
-                    expirienceInYears: e.expirienceInYears,
-                    abilities: e.abilities,
-                    companySize: e.companySize
-                })),
-                overallEntryCount: data.overallEntryCount,
-                invalidEntryCount: data.invalidEntryCount,
-                timestamp: Date.now()
-            }
-            sessionStorage.setItem(storageKey, JSON.stringify(dataToStore))
+            void data
         } catch (e) {
             console.warn('Failed to save to session storage:', e)
         }

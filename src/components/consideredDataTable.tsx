@@ -8,6 +8,7 @@ import entryStore from '../stores/entryStore'
 import { FormLabel } from '@mui/material'
 import { Tabs, Tab } from '@mui/material'
 import translationStore from '../stores/translationStore'
+import RawCsvDataGrid from './rawCsvDataGrid'
 
 const formatValueForDisplay = (value: unknown): string => {
     if (value === null || value === undefined) {
@@ -63,7 +64,6 @@ const ConsideredDataTable = observer(() => {
     const selectedCurrency = controlStore.selectedCurrency
     const t = translationStore.t
 
-    const rawCsvRows = selectedYearData?.rawCsvRows ?? []
     const mappedData = selectedYearData?.resultSet ?? []
     const filteredData = uiStore.filteredData[selectedYearNum] ?? []
 
@@ -83,30 +83,9 @@ const ConsideredDataTable = observer(() => {
     }
 
     const renderRawCsvTable = (): JSX.Element => {
-        if (rawCsvRows.length === 0) {
-            return <p style={{padding: '20px'}}>{t.noDataAvailable || 'No raw CSV data available'}</p>
-        }
-        const rowsWithId = rawCsvRows.map((entry, index) => ({
-            ...entry,
-            id: `raw-${index}`
-        }))
-        const firstEntry = rawCsvRows[0]
-        const columns: GridColDef[] = Object.keys(firstEntry).map(key => ({
-            field: key,
-            headerName: key,
-            flex: 1,
-            minWidth: 100,
-        }))
         return (
             <div style={{flex: 1, minHeight: 0}}>
-                <DataGrid
-                    rows={rowsWithId}
-                    columns={columns}
-                    pageSizeOptions={[10, 25, 50, 100]}
-                    paginationModel={{ page: 0, pageSize: 10 }}
-                    checkboxSelection
-                    disableRowSelectionOnClick
-                />
+                <RawCsvDataGrid year={selectedYearNum} />
             </div>
         )
     }
@@ -258,7 +237,7 @@ const ConsideredDataTable = observer(() => {
             >
                 <Tab label={`${t.filteredTab} (${filteredData.length})`} />
                 <Tab label={`${t.mappedTab} (${mappedData.length})`} />
-                <Tab label={`${t.rawCsvTab} (${rawCsvRows.length})`} />
+                <Tab label={t.rawCsvTab} />
             </Tabs>
             {tabIndex === 0 && renderFilteredTable()}
             {tabIndex === 1 && renderMappedTable()}

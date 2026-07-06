@@ -61,6 +61,11 @@ export default class StatisticsModal extends React.Component<IStatisticsModalPro
                     <Box sx={{ marginTop: '16px', padding: '12px', backgroundColor: '#F5F5F5', borderRadius: '6px' }}>
                         <Section title={t.statisticsQualityTitle} text={t.statisticsQualityText} noMargin />
                     </Box>
+                    <Section title={t.statisticsCompanySizeTitle} text={t.statisticsCompanySizeText} />
+                    <Section title={t.statisticsWorkforceTitle} text={t.statisticsWorkforceText} />
+                    <Box sx={{ marginTop: '16px', padding: '12px', backgroundColor: '#FFF4E8', borderRadius: '6px' }}>
+                        <Section title={t.statisticsSourcesTitle} text={t.statisticsSourcesText} noMargin />
+                    </Box>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={this.handleClose} color="secondary" autoFocus>
