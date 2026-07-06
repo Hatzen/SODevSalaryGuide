@@ -3,15 +3,40 @@ import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
 import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
-import { Typography } from '@mui/material'
+import { Typography, Autocomplete, TextField } from '@mui/material'
 import { CHUNK_COUNT_PER_YEAR } from '../model/constantMetaData'
 import { injectClause, StoreProps } from '../stores/storeHelper'
 import { inject, observer } from 'mobx-react'
 import Loader from 'react-loader-spinner'
-import Autocomplete from '@mui/material/Autocomplete'
-import TextField from '@mui/material/TextField'
+import { uiStore } from '../stores/uiStore'
 import controlStore from '../stores/controlStore'
 import translationStore from '../stores/translationStore'
+
+export const LanguageSelector: React.FC = () => {
+    const t = translationStore.t
+    return (
+        <div style={{padding: 'auto', position: 'absolute', right: '125px'}}>
+            <Autocomplete
+                options={['en', 'de']}
+                value={controlStore.language ?? 'en'}
+                onChange={(_event, value) => {
+                    if (value) {
+                        controlStore.setLanguage(value as 'en' | 'de')
+                    }
+                }}
+                renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        label={t.language}
+                        size="small"
+                        color="secondary"
+                        style={{ width: 120, marginLeft: 'auto', marginRight: '10px' }}
+                    />
+                )}
+            />
+        </div>
+    )
+}
 
 export interface MenuAppBarProps extends StoreProps {
     menuClicked: () => void
@@ -34,19 +59,20 @@ class MenuAppBar extends React.Component<MenuAppBarProps> {
 
     render(): JSX.Element {
         const t = translationStore.t
+        const isMobile = uiStore.isMobileView
 
         return (
             <div>
                 <AppBar position='static'>
-                    <Toolbar>
+                    <Toolbar variant={isMobile ? 'dense' : 'regular'}>
                         <IconButton onClick={this.props.menuClicked} color='inherit' aria-label='Menu'>
                             <MenuIcon />
                         </IconButton>
-                        <Typography variant='h5'>
+                        <Typography variant={isMobile ? 'subtitle1' : 'h5'} noWrap sx={{ flexGrow: 1 }}>
                             {t.title}
                         </Typography>
                         {this.loader}
-                        {this.languageSelector}
+                        {!isMobile && this.languageSelector}
                     </Toolbar>
                 </AppBar>
             </div>
@@ -54,29 +80,7 @@ class MenuAppBar extends React.Component<MenuAppBarProps> {
     }
 
     get languageSelector(): JSX.Element {
-        const t = translationStore.t
-        return (
-            <div style={{padding: 'auto', position: 'absolute', right: '125px'}}>
-                <Autocomplete
-                    options={['en', 'de']}
-                    value={controlStore.language ?? 'en'}
-                    onChange={(_event, value) => {
-                        if (value) {
-                            controlStore.setLanguage(value as 'en' | 'de')
-                        }
-                    }}
-                    renderInput={(params) => (
-                        <TextField
-                            {...params}
-                            label={t.language}
-                            size="small"
-                            color="secondary"
-                            style={{ width: 120, marginLeft: 'auto', marginRight: '10px' }}
-                        />
-                    )}
-                />
-            </div>
-        )
+        return <LanguageSelector />
     }
 
     get loader(): JSX.Element {
@@ -109,18 +113,20 @@ class MenuAppBar extends React.Component<MenuAppBarProps> {
             return <div></div>
         }
 
+        const isMobile = uiStore.isMobileView
+
         return (
-            <div style={{padding: 'auto', position: 'absolute', right: '25px'}}>
+            <div style={{padding: 'auto', position: 'absolute', right: isMobile ? '25px' : '25px'}}>
                 <div style={{}}>
-                    <Typography variant='body1'>
+                    <Typography variant={isMobile ? 'caption' : 'body1'}>
                         {loadingPercentage} %
                     </Typography>
                 </div>
                 <Loader
                     type="Audio"
                     color="#F48024"
-                    height={45}
-                    width={45}
+                    height={isMobile ? 35 : 45}
+                    width={isMobile ? 35 : 45}
                     secondaryColor="#000000" />
             </div>
         )

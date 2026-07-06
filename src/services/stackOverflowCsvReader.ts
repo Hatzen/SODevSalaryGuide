@@ -67,7 +67,7 @@ Uncaught DataCloneError: Failed to execute 'postMessage' on 'Worker': function (
                 totalCount = 0
                 
                 this.handleNextChunk(resultsetForYear, config)
-                completed()
+                // completed is already called via the consumer callback in entryStore
             }
         } as Papa.ParseRemoteConfig<CsvRow>
         const year = resultsetForYear.year.toString()

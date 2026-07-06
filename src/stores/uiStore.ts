@@ -28,6 +28,8 @@ export class UiStore {
 
     filteredData: { [year: number]: SurveyEntry[] } = {}
     lastFilterUpdateTime = 0
+    isMobileView = false
+    controlPaneOpen = false
 
     private readonly controlStore: ControlStore
     private readonly entryStore: EntryStore
@@ -42,10 +44,23 @@ export class UiStore {
         makeObservable(this, {
             filteredData: observable,
             lastFilterUpdateTime: observable,
+            isMobileView: observable,
+            controlPaneOpen: observable,
             updateFilteredData: action,
+            setMobileView: action,
+            setControlPaneOpen: action,
         })
 
+        this.initMobileDetection()
         this.initReactions()
+    }
+
+    public initMobileDetection(): void {
+        const checkMobile = (): void => {
+            this.isMobileView = window.innerWidth < 768
+        }
+        checkMobile()
+        window.addEventListener('resize', checkMobile)
     }
 
     private initReactions(): void {
@@ -73,8 +88,6 @@ export class UiStore {
                 }
             },
             (data) => {
-                // Debounce UI updates to at most once per second (1000ms)
-                // This prevents UI freezing during rapid data parsing
                 this.latestReactionData = data
                 if (this.debounceTimer) {
                     clearTimeout(this.debounceTimer)
@@ -86,7 +99,7 @@ export class UiStore {
                         this.updateFilteredData()
                     }
                     this.debounceTimer = null
-                }, 100) // 100ms throttle - responsive but not freezing
+                }, 100)
             },
             { fireImmediately: true }
         )
@@ -103,6 +116,14 @@ export class UiStore {
         } else {
             this.filteredData[selectedYearNum] = []
         }
+    }
+
+    setMobileView = (value: boolean): void => {
+        this.isMobileView = value
+    }
+
+    setControlPaneOpen = (value: boolean): void => {
+        this.controlPaneOpen = value
     }
 
     destroy(): void {

@@ -100,8 +100,10 @@ export class EntryStore {
                         + '\t chunks parsed ' + parsed + ' chunks to go ' + available + '\n '
                         + '\t entries parsed ' + overallEntryCount + ' invalid ones ' + invalidEntryCount + ' ')
                 
-                // Save to session storage after complete
-                this.saveToSession(year)
+                // Only save to session storage on the LAST chunk to avoid performance issues
+                if (parsed > 0 && parsed >= available) {
+                    this.saveToSession(year)
+                }
             }
         )
     }
