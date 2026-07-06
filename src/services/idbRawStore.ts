@@ -80,7 +80,9 @@ export class IdbRawStore {
         return new Promise<number>((resolve, reject) => {
             const tx = db.transaction(STORE, 'readonly')
             const store = tx.objectStore(STORE)
-            const range = IDBKeyRange.bound([year, -Infinity], [year, Infinity])
+            // Infinity is not a valid IndexedDB key; use a valid compound range:
+            // [year] is the lower bound (prefix) and [year, []] is greater than any [year, n].
+            const range = IDBKeyRange.bound([year], [year, []])
             const req = store.getAllKeys(range)
             req.onsuccess = () => {
                 const keys = (req.result as [number, number][]) ?? []
@@ -99,7 +101,7 @@ export class IdbRawStore {
         const db = await this.getDb()
         await new Promise<void>((resolve, reject) => {
             const tx = db.transaction(STORE, 'readwrite')
-            const range = IDBKeyRange.bound([year, -Infinity], [year, Infinity])
+            const range = IDBKeyRange.bound([year], [year, []])
             tx.objectStore(STORE).delete(range)
             tx.oncomplete = () => resolve()
             tx.onerror = () => reject(tx.error)

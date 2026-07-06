@@ -1,11 +1,9 @@
 import React from 'react'
 import { observer } from 'mobx-react'
-import { DataGrid, GridColDef } from '@mui/x-data-grid'
+import { DataGrid, GridColDef, GridToolbar } from '@mui/x-data-grid'
 import Loader from 'react-loader-spinner'
 import { idbRawStore } from '../services/idbRawStore'
 import CsvRow from '../model/csvRow'
-import Button from '@mui/material/Button'
-import Box from '@mui/material/Box'
 import translationStore from '../stores/translationStore'
 
 interface RawCsvDataGridProps {
@@ -13,60 +11,53 @@ interface RawCsvDataGridProps {
 }
 
 interface RawCsvDataGridState {
-    page: number
-    pageCount: number
     rows: CsvRow[]
     columnNames: string[]
     loading: boolean
-    total: number
 }
 
 class RawCsvDataGrid extends React.Component<RawCsvDataGridProps, RawCsvDataGridState> {
     constructor(props: RawCsvDataGridProps) {
         super(props)
         this.state = {
-            page: 0,
-            pageCount: 0,
             rows: [],
             columnNames: [],
-            loading: true,
-            total: 0
+            loading: true
         }
     }
 
     componentDidMount(): void {
-        this.loadPage(0)
+        this.loadAll()
     }
 
     componentDidUpdate(prevProps: RawCsvDataGridProps): void {
         if (prevProps.year !== this.props.year) {
-            this.loadPage(0)
+            this.loadAll()
         }
     }
 
-    private async loadPage(page: number): Promise<void> {
-        this.setState({ loading: true, page })
+    private async loadAll(): Promise<void> {
+        this.setState({ loading: true })
         try {
-            const [rows, pageCount, columnNames] = await Promise.all([
-                idbRawStore.getPage(this.props.year, page),
-                idbRawStore.getPageCount(this.props.year),
-                idbRawStore.getColumnNames(this.props.year)
-            ])
+            const pageCount = await idbRawStore.getPageCount(this.props.year)
+            const pages: CsvRow[][] = await Promise.all(
+                Array.from({ length: pageCount }, (_, i) => idbRawStore.getPage(this.props.year, i))
+            )
+            const allRows = pages.flat()
             this.setState({
-                rows,
-                pageCount,
-                columnNames,
-                total: pageCount * 5000,
+                rows: allRows,
+                columnNames: allRows.length > 0 ? Object.keys(allRows[0]) : [],
                 loading: false
             })
         } catch (e) {
-            console.error('Failed to load raw CSV page from IndexedDB', e)
+            console.error('Failed to load raw CSV from IndexedDB', e)
             this.setState({ loading: false })
         }
     }
 
     render(): JSX.Element {
         const t = translationStore.t
+
         if (this.state.loading) {
             return (
                 <div style={{ textAlign: 'center', padding: '40px' }}>
@@ -76,18 +67,15 @@ class RawCsvDataGrid extends React.Component<RawCsvDataGridProps, RawCsvDataGrid
             )
         }
 
-        if (this.state.rows.length === 0 && this.state.pageCount === 0) {
+        if (this.state.rows.length === 0) {
             return <p style={{ padding: '20px' }}>{t.noDataAvailable || 'No raw CSV data available'}</p>
         }
 
         const rowsWithId = this.state.rows.map((entry, index) => ({
             ...entry,
-            id: `raw-${this.state.page}-${index}`
+            id: `raw-${index}`
         }))
-        const columns: GridColDef[] = (this.state.columnNames.length > 0
-            ? this.state.columnNames
-            : Object.keys(this.state.rows[0] ?? {})
-        ).map(key => ({
+        const columns: GridColDef[] = this.state.columnNames.map(key => ({
             field: key,
             headerName: key,
             flex: 1,
@@ -99,32 +87,22 @@ class RawCsvDataGrid extends React.Component<RawCsvDataGridProps, RawCsvDataGrid
                 <DataGrid
                     rows={rowsWithId}
                     columns={columns}
-                    pageSizeOptions={[10, 25, 50, 100]}
-                    paginationModel={{ page: 0, pageSize: 10 }}
+                    pageSizeOptions={[25, 50, 100, 200]}
+                    initialState={{
+                        pagination: { paginationModel: { pageSize: 50, page: 0 } }
+                    }}
                     checkboxSelection
                     disableRowSelectionOnClick
+                    slots={{ toolbar: GridToolbar }}
+                    slotProps={{
+                        toolbar: {
+                            showQuickFilter: true,
+                            printOptions: { disableToolbarButton: true },
+                            // Keep only the search; hide export/columns toggles for raw data
+                            csvOptions: { disableToolbarButton: true }
+                        }
+                    }}
                 />
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '10px', fontSize: '0.9em', color: '#666' }}>
-                    <span>
-                        {t.rawCsvTab}: {this.state.total} {t.entries} · {t.page} {this.state.page + 1}/{Math.max(1, this.state.pageCount)}
-                    </span>
-                    <span>
-                        <Button
-                            size="small"
-                            disabled={this.state.page <= 0}
-                            onClick={() => this.loadPage(this.state.page - 1)}
-                        >
-                            {'<'}
-                        </Button>
-                        <Button
-                            size="small"
-                            disabled={this.state.page + 1 >= this.state.pageCount}
-                            onClick={() => this.loadPage(this.state.page + 1)}
-                        >
-                            {'>'}
-                        </Button>
-                    </span>
-                </Box>
             </div>
         )
     }
