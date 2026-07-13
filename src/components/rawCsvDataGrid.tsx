@@ -87,9 +87,10 @@ class RawCsvDataGrid extends React.Component<RawCsvDataGridProps, RawCsvDataGrid
                 <DataGrid
                     rows={rowsWithId}
                     columns={columns}
-                    pageSizeOptions={[25, 50, 100, 200]}
+                    style={{ flex: 1, minHeight: 0 }}
+                    pageSizeOptions={[10, 25, 50, 100]}
                     initialState={{
-                        pagination: { paginationModel: { pageSize: 50, page: 0 } }
+                        pagination: { paginationModel: { pageSize: 10, page: 0 } }
                     }}
                     checkboxSelection
                     disableRowSelectionOnClick

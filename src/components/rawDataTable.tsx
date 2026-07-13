@@ -10,7 +10,7 @@ const RawDataTable = observer(() => {
     return (
         <div style={{padding: '20px', height: '100%', display: 'flex', flexDirection: 'column'}}>
             <h2><FormLabel>Raw CSV Data (Exact from File)</FormLabel></h2>
-            <div style={{flex: 1, minHeight: 0}}>
+            <div style={{flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column'}}>
                 <RawCsvDataGrid year={selectedYearNum} />
             </div>
         </div>

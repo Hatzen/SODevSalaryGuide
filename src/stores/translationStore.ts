@@ -40,7 +40,6 @@ const translations = {
         shareLinkSuccess: 'Share link copied to clipboard!',
 
         // ConsideredDataTable
-        dataTables: 'Data Tables',
         rawCsvTab: 'Raw CSV',
         mappedTab: 'Mapped All',
         filteredTab: 'Filtered',

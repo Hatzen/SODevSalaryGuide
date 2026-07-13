@@ -150,6 +150,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
                 </li>
             )}
             style={{ width: isMobile ? '100%' : 250 }}
+            slotProps={{ popper: { style: { width: 'auto', minWidth: '100%', maxWidth: 600 } } }}
             renderInput={(params) => (
                 <TextField style={{ padding: '10px' }} {...params} label={t.yearLabel} color="secondary" fullWidth={isMobile} />
             )}
@@ -171,6 +172,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
                 </li>
             )}
             style={{ width: isMobile ? '100%' : 250 }}
+            slotProps={{ popper: { style: { width: 'auto', minWidth: '100%', maxWidth: 600 } } }}
             renderInput={(params) => (
                 <TextField style={{ }} {...params} label={t.currencyLabel} color="secondary" fullWidth={isMobile} />
             )}
@@ -223,6 +225,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
                 </li>
             )}
             style={{ width: isMobile ? '100%' : 250 }}
+            slotProps={{ popper: { style: { width: 'auto', minWidth: '100%', maxWidth: 600 } } }}
             renderInput={(params) => (
                 <TextField style={{ }} {...params} label={t.abilitiesLabel} color="secondary" fullWidth={isMobile} />
             )}
@@ -284,6 +287,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
                 </li>
             )}
             style={{ width: isMobile ? '100%' : 250 }}
+            slotProps={{ popper: { style: { width: 'auto', minWidth: '100%', maxWidth: 600 } } }}
             renderInput={(params) => (
                 <TextField style={{ }} {...params} label={t.countriesLabel} color="secondary" fullWidth={isMobile} />
             )}
@@ -319,6 +323,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
                 </li>
             )}
             style={{ width: isMobile ? '100%' : 250 }}
+            slotProps={{ popper: { style: { width: 'auto', minWidth: '100%', maxWidth: 600 } } }}
             renderInput={(params) => (
                 <TextField style={{ }} {...params} label={t.degreeLabel} color="secondary" fullWidth={isMobile} />
             )}

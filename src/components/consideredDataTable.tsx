@@ -84,11 +84,49 @@ const ConsideredDataTable = observer(() => {
 
     const renderRawCsvTable = (): JSX.Element => {
         return (
-            <div style={{flex: 1, minHeight: 0}}>
+            <div style={{flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column'}}>
                 <RawCsvDataGrid year={selectedYearNum} />
             </div>
         )
     }
+
+    const buildColumns = (): GridColDef[] => [
+        { field: 'salary', headerName: t.salaryRaw, flex: 1, minWidth: 100 },
+        {
+            field: 'convertedSalary',
+            headerName: `${t.salaryConverted} (${selectedCurrency})`,
+            flex: 1,
+            minWidth: 120,
+            valueFormatter: (value: number) => {
+                return value ? Math.round(value).toLocaleString() : ''
+            }
+        },
+        { field: 'currency', headerName: t.currencyLabel, flex: 1, minWidth: 80 },
+        { field: 'gender', headerName: t.genderLabel, flex: 1, minWidth: 80, valueFormatter: (value) => formatGenderValue(value, t) },
+        { field: 'country', headerName: t.countriesLabel, flex: 1, minWidth: 100 },
+        { field: 'highestDegree', headerName: t.degreeLabel, flex: 1, minWidth: 120 },
+        {
+            field: 'expirienceInYears',
+            headerName: t.experienceLabel,
+            flex: 1,
+            minWidth: 120,
+            valueFormatter: (value) => formatValueForDisplay(value)
+        },
+        {
+            field: 'abilities',
+            headerName: t.abilitiesLabel,
+            flex: 1,
+            minWidth: 200,
+            valueFormatter: (value) => formatValueForDisplay(value)
+        },
+        {
+            field: 'companySize',
+            headerName: t.companySizeLabel,
+            flex: 1,
+            minWidth: 120,
+            valueFormatter: (value) => formatValueForDisplay(value)
+        }
+    ]
 
     const renderMappedTable = (): JSX.Element => {
         const rowsWithId = mappedData.map((entry, index) => {
@@ -104,52 +142,16 @@ const ConsideredDataTable = observer(() => {
             }
         })
 
-        const columns: GridColDef[] = [
-            { field: 'salary', headerName: t.salaryRaw, flex: 1, minWidth: 100 },
-            {
-                field: 'convertedSalary',
-                headerName: `${t.salaryConverted} (${selectedCurrency})`,
-                flex: 1,
-                minWidth: 120,
-                valueFormatter: (value: number) => {
-                    return value ? Math.round(value).toLocaleString() : ''
-                }
-            },
-            { field: 'gender', headerName: t.genderLabel, flex: 1, minWidth: 80, valueFormatter: (value) => formatGenderValue(value, t) },
-            { field: 'country', headerName: t.countriesLabel, flex: 1, minWidth: 100 },
-            { field: 'highestDegree', headerName: t.degreeLabel, flex: 1, minWidth: 120 },
-            {
-                field: 'expirienceInYears',
-                headerName: t.experienceLabel,
-                flex: 1,
-                minWidth: 120,
-                valueFormatter: (value) => formatValueForDisplay(value)
-            },
-            {
-                field: 'abilities',
-                headerName: t.abilitiesLabel,
-                flex: 1,
-                minWidth: 200,
-                valueFormatter: (value) => formatValueForDisplay(value)
-            },
-            {
-                field: 'companySize',
-                headerName: t.companySizeLabel,
-                flex: 1,
-                minWidth: 120,
-                valueFormatter: (value) => formatValueForDisplay(value)
-            }
-        ]
-
         return (
             <div style={{flex: 1, minHeight: 0}}>
                 <DataGrid
                     rows={rowsWithId}
-                    columns={columns}
+                    columns={buildColumns()}
                     pageSizeOptions={[10, 25, 50, 100]}
-                    paginationModel={{ page: 0, pageSize: 10 }}
+                    initialState={{ pagination: { paginationModel: { pageSize: 10, page: 0 } } }}
                     checkboxSelection
                     disableRowSelectionOnClick
+                    style={{ height: '100%' }}
                 />
             </div>
         )
@@ -169,60 +171,23 @@ const ConsideredDataTable = observer(() => {
             }
         })
 
-        const columns: GridColDef[] = [
-            { field: 'salary', headerName: t.salaryRaw, flex: 1, minWidth: 100 },
-            {
-                field: 'convertedSalary',
-                headerName: `${t.salaryConverted} (${selectedCurrency})`,
-                flex: 1,
-                minWidth: 120,
-                valueFormatter: (value: number) => {
-                    return value ? Math.round(value).toLocaleString() : ''
-                }
-            },
-            { field: 'gender', headerName: t.genderLabel, flex: 1, minWidth: 80, valueFormatter: (value) => formatGenderValue(value, t) },
-            { field: 'country', headerName: t.countriesLabel, flex: 1, minWidth: 100 },
-            { field: 'highestDegree', headerName: t.degreeLabel, flex: 1, minWidth: 120 },
-            {
-                field: 'expirienceInYears',
-                headerName: t.experienceLabel,
-                flex: 1,
-                minWidth: 120,
-                valueFormatter: (value) => formatValueForDisplay(value)
-            },
-            {
-                field: 'abilities',
-                headerName: t.abilitiesLabel,
-                flex: 1,
-                minWidth: 200,
-                valueFormatter: (value) => formatValueForDisplay(value)
-            },
-            {
-                field: 'companySize',
-                headerName: t.companySizeLabel,
-                flex: 1,
-                minWidth: 120,
-                valueFormatter: (value) => formatValueForDisplay(value)
-            }
-        ]
-
         return (
             <div style={{flex: 1, minHeight: 0}}>
                 <DataGrid
                     rows={rowsWithId}
-                    columns={columns}
+                    columns={buildColumns()}
                     pageSizeOptions={[10, 25, 50, 100]}
-                    paginationModel={{ page: 0, pageSize: 10 }}
+                    initialState={{ pagination: { paginationModel: { pageSize: 10, page: 0 } } }}
                     checkboxSelection
                     disableRowSelectionOnClick
+                    style={{ height: '100%' }}
                 />
             </div>
         )
     }
 
     return (
-        <div style={{padding: '20px', height: '100%', display: 'flex', flexDirection: 'column'}}>
-            <h2><FormLabel>{t.dataTables}</FormLabel></h2>
+        <div style={{padding: '20px', display: 'flex', flexDirection: 'column'}}>
             <Tabs
                 value={tabIndex}
                 onChange={changeTab}
