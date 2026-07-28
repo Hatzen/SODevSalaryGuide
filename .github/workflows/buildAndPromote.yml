@@ -28,7 +28,7 @@ jobs:
   Publish:
     needs: Build
     runs-on: ubuntu-latest
-    #if: github.ref == 'main'
+    if: github.ref == 'main'
     steps:
       - uses: actions/checkout@v2.3.1
       - name: Get Dist folder
@@ -64,6 +64,6 @@ jobs:
           echo $APP_NAME
           echo $TAG
           git clone https://github.com/Hatzen/SODevSalaryGuide
-          cd ParAnnoying-Releases
+          cd SODevSalaryGuide
           ./../bin/hub release delete "${TAG}" || echo "Failed deleting TAG: ${TAG}" # If release got lost catch error with message
           ./../bin/hub release create -a "dist" -m "Current Master Build: ${APP_NAME}" -p "${TAG}"
