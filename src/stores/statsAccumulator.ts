@@ -25,12 +25,14 @@ export class StatsAccumulator {
     private n = 0
     private mean = 0
     private m2 = 0
+    private min = Infinity
 
     reset(): void {
         this.counts.fill(0)
         this.n = 0
         this.mean = 0
         this.m2 = 0
+        this.min = Infinity
     }
 
     add(value: number): void {
@@ -38,6 +40,9 @@ export class StatsAccumulator {
         const bin = Math.min(BIN_COUNT - 1, Math.max(0, Math.floor((value - BIN_MIN) / BIN_WIDTH)))
         this.counts[bin]++
         this.n++
+        if (value < this.min) {
+            this.min = value
+        }
         const delta = value - this.mean
         this.mean += delta / this.n
         this.m2 += delta * (value - this.mean)
@@ -71,6 +76,7 @@ export class StatsAccumulator {
         const q3 = this.quantile(0.75)
         const iqr = q3 - q1
         const std = this.n > 0 ? Math.sqrt(this.m2 / this.n) : 0
+        const lowerFence = q1 - 1.5 * iqr
         return {
             count: this.n,
             median,
@@ -78,7 +84,7 @@ export class StatsAccumulator {
             std,
             q1,
             q3,
-            lowerFence: q1 - 1.5 * iqr,
+            lowerFence: lowerFence < 0 ? this.min : lowerFence,
             upperFence: q3 + 1.5 * iqr
         }
     }

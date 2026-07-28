@@ -180,6 +180,8 @@ export class UiStore {
         this.isStreaming = false
     }
 
+    private rebuildBoxStatsRequestId = 0
+
     rebuildBoxStats = (): void => {
         const year = parseInt(this.entryStore.selectedYear, 10)
         this.boxAccumulator.reset()
@@ -187,13 +189,29 @@ export class UiStore {
         const parsedData = this.entryStore.parsedDataByYear[year]
         const controlState = this.controlStore.controlState
         if (parsedData?.resultSet) {
-            for (const entry of parsedData.resultSet) {
-                if (controlState.filterByState(entry)) {
-                    this.boxAccumulator.add(this.convertSalary(entry))
+            const entries = parsedData.resultSet
+            const chunkSize = 1000
+            let index = 0
+            const requestId = ++this.rebuildBoxStatsRequestId
+            const processChunk = (): void => {
+                if (requestId !== this.rebuildBoxStatsRequestId) return
+                const end = Math.min(index + chunkSize, entries.length)
+                for (let i = index; i < end; i++) {
+                    if (controlState.filterByState(entries[i])) {
+                        this.boxAccumulator.add(this.convertSalary(entries[i]))
+                    }
+                }
+                index = end
+                if (index < entries.length) {
+                    requestAnimationFrame(processChunk)
+                } else {
+                    this.boxStats = this.boxAccumulator.toBoxStats()
                 }
             }
+            requestAnimationFrame(processChunk)
+        } else {
+            this.boxStats = this.boxAccumulator.toBoxStats()
         }
-        this.boxStats = this.boxAccumulator.toBoxStats()
     }
 
     destroy(): void {

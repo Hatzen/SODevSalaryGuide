@@ -1,5 +1,5 @@
 import React from 'react'
-import { Checkbox, FormGroup, FormControl, FormControlLabel, Slider, Box, TextField, Typography, IconButton } from '@mui/material'
+import { Checkbox, FormGroup, FormControl, Slider, Box, TextField, Typography, IconButton } from '@mui/material'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
@@ -131,7 +131,6 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
 
     get years(): JSX.Element {
         const t = translationStore.t
-        const isMobile = uiStore.isMobileView
         const config = this.props.controlStore!
         const selectedYear: string | null = config.controlState.selectedYear
         const filteredValues = AVAILABLE_YEARS
@@ -149,10 +148,10 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
                     {option}
                 </li>
             )}
-            style={{ width: isMobile ? '100%' : 250 }}
-            slotProps={{ popper: { style: { width: 'auto', minWidth: '100%', maxWidth: 600 } } }}
+            style={{ width: '100%' }}
+            slotProps={{ popper: { style: { width: 'auto', minWidth: 'auto', maxWidth: 400 } } }}
             renderInput={(params) => (
-                <TextField style={{ padding: '10px' }} {...params} label={t.yearLabel} color="secondary" fullWidth={isMobile} />
+                <TextField style={{ padding: '10px' }} {...params} label={t.yearLabel} color="secondary" fullWidth />
             )}
         />)
         return autoCompleteComponent
@@ -161,7 +160,6 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
     get currency(): JSX.Element {
         const t = translationStore.t
         const allCurrencies = Object.values(Currency)
-        const isMobile = uiStore.isMobileView
         const autoCompleteComponent = (<Autocomplete
             options={allCurrencies}
             value={this.props.controlStore!.selectedCurrency}
@@ -171,25 +169,19 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
                     {option}
                 </li>
             )}
-            style={{ width: isMobile ? '100%' : 250 }}
-            slotProps={{ popper: { style: { width: 'auto', minWidth: '100%', maxWidth: 600 } } }}
+            style={{ width: '100%' }}
+            slotProps={{ popper: { style: { width: 'auto', minWidth: 'auto', maxWidth: 400 } } }}
             renderInput={(params) => (
-                <TextField style={{ }} {...params} label={t.currencyLabel} color="secondary" fullWidth={isMobile} />
+                <TextField style={{ }} {...params} label={t.currencyLabel} color="secondary" fullWidth />
             )}
         />)
         return (<div style={{marginTop: '8px'}}>
-            <FormControlLabel
-                label={
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '15px' }}>
-                        <Typography variant="body1" color="secondary">{t.currencyLabel}</Typography>
-                        <Typography variant="body2" style={{ color: '#666', fontSize: '0.85em' }}>
-                                        ({allCurrencies.length})
-                        </Typography>
-                    </div>
-                }
-                control={<div></div>}
-                labelPlacement="start"
-            />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                <Typography variant="body1" color="secondary">{t.currencyLabel}</Typography>
+                <Typography variant="body2" style={{ color: '#666', fontSize: '0.85em' }}>
+                    ({allCurrencies.length})
+                </Typography>
+            </div>
             {autoCompleteComponent}
         </div>)
     }
@@ -205,7 +197,6 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
 
     get abilities(): JSX.Element {
         const t = translationStore.t
-        const isMobile = uiStore.isMobileView
         const allAbilities = Array.from(AbstractCsvRowMapper.abilities).map(([k, v]) => ({ key: k as string, count: v }))
         const filterdValues = allAbilities.map(a => a.key)
         const autoCompleteComponent = (<Autocomplete
@@ -224,10 +215,10 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
                     {option}
                 </li>
             )}
-            style={{ width: isMobile ? '100%' : 250 }}
-            slotProps={{ popper: { style: { width: 'auto', minWidth: '100%', maxWidth: 600 } } }}
+            style={{ width: '100%' }}
+            slotProps={{ popper: { style: { width: 'auto', minWidth: 'auto', maxWidth: 400 } } }}
             renderInput={(params) => (
-                <TextField style={{ }} {...params} label={t.abilitiesLabel} color="secondary" fullWidth={isMobile} />
+                <TextField style={{ }} {...params} label={t.abilitiesLabel} color="secondary" fullWidth />
             )}
         />)
         return (<ControlComponentWrapper
@@ -267,7 +258,6 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
 
     get countries(): JSX.Element {
         const t = translationStore.t
-        const isMobile = uiStore.isMobileView
         const allCountries = Array.from(AbstractCsvRowMapper.countries).map(([k, v]) => ({ key: k as string, count: v }))
         const filterdValues = allCountries.map(a => a.key)
         const autoCompleteComponent = (<Autocomplete
@@ -286,10 +276,10 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
                     {option}
                 </li>
             )}
-            style={{ width: isMobile ? '100%' : 250 }}
-            slotProps={{ popper: { style: { width: 'auto', minWidth: '100%', maxWidth: 600 } } }}
+            style={{ width: '100%' }}
+            slotProps={{ popper: { style: { width: 'auto', minWidth: 'auto', maxWidth: 400 } } }}
             renderInput={(params) => (
-                <TextField style={{ }} {...params} label={t.countriesLabel} color="secondary" fullWidth={isMobile} />
+                <TextField style={{ }} {...params} label={t.countriesLabel} color="secondary" fullWidth />
             )}
         />)
         return (<ControlComponentWrapper
@@ -303,7 +293,6 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
 
     get degrees(): JSX.Element {
         const t = translationStore.t
-        const isMobile = uiStore.isMobileView
         const allDegrees = Array.from(AbstractCsvRowMapper.educations).map(([k, v]) => ({ key: k as string, count: v }))
         const filterdValues = allDegrees.map(a => a.key)
         const autoCompleteComponent = (<Autocomplete
@@ -322,10 +311,10 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
                     {option}
                 </li>
             )}
-            style={{ width: isMobile ? '100%' : 250 }}
-            slotProps={{ popper: { style: { width: 'auto', minWidth: '100%', maxWidth: 600 } } }}
+            style={{ width: '100%' }}
+            slotProps={{ popper: { style: { width: 'auto', minWidth: 'auto', maxWidth: 400 } } }}
             renderInput={(params) => (
-                <TextField style={{ }} {...params} label={t.degreeLabel} color="secondary" fullWidth={isMobile} />
+                <TextField style={{ }} {...params} label={t.degreeLabel} color="secondary" fullWidth />
             )}
         />)
         return (<ControlComponentWrapper
@@ -366,19 +355,18 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
         const checkboxes = values.map(value => {
             const check = selectedValues.includes(Gender[value as keyof typeof Gender])
             return (
-                <FormControlLabel
-                    key={this.key++}
-                    control={<Checkbox
+                <div key={this.key++} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Checkbox
                         checked={check}
                         color="secondary"
                         onChange={() => { this.props.controlStore!.setGenders(Gender[value as keyof typeof Gender]) }}
-                    />}
-                    label={genderTranslations[value] || value}
-                />
+                    />
+                    <Typography variant="body1">{genderTranslations[value] || value}</Typography>
+                </div>
             )
         })
         return (
-            <div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                 {checkboxes}
             </div>
         )
@@ -424,12 +412,14 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
 
     get salaryFilter(): JSX.Element {
         const t = translationStore.t
-        return (<ControlComponentWrapper
-            title={t.salaryFilterLabel}
-            controlComponent={<Typography variant="body2" style={{ color: '#666', fontSize: '0.85em' }}>{t.salaryFilterHint}</Typography>}
-            isEnabled={this.props.controlStore!.enableSalaryFilter}
-            enable={(event, value) => { this.props.controlStore!.setEnableSalaryFilter(value)}}>
-        </ControlComponentWrapper>)
+        return (<div style={{marginBottom: '16px'}}>
+            <ControlComponentWrapper
+                title={t.salaryFilterLabel}
+                controlComponent={<Typography variant="body2" style={{ color: '#666', fontSize: '0.85em' }}>{t.salaryFilterHint}</Typography>}
+                isEnabled={this.props.controlStore!.enableSalaryFilter}
+                enable={(event, value) => { this.props.controlStore!.setEnableSalaryFilter(value)}}>
+            </ControlComponentWrapper>
+        </div>)
     }
 
     handleMinCompanySizeChange = (event: React.ChangeEvent<HTMLInputElement>): void => {

@@ -1,4 +1,4 @@
-import { Checkbox, FormControlLabel } from '@mui/material'
+import { Checkbox } from '@mui/material'
 import { Typography } from '@mui/material'
 import React from 'react'
 
@@ -16,23 +16,22 @@ export default class ControlComponentWrapper extends React.Component<ControlComp
     render(): JSX.Element {
         return (
             <div style={{marginTop: '8px'}}>
-                <FormControlLabel
-                    label={
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <Typography variant="body1" color="secondary">{this.props.title}</Typography>
-                            {this.props.count !== undefined && (
-                                <Typography variant="body2" style={{ color: '#666', fontSize: '0.85em' }}>
-                                    ({this.props.count})
-                                </Typography>
-                            )}
-                        </div>
-                    }
-                    control={<Checkbox color="secondary" defaultChecked={this.props.isEnabled} onChange={this.props.enable} />}
-                    labelPlacement="start"
-                />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                    <Typography variant="body1" color="secondary">{this.props.title}</Typography>
+                    {this.props.count !== undefined && (
+                        <Typography variant="body2" style={{ color: '#666', fontSize: '0.85em' }}>
+                            ({this.props.count})
+                        </Typography>
+                    )}
+                    <Checkbox
+                        color="secondary"
+                        checked={this.props.isEnabled}
+                        onChange={this.props.enable}
+                        size="small"
+                    />
+                </div>
                 {this.props.controlComponent}
             </div>
         )
     }
-
 }
