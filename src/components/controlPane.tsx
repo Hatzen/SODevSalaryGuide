@@ -64,7 +64,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
         const isMobile = uiStore.isMobileView
 
         return (
-            <div key={this.state.refreshKey} style={{padding: isMobile ? 12 : 20, overflow: 'scroll', position: 'relative', top: 0, left: 0, right: 0, maxHeight: '100%'}}>
+            <div key={this.state.refreshKey} style={{padding: isMobile ? 12 : 20, overflow: 'auto', position: 'relative', top: 0, left: 0, right: 0, maxHeight: '100%'}}>
                 {this.headerWithMenu}
                 <Typography variant="caption" style={{fontSize: '0.7em', color: '#888', display: 'block', marginBottom: '10px'}}>
                     {t.lastFilterUpdate}: {lastUpdateTime}
@@ -74,6 +74,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
                         <FormGroup key={1}>
                             {this.years}
                             {this.currency}
+                            <Typography variant="body2" style={{ color: '#666', fontSize: '0.85em', marginTop: '10px'}}>{t.controlPaneHint}</Typography>
                             {this.slider}
                             {this.abilities}
                             {this.companySizeInputs}
@@ -140,21 +141,24 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
             onChange={this.handleYearChange.bind(this)}
             renderOption={(props, option, { selected }) => (
                 <li {...props}>
-                    <Checkbox
-                        style={{ marginRight: 8 }}
-                        checked={selected}
-                        color="secondary"
-                    />
                     {option}
                 </li>
             )}
             style={{ width: '100%' }}
             slotProps={{ popper: { style: { width: 'auto', minWidth: 'auto', maxWidth: 400 } } }}
             renderInput={(params) => (
-                <TextField style={{ padding: '10px' }} {...params} label={t.yearLabel} color="secondary" fullWidth />
+                <TextField style={{ }} {...params} label={t.yearLabel} color="secondary" fullWidth />
             )}
         />)
-        return autoCompleteComponent
+        return (<div style={{marginTop: '8px'}}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                <Typography variant="body1" color="secondary">{t.yearLabel}</Typography>
+                <Typography variant="body2" style={{ color: '#666', fontSize: '0.85em' }}>
+                    (2011 - 2025)
+                </Typography>
+            </div>
+            {autoCompleteComponent}
+        </div>)
     }
 
     get currency(): JSX.Element {

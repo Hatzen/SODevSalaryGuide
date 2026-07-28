@@ -55,7 +55,7 @@ class SalaryEstimator extends React.Component<StoreProps, EstimatorState> {
             degrees: [...cs.degrees],
             companySizeMin: cs.companySize[0],
             companySizeMax: cs.companySize[1],
-            genders: [...cs.genders],
+            genders: [], // dont initalize as there is usually no data
             calculated: false
         }
     }
@@ -340,14 +340,16 @@ class SalaryEstimator extends React.Component<StoreProps, EstimatorState> {
                         {this.renderField(t.estimatorDegree, this.degreesField)}
                         {this.renderField(t.estimatorCompanySize, this.companySizeField)}
                         {this.renderField(t.estimatorGender, this.gendersField)}
-                        <Button
-                            variant="contained"
-                            color="secondary"
-                            onClick={() => this.setState({ calculated: true })}
-                            style={{ backgroundColor: '#F48024' }}
-                        >
-                            {t.estimatorCalculate}
-                        </Button>
+                        <div style={{float: 'right'}}>
+                            <Button
+                                variant="contained"
+                                color="secondary"
+                                onClick={() => this.setState({ calculated: true })}
+                                style={{ color: 'white' }}
+                            >
+                                {t.estimatorCalculate}
+                            </Button>
+                        </div>
                     </Paper>
 
                     <Box sx={{ flex: '1 1 320px', minWidth: 300 }}>

@@ -17,8 +17,9 @@ const translations = {
         // ControlPane
         filters: 'Filters',
         lastFilterUpdate: 'Last filter update',
-        yearLabel: 'Show data for year',
+        yearLabel: 'Survey Year',
         currencyLabel: 'Currency',
+        controlPaneHint: 'The filters below need to be activated with the checkbox, only enabled checkboxes will lead to consider the selected  filter values below.',
         genderLabel: 'Gender',
         genderMale: 'Male',
         genderFemale: 'Female',
@@ -126,6 +127,7 @@ const translations = {
         lastFilterUpdate: 'Letzte Filteraktualisierung',
         yearLabel: 'Daten für Jahr anzeigen',
         currencyLabel: 'Währung',
+        controlPaneHint: 'Die nachfolgenden Filter müssen über die Checkbox aktiviert werden, erst danach werden die Daten auf die ausgewählten Kriterien gefiltert.',
         genderLabel: 'Geschlecht',
         genderMale: 'Männlich',
         genderFemale: 'Weiblich',
