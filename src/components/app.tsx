@@ -113,7 +113,7 @@ class App extends React.Component<Record<string, unknown>, AppState> {
                         </Tabs>
                     </div>
                     <div style={{position: 'relative', top: 0, left: 0, right: 0, height: 'calc(100% - 48px)', width: '100%'}}>
-                        <div style={{width: '100%', height: '100%'}}>
+                        <div style={{width: '100%', height: '100%', overflow: 'auto'}}>
                             {this.state.tabIndex === 0 ? <BoxPlot /> :
                                 this.state.tabIndex === 1 ? <BarPlot /> :
                                     this.state.tabIndex === 2 ? <ConsideredDataTable /> :
