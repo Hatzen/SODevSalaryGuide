@@ -30,7 +30,12 @@ Uncaught DataCloneError: Failed to execute 'postMessage' on 'Worker': function (
         }
     }
 
-    startWorkerForYear (resultsetForYear: ResultSetForYear, consumer: (row: Papa.ParseStepResult<CsvRow>) => void, completed: () => void): void {
+    startWorkerForYear (
+        resultsetForYear: ResultSetForYear,
+        consumer: (row: Papa.ParseStepResult<CsvRow>) => void,
+        completed: (rawRows: CsvRow[]) => void,
+        onValidEntry?: (entry: SurveyEntry) => void
+    ): void {
         let validRows: SurveyEntry[] = []
         let invalidCount = 0
         let totalCount = 0
@@ -44,6 +49,7 @@ Uncaught DataCloneError: Failed to execute 'postMessage' on 'Worker': function (
                 const rowEntry = mapper.map(row)
                 if (rowEntry.isValid) {
                     validRows.push(rowEntry)
+                    onValidEntry?.(rowEntry)
                 } else {
                     invalidCount++
                 }
@@ -57,17 +63,18 @@ Uncaught DataCloneError: Failed to execute 'postMessage' on 'Worker': function (
                 transaction(() => {
                     // Replace array entirely to avoid multiple MobX notifications
                     resultsetForYear.resultSet = [...resultsetForYear.resultSet, ...validRows]
-                    resultsetForYear.rawCsvRows = [...resultsetForYear.rawCsvRows, ...rawRows]
                     resultsetForYear.invalidEntryCount += invalidCount
                     resultsetForYear.overallEntryCount += totalCount
                 })
+                const chunkRawRows = rawRows
                 validRows = []
                 rawRows = []
                 invalidCount = 0
                 totalCount = 0
-                
+
                 this.handleNextChunk(resultsetForYear, config)
-                completed()
+                // Hand the raw CSV rows of this chunk to the caller for storage
+                completed(chunkRawRows)
             }
         } as Papa.ParseRemoteConfig<CsvRow>
         const year = resultsetForYear.year.toString()

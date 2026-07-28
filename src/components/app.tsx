@@ -8,17 +8,17 @@ import ControlPane from './controlPane'
 import DisclaimerModal from './disclaimerModal'
 import MenuAppBar from './appBar'
 import { Provider, observer } from 'mobx-react'
-import { Tab, Tabs } from '@mui/material'
+import { Tab, Tabs, Drawer, Autocomplete, TextField } from '@mui/material'
 import { StoreProps } from '../stores/storeHelper'
 import SurveyEntry from '../model/surveyEntry'
 import ConsideredDataTable from './consideredDataTable'
 import CurrencyConversionTable from './currencyConversionTable'
+import SalaryEstimator from './salaryEstimator'
 import translationStore from '../stores/translationStore'
 import controlStore from '../stores/controlStore'
 import { uiStore } from '../stores/uiStore'
 
 interface AppState {
-    components: number[],
     tabIndex: number
 }
 
@@ -29,7 +29,6 @@ class App extends React.Component<Record<string, unknown>, AppState> {
         super(props)
         this.controlPane = React.createRef<AllotmentHandle>()
         this.state ={
-            components: [0, 1],
             tabIndex: 0
         }
         SurveyEntry.entryStore = entryStore
@@ -44,8 +43,11 @@ class App extends React.Component<Record<string, unknown>, AppState> {
         }
     }
 
+    componentDidMount(): void {
+        uiStore.initMobileDetection()
+    }
+
     render(): JSX.Element {
-        const t = translationStore.t
         const fitAll: React.CSSProperties = {position: 'absolute', top:0, left:0, bottom: 0, right:0}
         const stores: StoreProps = {
             entryStore,
@@ -53,62 +55,156 @@ class App extends React.Component<Record<string, unknown>, AppState> {
             uiStore: uiStore
         }
 
-        const panes = this.state.components
+        const isMobile = uiStore.isMobileView
+        const appBarHeight = isMobile ? 48 : 64
 
         return (
             <div style={fitAll}>
                 <Provider {...stores}>
-                    <DisclaimerModal fullScreen={false} />
+                    <DisclaimerModal fullScreen={isMobile} />
                     <MenuAppBar menuClicked={this.toggleControls.bind(this)} />
-                    <div style={{position: 'absolute', top: 64, bottom: 0, left: 0, right:0}}>
-                        <Allotment ref={this.controlPane}>
-                            {panes.map((pane: number) => {
-                                if (pane === 0) {
-                                    return (
-                                        <Allotment.Pane key={pane}>
-                                            <div style={{position: 'relative', top: 0, left: 0, right: 0}} >
-                                                <Tabs
-                                                    value={this.state.tabIndex}
-                                                    onChange={this.changeTab}
-                                                    sx={{
-                                                        '& .MuiTabs-indicator': {
-                                                            backgroundColor: '#F48024'
-                                                        },
-                                                        '& .MuiTab-root': {
-                                                            color: '#F48024',
-                                                            '&.Mui-selected': {
-                                                                color: '#F48024',
-                                                                fontWeight: 500
-                                                            }
-                                                        }
-                                                    }}>
-                                                    <Tab label={t.salaryTab} />
-                                                    <Tab label={t.participationTab} />
-                                                    <Tab label={t.consideredDataTab} />
-                                                    <Tab label={t.currencyRatesTab} />
-                                                </Tabs>
-                                            </div>
-                                            <div style={{position: 'relative', top: 0, left: 0, right: 0, height: 'calc(100% - 48px)', width: '100%'}}>
-                                                <div style={{width: '100%', height: '100%'}}>
-                                                    {this.state.tabIndex === 0 ? <BoxPlot /> :
-                                                        this.state.tabIndex === 1 ? <BarPlot /> :
-                                                            this.state.tabIndex === 2 ? <ConsideredDataTable /> :
-                                                                <CurrencyConversionTable />}
-                                                </div>
-                                            </div>
-                                        </Allotment.Pane>
-                                    )
-                                } else {
-                                    return (
-                                        <Allotment.Pane  key={pane} snap maxSize={400}>
-                                            <ControlPane />
-                                        </Allotment.Pane>
-                                    )
-                                }
-                            })}
-                        </Allotment>
+                    <div style={{position: 'absolute', top: appBarHeight, bottom: isMobile ? 48 : 0, left: 0, right:0}}>
+                        {isMobile ? this.renderMobileLayout() : this.renderDesktopLayout()}
                     </div>
+                    {isMobile && this.renderMobileFooter()}
+                    <Drawer
+                        anchor="right"
+                        open={uiStore.controlPaneOpen && isMobile}
+                        onClose={this.closeDrawer.bind(this)}
+                        PaperProps={{
+                            sx: { width: '100%', maxWidth: '400px', backgroundColor: '#fff' }
+                        }}
+                    >
+                        <ControlPane />
+                    </Drawer>
                 </Provider>
+            </div>
+        )
+    }
+
+    private renderDesktopLayout(): JSX.Element {
+        const t = translationStore.t
+        return (
+            <Allotment ref={this.controlPane}>
+                <Allotment.Pane>
+                    <div style={{position: 'relative', top: 0, left: 0, right: 0}} >
+                        <Tabs
+                            value={this.state.tabIndex}
+                            onChange={this.changeTab}
+                            variant="scrollable"
+                            scrollButtons="auto"
+                            sx={{
+                                '& .MuiTabs-indicator': {
+                                    backgroundColor: '#F48024'
+                                },
+                                '& .MuiTab-root': {
+                                    color: '#F48024',
+                                    '&.Mui-selected': {
+                                        color: '#F48024',
+                                        fontWeight: 500
+                                    }
+                                }
+                            }}>
+                            <Tab label={t.salaryTab} />
+                            <Tab label={t.participationTab} />
+                            <Tab label={t.consideredDataTab} />
+                            <Tab label={t.currencyRatesTab} />
+                            <Tab label={t.estimatorTab} />
+                        </Tabs>
+                    </div>
+                    <div style={{position: 'relative', top: 0, left: 0, right: 0, height: 'calc(100% - 48px)', width: '100%'}}>
+                        <div style={{width: '100%', height: '100%', overflow: 'auto'}}>
+                            {this.state.tabIndex === 0 ? <BoxPlot /> :
+                                this.state.tabIndex === 1 ? <BarPlot /> :
+                                    this.state.tabIndex === 2 ? <ConsideredDataTable /> :
+                                        this.state.tabIndex === 3 ? <CurrencyConversionTable /> :
+                                            <SalaryEstimator />}
+                        </div>
+                    </div>
+                </Allotment.Pane>
+                <Allotment.Pane snap maxSize={400}>
+                    <ControlPane />
+                </Allotment.Pane>
+            </Allotment>
+        )
+    }
+
+    private renderMobileLayout(): JSX.Element {
+        const t = translationStore.t
+        return (
+            <div style={{width: '100%', height: '100%'}}>
+                <div style={{position: 'relative', top: 0, left: 0, right: 0}} >
+                    <Tabs
+                        value={this.state.tabIndex}
+                        onChange={this.changeTab}
+                        variant="scrollable"
+                        scrollButtons="auto"
+                        sx={{
+                            '& .MuiTabs-indicator': {
+                                backgroundColor: '#F48024'
+                            },
+                            '& .MuiTab-root': {
+                                color: '#F48024',
+                                '&.Mui-selected': {
+                                    color: '#F48024',
+                                    fontWeight: 500
+                                }
+                            }
+                        }}>
+                        <Tab label={t.salaryTab} />
+                        <Tab label={t.participationTab} />
+                        <Tab label={t.consideredDataTab} />
+                        <Tab label={t.currencyRatesTab} />
+                        <Tab label={t.estimatorTab} />
+                    </Tabs>
+                </div>
+                <div style={{position: 'relative', top: 0, left: 0, right: 0, height: 'calc(100% - 48px)', width: '100%'}}>
+                    <div style={{width: '100%', height: '100%'}}>
+                        {this.state.tabIndex === 0 ? <BoxPlot /> :
+                            this.state.tabIndex === 1 ? <BarPlot /> :
+                                this.state.tabIndex === 2 ? <ConsideredDataTable /> :
+                                    this.state.tabIndex === 3 ? <CurrencyConversionTable /> :
+                                        <SalaryEstimator />}
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
+    private renderMobileFooter(): JSX.Element {
+        const t = translationStore.t
+        return (
+            <div style={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                height: 48,
+                backgroundColor: '#F48024',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'flex-end',
+                padding: '0 16px',
+                zIndex: 10
+            }}>
+                <Autocomplete
+                    options={['en', 'de']}
+                    value={controlStore.language ?? 'en'}
+                    onChange={(_event, value) => {
+                        if (value) {
+                            controlStore.setLanguage(value as 'en' | 'de')
+                        }
+                    }}
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            label={t.language}
+                            size="small"
+                            color="secondary"
+                            style={{ width: 120, color: '#fff' }}
+                        />
+                    )}
+                />
             </div>
         )
     }
@@ -118,16 +214,11 @@ class App extends React.Component<Record<string, unknown>, AppState> {
     }
 
     private toggleControls(): void {
-        if (this.state.components.length === 1) {
-            this.setState({
-                components: [0 ,1]
-            })
-            this.controlPane.current!.reset()
-        } else {
-            this.setState({
-                components: [0]
-            })
-        }
+        uiStore.setControlPaneOpen(!uiStore.controlPaneOpen)
+    }
+
+    private closeDrawer(): void {
+        uiStore.setControlPaneOpen(false)
     }
 
 }
