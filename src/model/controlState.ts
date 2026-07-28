@@ -40,8 +40,12 @@ export default class ControlState {
         if (!this.enableSalaryFilter) {
             return true
         }
-        const salary = entry.salary
-        return salary >= 10000 && salary <= 250000
+        const rawSalary = entry._salary
+        const entryStore = SurveyEntry.entryStore
+        const currencyValues = entryStore?.currencyValues
+        const entryCurrencyRatio = currencyValues?.getRatioByCode(entry.currency) ?? 1
+        const usdSalary = rawSalary / entryCurrencyRatio
+        return usdSalary >= 10000 && usdSalary <= 250000
     }
 
     private filterByAbilities(entry: SurveyEntry): boolean {

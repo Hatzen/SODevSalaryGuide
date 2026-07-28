@@ -11,6 +11,7 @@
     "strict": true,
     "sourceMap": true,
     "target": "esnext",
+    "skipLibCheck": true,
     // Additional:
     // Allow mobx-react decoraters.
     "experimentalDecorators": true,
