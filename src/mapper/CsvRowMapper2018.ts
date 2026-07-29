@@ -1,6 +1,7 @@
 import { AbstractCsvRowMapper } from './AbstractCsvRowMapper'
 
 export class CsvRowMapper2018 extends AbstractCsvRowMapper {
+    readonly SALARY_ALREADY_CONVERTED = true
     readonly MAPPER_FOR_YEAR = 2018
     
     readonly SALARY_KEY = 'ConvertedSalary' // 2018
@@ -12,3 +13,5 @@ export class CsvRowMapper2018 extends AbstractCsvRowMapper {
     readonly COMPANY_SIZE = 'CompanySize'
     readonly COUNTRY = 'Country'
 }
+
+

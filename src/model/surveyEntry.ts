@@ -6,7 +6,7 @@ export default class SurveyEntry {
     static entryStore: EntryStore | null = null
 
     _salary!: number
-    isSalaryAlreadyConverted = false
+    salaryIsUsd = false
     currency: Currency = Currency.USD
 
     // 2011-2014: How many years of IT/Programming experience do you have?
@@ -85,9 +85,10 @@ export default class SurveyEntry {
 
     get salary(): number {
         const entryStore = SurveyEntry.entryStore
-        if (this.isSalaryAlreadyConverted !== false && entryStore != null) {
+        if (this.salaryIsUsd !== true && entryStore != null) {
             // TODO: Especially this is incorrect when using converted salary is not it?
             // TODO: Why this will only work on 2018 and lead to very strange results...
+            // Salary is already in the entry currency; convert to USD for internal use
             return this._salary / entryStore.currencyValues.getRatioByCode(this.currency)
         }
         return this._salary
@@ -96,3 +97,4 @@ export default class SurveyEntry {
         return this._salary > 0
     }
 }
+

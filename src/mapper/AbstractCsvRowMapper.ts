@@ -41,6 +41,7 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
     abstract readonly COUNTRY: string
 
     abstract readonly MAPPER_FOR_YEAR: number
+    readonly SALARY_ALREADY_CONVERTED: boolean = false
 
     map (csvRow: CsvRow): SurveyEntry {
         const result = new SurveyEntry()
@@ -265,6 +266,7 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
             const salaryValue = this.getSalaryValue(salary)
             if (salaryValue !== -1 && Math.abs(salaryValue) > 0) {
                 result._salary = Math.abs(salaryValue)
+                result.salaryIsUsd = this.SALARY_ALREADY_CONVERTED
             }
         }
 
@@ -380,3 +382,4 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
         }
     }*/
 }
+

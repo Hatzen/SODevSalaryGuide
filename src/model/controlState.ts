@@ -43,8 +43,7 @@ export default class ControlState {
         const rawSalary = entry._salary
         const entryStore = SurveyEntry.entryStore
         const currencyValues = entryStore?.currencyValues
-        const entryCurrencyRatio = currencyValues?.getRatioByCode(entry.currency) ?? 1
-        const usdSalary = rawSalary / entryCurrencyRatio
+        const usdSalary = entry.salaryIsUsd ? rawSalary : rawSalary / (currencyValues?.getRatioByCode(entry.currency) ?? 1)
         return usdSalary >= 10000 && usdSalary <= 250000
     }
 

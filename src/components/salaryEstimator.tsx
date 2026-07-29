@@ -417,3 +417,4 @@ class SalaryEstimator extends React.Component<StoreProps, EstimatorState> {
 }
 
 export default inject(...injectClause)(observer(SalaryEstimator))
+
