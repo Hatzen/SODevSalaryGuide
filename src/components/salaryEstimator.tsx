@@ -64,57 +64,55 @@ class SalaryEstimator extends React.Component<StoreProps, EstimatorState> {
         const currencyValues = this.props.entryStore!.currencyValues
         const selectedCurrency = this.props.controlStore!.selectedCurrency
         const rawSalary = entry._salary
-        const entryCurrencyRatio = currencyValues?.getRatioByCode(entry.currency) ?? 1
-        const usdSalary = rawSalary / entryCurrencyRatio
+        const usdSalary = entry.salaryIsUsd ? rawSalary : rawSalary / (currencyValues?.getRatioByCode(entry.currency) ?? 1)
         const targetCurrencyRatio = currencyValues?.getRatioByCode(selectedCurrency) ?? 1
         return usdSalary * targetCurrencyRatio
     }
+
+private _isSalaryInRangeUSD(entry: SurveyEntry): boolean {
+    const currencyValues = this.props.entryStore!.currencyValues
+    const rawSalary = entry._salary
+    const usdValue = entry.salaryIsUsd ? rawSalary : rawSalary / (currencyValues?.getRatioByCode(entry.currency) ?? 1)
+    return usdValue >= 10000 && usdValue <= 250000
+}
 
     private allEntries(): SurveyEntry[] {
         const year = parseInt(this.props.entryStore!.selectedYear, 10)
         return this.props.entryStore!.parsedDataByYear[year]?.resultSet ?? []
     }
 
-    private matchesFilter(entry: SurveyEntry, opts: {
-        exp: [number, number],
-        abilities: string[],
-        countries: string[],
-        degrees: string[],
-        companyMin: number | null,
-        companyMax: number | null,
-        genders: Gender[]
-    }): boolean {
-        const exp = entry.expirienceInYears
-        if (exp && !(exp.min >= opts.exp[0] && exp.max <= opts.exp[1])) return false
-        if (opts.abilities.length > 0 && !(entry.abilities ?? []).some(a => opts.abilities.includes(a))) return false
-        if (opts.countries.length > 0 && !opts.countries.includes(entry.country!)) return false
-        if (opts.degrees.length > 0 && !opts.degrees.includes(entry.highestDegree!)) return false
-        if (opts.genders.length > 0 && !opts.genders.includes(entry.gender!)) return false
-        const cs = entry.companySize
-        if (cs) {
-            if (opts.companyMin !== null && opts.companyMin !== undefined && cs.max < opts.companyMin) return false
-            if (opts.companyMax !== null && opts.companyMax !== undefined && cs.min > opts.companyMax) return false
-        }
-        return true
+private matchesFilter(entry: SurveyEntry, opts: { exp: [number, number]; abilities: string[]; countries: string[]; degrees: string[]; companyMin: number | null; companyMax: number | null; genders: Gender[] }): boolean {
+    const exp = entry.expirienceInYears
+    if (exp && !(exp.min >= opts.exp[0] && exp.max <= opts.exp[1])) return false
+    if (opts.abilities.length > 0 && !(entry.abilities ?? []).some(a => opts.abilities.includes(a))) return false
+    if (opts.countries.length > 0 && !opts.countries.includes(entry.country!)) return false
+    if (opts.degrees.length > 0 && !opts.degrees.includes(entry.highestDegree!)) return false
+    if (opts.genders.length > 0 && !opts.genders.includes(entry.gender!)) return false
+    const cs = entry.companySize
+    if (cs) {
+        if (opts.companyMin !== null && opts.companyMin !== undefined && cs.max < opts.companyMin) return false
+        if (opts.companyMax !== null && opts.companyMax !== undefined && cs.min > opts.companyMax) return false
     }
+    return true
+}
 
-    private computeStats(entries: SurveyEntry[]): Stats | null {
-        if (entries.length === 0) return null
-        const salaries = entries.map(e => this.convertSalary(e))
-        const sorted = [...salaries].sort((a, b) => a - b)
-        const median = sorted[Math.floor(sorted.length / 2)]
-        const mean = salaries.reduce((a, b) => a + b, 0) / salaries.length
-        const variance = salaries.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / salaries.length
-        const std = Math.sqrt(variance)
-        return {
-            count: salaries.length,
-            median,
-            mean,
-            std,
-            lower: mean - std,
-            upper: mean + std
-        }
+private computeStats(entries: SurveyEntry[]): Stats | null {
+    if (entries.length === 0) return null
+    const salaries = entries.map(e => this.convertSalary(e))
+    const sorted = [...salaries].sort((a, b) => a - b)
+    const median = sorted[Math.floor(sorted.length / 2)]
+    const mean = salaries.reduce((a, b) => a + b, 0) / salaries.length
+    const variance = salaries.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / salaries.length
+    const std = Math.sqrt(variance)
+    return {
+        count: salaries.length,
+        median,
+        mean,
+        std,
+        lower: mean - std,
+        upper: mean + std
     }
+}
 
     private currentFilter(): {
         exp: [number, number],

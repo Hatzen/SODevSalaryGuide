@@ -32,7 +32,6 @@ export class UiStore {
     isMobileView = false
     controlPaneOpen = false
 
-    // Incremental box-plot statistics, updated every 5k streamed entries
     boxStats: BoxStats | null = null
     private boxAccumulator = new StatsAccumulator()
     private boxStatsYear = -1
@@ -112,8 +111,6 @@ export class UiStore {
                         this.lastFilterUpdateTime = Date.now()
                         console.log('[DEBUG] UiStore filtering triggered at', new Date(this.lastFilterUpdateTime).toISOString())
                         this.updateFilteredData()
-                        // During active streaming the box stats are fed incrementally;
-                        // otherwise (filter/currency change) recompute from the full set.
                         if (!this.isStreaming) {
                             this.rebuildBoxStats()
                         }
@@ -150,30 +147,32 @@ export class UiStore {
         const currencyValues = this.entryStore.currencyValues
         const selectedCurrency = this.controlStore.selectedCurrency
         const rawSalary = entry._salary
-        const entryCurrencyRatio = currencyValues?.getRatioByCode(entry.currency) ?? 1
-        const usdSalary = rawSalary / entryCurrencyRatio
+        const usdSalary = entry.salaryIsUsd ? rawSalary : rawSalary / (currencyValues?.getRatioByCode(entry.currency) ?? 1)
         const targetCurrencyRatio = currencyValues?.getRatioByCode(selectedCurrency) ?? 1
         return usdSalary * targetCurrencyRatio
     }
 
-    recordStreamEntry = (entry: SurveyEntry): void => {
-        const year = parseInt(this.entryStore.selectedYear, 10)
-        if (year !== this.boxStatsYear) {
-            this.boxAccumulator.reset()
-            this.boxStatsYear = year
-            this.isStreaming = true
-            this.streamCounter = 0
-        }
-        if (!this.controlStore.controlState.filterByState(entry)) {
-            return
-        }
-        this.boxAccumulator.add(this.convertSalary(entry))
-        this.streamCounter++
-        // Flush a preview of the box plot every 5k new datasets
-        if (this.streamCounter % this.flushInterval === 0) {
-            this.boxStats = this.boxAccumulator.toBoxStats()
-        }
+    isSalaryInRange(usdValue: number): boolean {
+        return usdValue >= 10000 && usdValue <= 250000
     }
+
+recordStreamEntry = (entry: SurveyEntry): void => {
+    const year = parseInt(this.entryStore.selectedYear, 10)
+    if (year !== this.boxStatsYear) {
+        this.boxAccumulator.reset()
+        this.boxStatsYear = year
+        this.isStreaming = true
+        this.streamCounter = 0
+    }
+    if (!this.controlStore.controlState.filterByState(entry)) {
+        return
+    }
+    this.boxAccumulator.add(this.convertSalary(entry))
+    this.streamCounter++
+    if (this.streamCounter % this.flushInterval === 0) {
+        this.boxStats = this.boxAccumulator.toBoxStats()
+    }
+}
 
     finalizeStream = (): void => {
         this.boxStats = this.boxAccumulator.toBoxStats()
@@ -182,37 +181,37 @@ export class UiStore {
 
     private rebuildBoxStatsRequestId = 0
 
-    rebuildBoxStats = (): void => {
-        const year = parseInt(this.entryStore.selectedYear, 10)
-        this.boxAccumulator.reset()
-        this.boxStatsYear = year
-        const parsedData = this.entryStore.parsedDataByYear[year]
-        const controlState = this.controlStore.controlState
-        if (parsedData?.resultSet) {
-            const entries = parsedData.resultSet
-            const chunkSize = 1000
-            let index = 0
-            const requestId = ++this.rebuildBoxStatsRequestId
-            const processChunk = (): void => {
-                if (requestId !== this.rebuildBoxStatsRequestId) return
-                const end = Math.min(index + chunkSize, entries.length)
-                for (let i = index; i < end; i++) {
-                    if (controlState.filterByState(entries[i])) {
-                        this.boxAccumulator.add(this.convertSalary(entries[i]))
-                    }
-                }
-                index = end
-                if (index < entries.length) {
-                    requestAnimationFrame(processChunk)
-                } else {
-                    this.boxStats = this.boxAccumulator.toBoxStats()
+rebuildBoxStats = (): void => {
+    const year = parseInt(this.entryStore.selectedYear, 10)
+    this.boxAccumulator.reset()
+    this.boxStatsYear = year
+    const parsedData = this.entryStore.parsedDataByYear[year]
+    const controlState = this.controlStore.controlState
+    if (parsedData?.resultSet) {
+        const entries = parsedData.resultSet
+        const chunkSize = 1000
+        let index = 0
+        const requestId = ++this.rebuildBoxStatsRequestId
+        const processChunk = (): void => {
+            if (requestId !== this.rebuildBoxStatsRequestId) return
+            const end = Math.min(index + chunkSize, entries.length)
+            for (let i = index; i < end; i++) {
+                if (controlState.filterByState(entries[i])) {
+                    this.boxAccumulator.add(this.convertSalary(entries[i]))
                 }
             }
-            requestAnimationFrame(processChunk)
-        } else {
-            this.boxStats = this.boxAccumulator.toBoxStats()
+            index = end
+            if (index < entries.length) {
+                requestAnimationFrame(processChunk)
+            } else {
+                this.boxStats = this.boxAccumulator.toBoxStats()
+            }
         }
+        requestAnimationFrame(processChunk)
+    } else {
+        this.boxStats = this.boxAccumulator.toBoxStats()
     }
+}
 
     destroy(): void {
         if (this.reactionDisposer) {
@@ -226,6 +225,5 @@ export class UiStore {
 
 export const uiStore = new UiStore(controlStore, entryStore)
 
-// Feed parsed entries into the incremental box-plot statistics
 entryStore.setStreamSink((entry) => uiStore.recordStreamEntry(entry))
 entryStore.setStreamFinalize(() => uiStore.finalizeStream())

@@ -5,7 +5,6 @@ import Loader from 'react-loader-spinner'
 import { uiStore } from '../stores/uiStore'
 import controlStore from '../stores/controlStore'
 import entryStore from '../stores/entryStore'
-import { FormLabel } from '@mui/material'
 import { Tabs, Tab } from '@mui/material'
 import translationStore from '../stores/translationStore'
 import RawCsvDataGrid from './rawCsvDataGrid'
@@ -128,19 +127,19 @@ const ConsideredDataTable = observer(() => {
         }
     ]
 
-    const renderMappedTable = (): JSX.Element => {
-        const rowsWithId = mappedData.map((entry, index) => {
-            const rawSalary = entry._salary
-            const entryCurrencyRatio = entryStore.currencyValues?.getRatioByCode(entry.currency) ?? 1
-            const usdSalary = rawSalary / entryCurrencyRatio
-            const targetCurrencyRatio = entryStore.currencyValues?.getRatioByCode(selectedCurrency) ?? 1
-            return {
-                ...entry,
-                id: `mapped-${index}`,
-                convertedSalary: usdSalary * targetCurrencyRatio,
-                salary: rawSalary
-            }
-        })
+const renderMappedTable = (): JSX.Element => {
+    const rowsWithId = mappedData.map((entry, index) => {
+        const rawSalary = entry._salary
+        const entryCurrencyRatio = entryStore.currencyValues?.getRatioByCode(entry.currency) ?? 1
+        const usdSalary = entry.salaryIsUsd ? rawSalary : rawSalary / entryCurrencyRatio
+        const targetCurrencyRatio = entryStore.currencyValues?.getRatioByCode(selectedCurrency) ?? 1
+        return {
+            ...entry,
+            id: `mapped-${index}`,
+            convertedSalary: usdSalary * targetCurrencyRatio,
+            salary: rawSalary
+        }
+    })
 
         return (
             <div style={{flex: 1, minHeight: 0}}>
