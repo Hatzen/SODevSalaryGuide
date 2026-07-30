@@ -216,14 +216,16 @@ class SalaryEstimator extends React.Component<StoreProps, EstimatorState> {
     private get abilitiesField(): JSX.Element {
         const t = translationStore.t
         const isMobile = this.props.uiStore!.isMobileView
-        const options = Array.from(AbstractCsvRowMapper.abilities).map(([k]) => k as string)
+        const options = Array.from(AbstractCsvRowMapper.abilities).map(([k, v]) => ({ key: k, label: v.label }))
         return (
             <Autocomplete
                 multiple
                 options={options}
+                getOptionLabel={(option) => option.label}
+                isOptionEqualToValue={(option, value) => option.key === value?.key}
                 disableCloseOnSelect
-                value={this.state.abilities}
-                onChange={(_e, v) => this.setState({ abilities: v })}
+                value={options.filter(o => this.state.abilities.includes(o.key))}
+                onChange={(_e, v) => this.setState({ abilities: v.map(x => x.key) })}
                 renderInput={(params) => <TextField {...params} label={t.estimatorAbilities} color="secondary" />}
                 style={{ width: isMobile ? '100%' : 350 }}
             />
@@ -233,14 +235,16 @@ class SalaryEstimator extends React.Component<StoreProps, EstimatorState> {
     private get countriesField(): JSX.Element {
         const t = translationStore.t
         const isMobile = this.props.uiStore!.isMobileView
-        const options = Array.from(AbstractCsvRowMapper.countries).map(([k]) => k as string)
+        const options = Array.from(AbstractCsvRowMapper.countries).map(([k, v]) => ({ key: k, label: v.label }))
         return (
             <Autocomplete
                 multiple
                 options={options}
+                getOptionLabel={(option) => option.label}
+                isOptionEqualToValue={(option, value) => option.key === value?.key}
                 disableCloseOnSelect
-                value={this.state.countries}
-                onChange={(_e, v) => this.setState({ countries: v })}
+                value={options.filter(o => this.state.countries.includes(o.key))}
+                onChange={(_e, v) => this.setState({ countries: v.map(x => x.key) })}
                 renderInput={(params) => <TextField {...params} label={t.estimatorCountries} color="secondary" />}
                 style={{ width: isMobile ? '100%' : 350 }}
             />
@@ -250,14 +254,16 @@ class SalaryEstimator extends React.Component<StoreProps, EstimatorState> {
     private get degreesField(): JSX.Element {
         const t = translationStore.t
         const isMobile = this.props.uiStore!.isMobileView
-        const options = Array.from(AbstractCsvRowMapper.educations).map(([k]) => k as string)
+        const options = Array.from(AbstractCsvRowMapper.educations).map(([k, v]) => ({ key: k, label: v.label }))
         return (
             <Autocomplete
                 multiple
                 options={options}
+                getOptionLabel={(option) => option.label}
+                isOptionEqualToValue={(option, value) => option.key === value?.key}
                 disableCloseOnSelect
-                value={this.state.degrees}
-                onChange={(_e, v) => this.setState({ degrees: v })}
+                value={options.filter(o => this.state.degrees.includes(o.key))}
+                onChange={(_e, v) => this.setState({ degrees: v.map(x => x.key) })}
                 renderInput={(params) => <TextField {...params} label={t.estimatorDegree} color="secondary" />}
                 style={{ width: isMobile ? '100%' : 350 }}
             />

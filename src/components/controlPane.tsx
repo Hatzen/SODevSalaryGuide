@@ -201,14 +201,15 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
 
     get abilities(): JSX.Element {
         const t = translationStore.t
-        const allAbilities = Array.from(AbstractCsvRowMapper.abilities).map(([k, v]) => ({ key: k as string, count: v }))
-        const filterdValues = allAbilities.map(a => a.key)
+        const allAbilities = Array.from(AbstractCsvRowMapper.abilities).map(([k, v]) => ({ key: k as string, label: v.label }))
         const autoCompleteComponent = (<Autocomplete
             multiple
             id="checkboxes-tags-demo"
-            options={filterdValues}
+            options={allAbilities}
+            getOptionLabel={(option) => option.label}
+            isOptionEqualToValue={(option, value) => option.key === value?.key}
             disableCloseOnSelect
-            value={this.props.controlStore!.abilities}
+            value={allAbilities.filter(a => this.props.controlStore!.abilities.includes(a.key))}
             onChange={this.handleChangesForAbilities.bind(this)}
             renderOption={(props, option, state) => (
                 <li {...props}>
@@ -216,7 +217,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
                         style={{ marginRight: 8 }}
                         checked={state.selected}
                     />
-                    {option}
+                    {option.label}
                 </li>
             )}
             style={{ width: '100%' }}
@@ -262,14 +263,15 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
 
     get countries(): JSX.Element {
         const t = translationStore.t
-        const allCountries = Array.from(AbstractCsvRowMapper.countries).map(([k, v]) => ({ key: k as string, count: v }))
-        const filterdValues = allCountries.map(a => a.key)
+        const allCountries = Array.from(AbstractCsvRowMapper.countries).map(([k, v]) => ({ key: k as string, label: v.label }))
         const autoCompleteComponent = (<Autocomplete
             multiple
             id="checkboxes-tags-demo"
-            options={filterdValues}
+            options={allCountries}
+            getOptionLabel={(option) => option.label}
+            isOptionEqualToValue={(option, value) => option.key === value?.key}
             disableCloseOnSelect
-            value={this.props.controlStore!.countries}
+            value={allCountries.filter(a => this.props.controlStore!.countries.includes(a.key))}
             onChange={this.handleChangesForCountries.bind(this)}
             renderOption={(props, option, state) => (
                 <li {...props}>
@@ -277,7 +279,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
                         style={{ marginRight: 8 }}
                         checked={state.selected}
                     />
-                    {option}
+                    {option.label}
                 </li>
             )}
             style={{ width: '100%' }}
@@ -297,14 +299,15 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
 
     get degrees(): JSX.Element {
         const t = translationStore.t
-        const allDegrees = Array.from(AbstractCsvRowMapper.educations).map(([k, v]) => ({ key: k as string, count: v }))
-        const filterdValues = allDegrees.map(a => a.key)
+        const allDegrees = Array.from(AbstractCsvRowMapper.educations).map(([k, v]) => ({ key: k as string, label: v.label }))
         const autoCompleteComponent = (<Autocomplete
             multiple
             id="checkboxes-tags-demo"
-            options={filterdValues}
+            options={allDegrees}
+            getOptionLabel={(option) => option.label}
+            isOptionEqualToValue={(option, value) => option.key === value?.key}
             disableCloseOnSelect
-            value={this.props.controlStore!.degrees}
+            value={allDegrees.filter(a => this.props.controlStore!.degrees.includes(a.key))}
             onChange={this.handleChangesForDegree.bind(this)}
             renderOption={(props, option, state) => (
                 <li {...props}>
@@ -312,7 +315,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
                         style={{ marginRight: 8 }}
                         checked={state.selected}
                     />
-                    {option}
+                    {option.label}
                 </li>
             )}
             style={{ width: '100%' }}
@@ -436,16 +439,16 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
         this.props.controlStore!.setCompanySizeFromMax(value)
     }
 
-    handleChangesForCountries(event: React.ChangeEvent<unknown>, value: string[]): void {
-        this.props.controlStore!.setCountries(value)
+    handleChangesForCountries(event: React.ChangeEvent<unknown>, value: { key: string, label: string }[]): void {
+        this.props.controlStore!.setCountries(value.map(v => v.key))
     }
 
-    handleChangesForDegree(event: React.ChangeEvent<unknown>, value: string[]): void {
-        this.props.controlStore!.setDegrees(value)
+    handleChangesForDegree(event: React.ChangeEvent<unknown>, value: { key: string, label: string }[]): void {
+        this.props.controlStore!.setDegrees(value.map(v => v.key))
     }
 
-    handleChangesForAbilities(event: React.ChangeEvent<unknown>, value: string[]): void {
-        this.props.controlStore!.setAbilities(value)
+    handleChangesForAbilities(event: React.ChangeEvent<unknown>, value: { key: string, label: string }[]): void {
+        this.props.controlStore!.setAbilities(value.map(v => v.key))
     }
 
     handleChange(_event: Event | React.SyntheticEvent, value: number | number[]): void {
