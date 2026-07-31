@@ -88,8 +88,8 @@ return [
         return {
             barmode: 'group',
             showlegend: true,
-            paper_bgcolor: '#FFFFFF',
-            plot_bgcolor: '#FFFFFF'
+            paper_bgcolor: '#FF000000',
+            plot_bgcolor: '#FF000000',
         }
     }
 }
