@@ -198,11 +198,11 @@ export class EntryStore {
         
         for (const entry of entries) {
             if (entry.gender) genderSet.add(entry.gender)
-            if (entry.country) countryMap.set(entry.country, (countryMap.get(entry.country) || 0) + 1)
-            if (entry.highestDegree) educationMap.set(entry.highestDegree, (educationMap.get(entry.highestDegree) || 0) + 1)
+            if (entry.country) AbstractCsvRowMapper.updateDistinctValue(countryMap, entry.country, entry.country)
+            if (entry.highestDegree) AbstractCsvRowMapper.updateDistinctValue(educationMap, entry.highestDegree, entry.highestDegree)
             if (entry.abilities) {
                 for (const abil of entry.abilities) {
-                    abilityMap.set(abil, (abilityMap.get(abil) || 0) + 1)
+                    AbstractCsvRowMapper.updateDistinctValue(abilityMap, abil, abil)
                 }
             }
         }

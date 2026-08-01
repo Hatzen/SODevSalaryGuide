@@ -62,10 +62,25 @@ class BarPlot extends React.Component<StoreProps> {
         const invalidNumbers = [yearEntrySet.invalidEntryCount]
         const matchingFilterNumbers = [filteredYearList.length]
 
-        return [
-            { y: matchingFilterNumbers, name: 'matching filter', type: 'bar' },
-            { y: overallNumbers, name: 'allParticipations', type: 'bar' },
-            { y: invalidNumbers, name: 'considered invalid', type: 'bar' },
+return [
+            {
+                y: matchingFilterNumbers,
+                name: 'matching filter',
+                type: 'bar',
+                marker: { color: '#F48024' }  // Use primary orange from theme
+            },
+            {
+                y: overallNumbers,
+                name: 'allParticipations',
+                type: 'bar',
+                marker: { color: '#E3E6E8' }  // Use secondary gray from theme
+            },
+            {
+                y: invalidNumbers,
+                name: 'considered invalid',
+                type: 'bar',
+                marker: { color: '#FF6B6B' }  // Use error red
+            }
         ]
     }
     
@@ -74,7 +89,7 @@ class BarPlot extends React.Component<StoreProps> {
             barmode: 'group',
             showlegend: true,
             paper_bgcolor: '#FF000000',
-            plot_bgcolor: '#FF000000'
+            plot_bgcolor: '#FF000000',
         }
     }
 }

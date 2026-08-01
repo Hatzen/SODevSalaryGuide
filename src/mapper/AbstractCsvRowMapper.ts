@@ -6,6 +6,8 @@ import StackOverflowCsvReader from '../services/stackOverflowCsvReader'
 
 type ColumnList = { initial: string, from: number, to: number}
 
+export type DistinctValue = { label: string, count: number }
+
 interface ICsvRowMapper {
     readonly SALARY_KEY: string
     readonly CURRENCY_KEY: string
@@ -24,12 +26,12 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
     static COLUMN_DONT_EXIST = 'COLUMN_DONT_EXIST'
 
     // Sets to distinct values and map to filter values with single response.
-    static educations: Map<string, number> = new Map()
-    static countries: Map<string, number> = new Map()
+    static educations: Map<string, DistinctValue> = new Map()
+    static countries: Map<string, DistinctValue> = new Map()
     static genders: Set<string> = new Set()
     static years: Set<string> = new Set()
-    static abilities: Map<string, number> = new Map()
-    static companySize: Map<string, number> = new Map()
+    static abilities: Map<string, DistinctValue> = new Map()
+    static companySize: Map<string, DistinctValue> = new Map()
 
     abstract readonly SALARY_KEY: string
     abstract readonly CURRENCY_KEY: string
@@ -41,6 +43,7 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
     abstract readonly COUNTRY: string
 
     abstract readonly MAPPER_FOR_YEAR: number
+    readonly SALARY_ALREADY_CONVERTED: boolean = false
 
     map (csvRow: CsvRow): SurveyEntry {
         const result = new SurveyEntry()
@@ -97,9 +100,20 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
             return
         }
 
-        const newValue = (AbstractCsvRowMapper.abilities.get(id) || 0) + 1
-        AbstractCsvRowMapper.abilities.set(id, newValue)
+        AbstractCsvRowMapper.updateDistinctValue(AbstractCsvRowMapper.abilities, id, key)
         targetList.push(id)
+    }
+
+    static updateDistinctValue(map: Map<string, DistinctValue>, id: string, rawValue: string): void {
+        const existing = map.get(id)
+        if (existing) {
+            if (rawValue.length > existing.label.length) {
+                existing.label = rawValue
+            }
+            existing.count++
+        } else {
+            map.set(id, { label: rawValue, count: 1 })
+        }
     }
 
     protected valueAsId(dirtyString: string): string {
@@ -123,9 +137,7 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
         id = id.indexOf('selftaught') !== -1 ? 'selftaught' : id
         id = id.indexOf('onthejob') !== -1 ? 'onthejob' : id
 
-
-        const newValue = (AbstractCsvRowMapper.educations.get(id) ?? 0) + 1
-        AbstractCsvRowMapper.educations.set(id, newValue)
+        AbstractCsvRowMapper.updateDistinctValue(AbstractCsvRowMapper.educations, id, degree)
 
         result.highestDegree = id
     }
@@ -143,8 +155,7 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
             return
         }
 
-        const newValue = (AbstractCsvRowMapper.countries.get(id) ?? 0) + 1
-        AbstractCsvRowMapper.countries.set(id, newValue)
+        AbstractCsvRowMapper.updateDistinctValue(AbstractCsvRowMapper.countries, id, country)
 
         result.country = id
     }
@@ -203,8 +214,7 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
             return
         }
 
-        const newValue = (AbstractCsvRowMapper.companySize.get(id) ?? 0) + 1
-        AbstractCsvRowMapper.companySize.set(id, newValue)
+        AbstractCsvRowMapper.updateDistinctValue(AbstractCsvRowMapper.companySize, id, companySize)
 
         let mappedResult
         // https://stackoverflow.com/questions/10003683/how-can-i-extract-a-number-from-a-string-in-javascript
@@ -265,6 +275,7 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
             const salaryValue = this.getSalaryValue(salary)
             if (salaryValue !== -1 && Math.abs(salaryValue) > 0) {
                 result._salary = Math.abs(salaryValue)
+                result.salaryIsUsd = this.SALARY_ALREADY_CONVERTED
             }
         }
 
@@ -380,3 +391,4 @@ export abstract class AbstractCsvRowMapper implements ICsvRowMapper{
         }
     }*/
 }
+

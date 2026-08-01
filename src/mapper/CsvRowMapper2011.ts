@@ -1,6 +1,7 @@
 import { AbstractCsvRowMapper } from './AbstractCsvRowMapper'
 
 export class CsvRowMapper2011 extends AbstractCsvRowMapper {
+    readonly SALARY_ALREADY_CONVERTED = true
     readonly MAPPER_FOR_YEAR = 2011
     
     readonly SALARY_KEY = 'Including bonus, what is your annual compensation in USD?' // 2011 - 2014
@@ -16,3 +17,5 @@ export class CsvRowMapper2011 extends AbstractCsvRowMapper {
     readonly COMPANY_SIZE = 'Which best describes the size of your company?'
     readonly COUNTRY = 'What Country or Region do you live in?'
 }
+
+
