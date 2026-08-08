@@ -2,68 +2,52 @@ name: Build and Deploy
 
 on:
   push:
-  #pull_request:
-  #  types: [closed]
+    branches:
+      - develop
+  pull_request:
+    types: [closed]
+    branches:
+      - develop
 
 jobs:
   Build:
     runs-on: ubuntu-latest
-    #if: github.event.pull_request.merged
+    # Run if it's a push OR if it's a merged pull request
+    if: |
+      github.event_name == 'push' || 
+      (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
     steps:
-      - uses: actions/checkout@v2.3.1
-      - name: echo branchname
-        run: echo "$GITHUB_REF"
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - run: npm install
+
+      - run: npm ci
       - run: npm run build
+
       - name: Upload Release
-        uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@v4
         with:
-          name: Release 
+          name: Release
           path: dist
-      
+
   Publish:
     needs: Build
     runs-on: ubuntu-latest
-    if: github.ref == 'develop'
+    # No extra branch check needed here because the 'on' trigger already filters for 'develop'
     steps:
-      - uses: actions/checkout@v2.3.1
+      - uses: actions/checkout@v4
+
       - name: Get Dist folder
-        uses: actions/download-artifact@master
+        uses: actions/download-artifact@v4
         with:
           name: Release
+          path: dist
+
       - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@4.1.7
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
-          branch: release-page
-          folder: .
-          
-  CreateRelease:
-    needs: Publish
-    runs-on: ubuntu-latest
-    if: github.ref == 'main'
-    steps:
-      - uses: actions/checkout@v2 # Needed for gradle file to get version information
-      - name: Get Hub
-        run: |
-          curl -fsSL https://github.com/github/hub/raw/master/script/get | bash -s 2.14.1
-          cd bin
-          chmod +x hub
-          cd ..
-      - name: Get Dist folder
-        uses: actions/download-artifact@master
-        with:
-          name: Release
-      - name: Publish
-        run: |
-          APP_NAME="SODevSalaryGuide"
-          TAG="latest-master"
-          echo $APP_NAME
-          echo $TAG
-          git clone https://github.com/Hatzen/SODevSalaryGuide
-          cd SODevSalaryGuide
-          ./../bin/hub release delete "${TAG}" || echo "Failed deleting TAG: ${TAG}" # If release got lost catch error with message
-          ./../bin/hub release create -a "dist" -m "Current Master Build: ${APP_NAME}" -p "${TAG}"
+          folder: dist
+          branch: gh-pages
