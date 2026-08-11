@@ -1,4 +1,4 @@
-import { ParseStepResult } from 'papaparse'
+import Papa, { ParseStepResult } from 'papaparse'
 import { transaction } from 'mobx'
 import { CsvRowMapper } from '../mapper/CsvRowMapper'
 import { CHUNK_COUNT_PER_YEAR } from '../model/constantMetaData'
@@ -10,98 +10,104 @@ export default class StackOverflowCsvReader {
 
     static readonly UNNAMED_COLUMN_PREFIX =  'columnIndex-'
 
-    private worker: Worker | null = null
-
-    startWorkerForYear (
-        resultsetForYear: ResultSetForYear,
-        consumer: (row: ParseStepResult<CsvRow>) => void,
-        completed: (rawRows: CsvRow[]) => void,
-        onValidEntry?: (entry: SurveyEntry) => void
-    ): void {
-        if (this.worker) {
-            this.worker.onmessage = null
-            this.worker.onerror = null
-            this.worker.terminate()
-            this.worker = null
-        }
-
-        this.worker = new Worker(new URL('./parseWorker.ts', import.meta.url))
-
-        this.worker.onmessage = (e) => {
-            const msg = e.data
-
-            if (msg.type === 'error') {
-                console.error('Parse worker error for chunk', msg.id, ':', msg.error)
-                this.handleNextChunk(resultsetForYear, consumer, completed, onValidEntry)
-                return
+    static readonly BASIC_CONFIG ={
+        download: true,
+        worker: false, // Using worker=true for better performance with large files
+        /*
+Uncaught DataCloneError: Failed to execute 'postMessage' on 'Worker': function (header, index) {
+            const UNNAMED_COLUMN_PREFIX = 'columnIndex-';
+            if (header =...<omitted>... } could not be cloned.
+        */
+        
+        delimiter: ',',
+        header: true,
+        transformHeader: function(header: string, index: number): string {
+            const UNNAMED_COLUMN_PREFIX = 'columnIndex-'
+            if (header == null || header === '') {
+                return UNNAMED_COLUMN_PREFIX + index
             }
-
-            if (msg.type === 'result') {
-                const rows = msg.data as any[]
-                const validRows: SurveyEntry[] = []
-                let invalidCount = 0
-                const rawRows: CsvRow[] = []
-
-                const mapper = new CsvRowMapper(resultsetForYear.year)
-
-                for (const row of rows) {
-                    const csvRow = row as CsvRow
-                    const rowEntry = mapper.map({ data: csvRow, meta: { fields: Object.keys(csvRow) } } as ParseStepResult<CsvRow>)
-
-                    if (rowEntry.isValid) {
-                        validRows.push(rowEntry)
-                        onValidEntry?.(rowEntry)
-                    } else {
-                        invalidCount++
-                    }
-                    rawRows.push(csvRow)
-                    consumer({ data: csvRow, meta: { fields: Object.keys(csvRow) } } as ParseStepResult<CsvRow>)
-                }
-
-                transaction(() => {
-                    Array.prototype.push.apply(resultsetForYear.resultSet, validRows)
-                    resultsetForYear.invalidEntryCount += invalidCount
-                    resultsetForYear.overallEntryCount += rows.length
-                })
-
-                completed(rawRows)
-
-                resultsetForYear.chunksParsed = msg.id
-                this.handleNextChunk(resultsetForYear, consumer, completed, onValidEntry)
-            }
+            return header
         }
-
-        this.worker.onerror = (err) => {
-            console.error('Parse worker error:', err)
-        }
-
-        resultsetForYear.chunksParsed = 0
-        resultsetForYear.chunksAvailable = CHUNK_COUNT_PER_YEAR[resultsetForYear.year.toString()]
-
-        this.handleNextChunk(resultsetForYear, consumer, completed, onValidEntry)
     }
 
-    private handleNextChunk (
+    async startWorkerForYear (
         resultsetForYear: ResultSetForYear,
-        consumer: (row: ParseStepResult<CsvRow>) => void,
+        consumer: (row: Papa.ParseStepResult<CsvRow>) => void,
         completed: (rawRows: CsvRow[]) => void,
         onValidEntry?: (entry: SurveyEntry) => void
-    ): void {
-        if (!this.worker) return
+    ): Promise<void> {
+        const year = resultsetForYear.year.toString()
+        const chunkCountForYear = CHUNK_COUNT_PER_YEAR[year]
+        resultsetForYear.chunksParsed = 0
+        resultsetForYear.chunksAvailable = chunkCountForYear
+        
+        await this.handleNextChunk(resultsetForYear, consumer, completed, onValidEntry)
+    }
 
+    private async handleNextChunk (
+        resultsetForYear: ResultSetForYear,
+        consumer: (row: Papa.ParseStepResult<CsvRow>) => void,
+        completed: (rawRows: CsvRow[]) => void,
+        onValidEntry?: (entry: SurveyEntry) => void
+    ): Promise<void> {
         resultsetForYear.chunksParsed++
         if (resultsetForYear.chunksParsed > resultsetForYear.chunksAvailable) {
-            this.worker.terminate()
-            this.worker = null
             return
         }
         const fileName = this.generateFileName(resultsetForYear.year.toString(), resultsetForYear.chunksParsed)
         const fileUrl = this.baseUrl + '/' + fileName
-        this.worker.postMessage({
-            type: 'parse',
-            url: fileUrl,
-            id: resultsetForYear.chunksParsed
-        })
+
+        const worker = new Worker(new URL('./parseWorker.ts', import.meta.url))
+
+        try {
+            const result = await new Promise<any>((resolve, reject) => {
+                worker.onmessage = (e) => {
+                    const msg = e.data
+                    if (msg.type === 'result') {
+                        resolve(msg)
+                    } else if (msg.type === 'error') {
+                        reject(new Error(msg.error))
+                    }
+                }
+                worker.onerror = (err) => {
+                    reject(err)
+                }
+                worker.postMessage({
+                    type: 'parse',
+                    url: fileUrl,
+                    id: resultsetForYear.chunksParsed
+                })
+            })
+
+            const validRows: SurveyEntry[] = []
+            let invalidCount = 0
+            const rawRows: CsvRow[] = []
+            const mapper = new CsvRowMapper(resultsetForYear.year)
+
+            for (const row of result.data) {
+                const rowEntry = mapper.map({ data: row, meta: { fields: Object.keys(row) } } as Papa.ParseStepResult<CsvRow>)
+                if (rowEntry.isValid) {
+                    validRows.push(rowEntry)
+                    onValidEntry?.(rowEntry)
+                } else {
+                    invalidCount++
+                }
+                rawRows.push(row)
+                consumer({ data: row, meta: { fields: Object.keys(row) } } as Papa.ParseStepResult<CsvRow>)
+            }
+
+            transaction(() => {
+                Array.prototype.push.apply(resultsetForYear.resultSet, validRows)
+                resultsetForYear.invalidEntryCount += invalidCount
+                resultsetForYear.overallEntryCount += result.data.length
+            })
+
+            completed(rawRows)
+
+            await this.handleNextChunk(resultsetForYear, consumer, completed, onValidEntry)
+        } finally {
+            worker.terminate()
+        }
     }
 
     private generateFileName(year: string, chunk: number): string {

@@ -127,7 +127,7 @@ export class EntryStore {
                 + '\t entries parsed ' + overallEntryCount + ' invalid ones ' + invalidEntryCount + ' ')
 
         // Buffer raw CSV rows and flush full pages to IndexedDB (never keep it all in RAM)
-        this.rawBuffer.push(...rawRows)
+        Array.prototype.push.apply(this.rawBuffer, rawRows)
         while (this.rawBuffer.length >= RAW_PAGE_SIZE) {
             const page = this.rawBuffer.splice(0, RAW_PAGE_SIZE)
             void idbRawStore.savePage(this.rawBufferYear, this.rawPageCount, page)
