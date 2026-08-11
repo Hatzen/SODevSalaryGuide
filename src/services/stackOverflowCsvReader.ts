@@ -12,22 +12,9 @@ export default class StackOverflowCsvReader {
 
     static readonly BASIC_CONFIG ={
         download: true,
-        worker: false, // Using worker=true for better performance with large files
-        /*
-Uncaught DataCloneError: Failed to execute 'postMessage' on 'Worker': function (header, index) {
-            const UNNAMED_COLUMN_PREFIX = 'columnIndex-';
-            if (header =...<omitted>... } could not be cloned.
-        */
-        
+        worker: true,
         delimiter: ',',
-        header: true,
-        transformHeader: function(header: string, index: number): string {
-            const UNNAMED_COLUMN_PREFIX = 'columnIndex-'
-            if (header == null || header === '') {
-                return UNNAMED_COLUMN_PREFIX + index
-            }
-            return header
-        }
+        header: true
     }
 
     async startWorkerForYear (
@@ -57,57 +44,63 @@ Uncaught DataCloneError: Failed to execute 'postMessage' on 'Worker': function (
         const fileName = this.generateFileName(resultsetForYear.year.toString(), resultsetForYear.chunksParsed)
         const fileUrl = this.baseUrl + '/' + fileName
 
-        const worker = new Worker(new URL('./parseWorker.ts', import.meta.url))
+        const validRows: SurveyEntry[] = []
+        let invalidCount = 0
+        let totalCount = 0
+        const rawRows: CsvRow[] = []
+        const mapper = new CsvRowMapper(resultsetForYear.year)
+        let normalizedFields: string[] | null = null
 
-        try {
-            const result = await new Promise<any>((resolve, reject) => {
-                worker.onmessage = (e) => {
-                    const msg = e.data
-                    if (msg.type === 'result') {
-                        resolve(msg)
-                    } else if (msg.type === 'error') {
-                        reject(new Error(msg.error))
+        await new Promise<void>((resolve, reject) => {
+            Papa.parse(fileUrl, {
+                ...StackOverflowCsvReader.BASIC_CONFIG,
+                step: (row: Papa.ParseStepResult<CsvRow>) => {
+                    if (!normalizedFields && row.meta && row.meta.fields) {
+                        normalizedFields = row.meta.fields.map((field, index) =>
+                            field == null || field === '' ? `${StackOverflowCsvReader.UNNAMED_COLUMN_PREFIX}${index}` : field
+                        )
                     }
-                }
-                worker.onerror = (err) => {
+
+                    const normalizedData: CsvRow = {}
+                    if (normalizedFields && row.meta && row.meta.fields) {
+                        for (let i = 0; i < row.meta.fields.length; i++) {
+                            const originalKey = row.meta.fields[i]
+                            const normalizedKey = normalizedFields[i]
+                            if (normalizedKey !== undefined && originalKey !== undefined) {
+                                normalizedData[normalizedKey] = row.data[originalKey]
+                            }
+                        }
+                    }
+
+                    const normalizedRow = { ...row, data: normalizedData } as Papa.ParseStepResult<CsvRow>
+                    const rowEntry = mapper.map(normalizedRow)
+                    if (rowEntry.isValid) {
+                        validRows.push(rowEntry)
+                        onValidEntry?.(rowEntry)
+                    } else {
+                        invalidCount++
+                    }
+                    totalCount++
+                    rawRows.push(row.data)
+                    consumer(row)
+                },
+                complete: () => {
+                    transaction(() => {
+                        Array.prototype.push.apply(resultsetForYear.resultSet, validRows)
+                        resultsetForYear.invalidEntryCount += invalidCount
+                        resultsetForYear.overallEntryCount += totalCount
+                    })
+                    completed(rawRows)
+                    resolve()
+                },
+                error: (err: any) => {
+                    console.error('Papa parse error for chunk', fileName, err)
                     reject(err)
                 }
-                worker.postMessage({
-                    type: 'parse',
-                    url: fileUrl,
-                    id: resultsetForYear.chunksParsed
-                })
-            })
+            } as Papa.ParseRemoteConfig<CsvRow>)
+        })
 
-            const validRows: SurveyEntry[] = []
-            let invalidCount = 0
-            const rawRows: CsvRow[] = []
-            const mapper = new CsvRowMapper(resultsetForYear.year)
-
-            for (const row of result.data) {
-                const rowEntry = mapper.map({ data: row, meta: { fields: Object.keys(row) } } as Papa.ParseStepResult<CsvRow>)
-                if (rowEntry.isValid) {
-                    validRows.push(rowEntry)
-                    onValidEntry?.(rowEntry)
-                } else {
-                    invalidCount++
-                }
-                rawRows.push(row)
-                consumer({ data: row, meta: { fields: Object.keys(row) } } as Papa.ParseStepResult<CsvRow>)
-            }
-
-            transaction(() => {
-                Array.prototype.push.apply(resultsetForYear.resultSet, validRows)
-                resultsetForYear.invalidEntryCount += invalidCount
-                resultsetForYear.overallEntryCount += result.data.length
-            })
-
-            completed(rawRows)
-
-            await this.handleNextChunk(resultsetForYear, consumer, completed, onValidEntry)
-        } finally {
-            worker.terminate()
-        }
+        await this.handleNextChunk(resultsetForYear, consumer, completed, onValidEntry)
     }
 
     private generateFileName(year: string, chunk: number): string {
