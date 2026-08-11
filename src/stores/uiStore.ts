@@ -38,6 +38,8 @@ export class UiStore {
     boxStats: BoxStats | null = null
     private boxAccumulator = new StatsAccumulator()
     private boxStatsYear = -1
+    private streamCounter = 0
+    private readonly flushInterval = 5000
 
     private readonly controlStore: ControlStore
     private readonly entryStore: EntryStore
@@ -58,6 +60,7 @@ export class UiStore {
             updateFilteredData: action,
             setMobileView: action,
             setControlPaneOpen: action,
+            recordStreamEntry: action,
             rebuildBoxStats: action,
         })
 
@@ -160,6 +163,20 @@ export class UiStore {
         return usdValue >= this.controlStore.salaryThresholdMin && usdValue <= this.controlStore.salaryThresholdMax
     }
 
+    recordStreamEntry = (entry: SurveyEntry): void => {
+        const year = parseInt(this.entryStore.selectedYear, 10)
+        if (year !== this.boxStatsYear) {
+            this.boxAccumulator.reset()
+            this.boxStatsYear = year
+            this.streamCounter = 0
+        }
+        this.boxAccumulator.add(this.convertSalary(entry))
+        this.streamCounter++
+        if (this.streamCounter % this.flushInterval === 0) {
+            this.boxStats = this.boxAccumulator.toBoxStats()
+        }
+    }
+
     private rebuildBoxStatsRequestId = 0
 
     rebuildBoxStats = (): void => {
@@ -209,3 +226,5 @@ export class UiStore {
 }
 
 export const uiStore = new UiStore(controlStore, entryStore)
+
+entryStore.setStreamSink((entry) => uiStore.recordStreamEntry(entry))

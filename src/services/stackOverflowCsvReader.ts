@@ -22,20 +22,22 @@ export default class StackOverflowCsvReader {
     async startWorkerForYear (
         resultsetForYear: ResultSetForYear,
         consumer: (row: Papa.ParseStepResult<CsvRow>) => void,
-        completed: (rawRows: CsvRow[], validRows: SurveyEntry[], invalidCount: number, totalCount: number) => void
+        completed: (rawRows: CsvRow[], validRows: SurveyEntry[], invalidCount: number, totalCount: number) => void,
+        onValidEntry?: (entry: SurveyEntry) => void
     ): Promise<void> {
         const year = resultsetForYear.year.toString()
         const chunkCountForYear = CHUNK_COUNT_PER_YEAR[year]
         resultsetForYear.chunksParsed = 0
         resultsetForYear.chunksAvailable = chunkCountForYear
         
-        await this.handleNextChunk(resultsetForYear, consumer, completed)
+        await this.handleNextChunk(resultsetForYear, consumer, completed, onValidEntry)
     }
 
     private async handleNextChunk (
         resultsetForYear: ResultSetForYear,
         consumer: (row: Papa.ParseStepResult<CsvRow>) => void,
-        completed: (rawRows: CsvRow[], validRows: SurveyEntry[], invalidCount: number, totalCount: number) => void
+        completed: (rawRows: CsvRow[], validRows: SurveyEntry[], invalidCount: number, totalCount: number) => void,
+        onValidEntry?: (entry: SurveyEntry) => void
     ): Promise<void> {
         resultsetForYear.chunksParsed++
         if (resultsetForYear.chunksParsed > resultsetForYear.chunksAvailable) {
@@ -85,6 +87,7 @@ export default class StackOverflowCsvReader {
                         const rowEntry = mapper.map({ data: normalizedRow, meta: { fields: normalizedFields || Object.keys(normalizedData) } } as Papa.ParseStepResult<CsvRow>)
                         if (rowEntry.isValid) {
                             validRows.push(rowEntry)
+                            onValidEntry?.(rowEntry)
                         } else {
                             invalidCount++
                         }
@@ -122,7 +125,7 @@ export default class StackOverflowCsvReader {
             } as Papa.ParseRemoteConfig<CsvRow>)
         })
 
-        await this.handleNextChunk(resultsetForYear, consumer, completed)
+        await this.handleNextChunk(resultsetForYear, consumer, completed, onValidEntry)
     }
 
     private generateFileName(year: string, chunk: number): string {

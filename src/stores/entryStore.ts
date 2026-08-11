@@ -40,6 +40,9 @@ export class EntryStore {
     selectedYear = AVAILABLE_YEARS[AVAILABLE_YEARS.length - 1]
     isParsing = false
 
+    // Sink that receives every valid parsed entry during streaming (wired by uiStore)
+    private streamSink: ((entry: SurveyEntry) => void) | null = null
+
     // Buffer of raw CSV rows for the year currently being parsed, flushed to IndexedDB per page
     public rawBuffer: CsvRow[] = []
     public rawPageCount = 0
@@ -61,6 +64,10 @@ export class EntryStore {
             rawBufferYear: false
         })
         this.loadData()
+    }
+
+    setStreamSink(sink: (entry: SurveyEntry) => void): void {
+        this.streamSink = sink
     }
 
     /**
@@ -123,7 +130,8 @@ export class EntryStore {
         this.reader.startWorkerForYear(
             yearData,
             this.addRow,
-            this.handleRawChunk.bind(this)
+            this.handleRawChunk.bind(this),
+            (entry) => { this.streamSink?.(entry) }
         )
     }
 
