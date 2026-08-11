@@ -362308,9 +362308,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _consideredDataTable__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./consideredDataTable */ "./src/components/consideredDataTable.tsx");
 /* harmony import */ var _currencyConversionTable__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./currencyConversionTable */ "./src/components/currencyConversionTable.tsx");
 /* harmony import */ var _salaryEstimator__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./salaryEstimator */ "./src/components/salaryEstimator.tsx");
-/* harmony import */ var _stores_translationStore__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ../stores/translationStore */ "./src/stores/translationStore.ts");
-/* harmony import */ var _stores_controlStore__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ../stores/controlStore */ "./src/stores/controlStore.ts");
-/* harmony import */ var _stores_uiStore__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ../stores/uiStore */ "./src/stores/uiStore.ts");
+/* harmony import */ var _histogramTab__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./histogramTab */ "./src/components/histogramTab.tsx");
+/* harmony import */ var _stores_translationStore__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ../stores/translationStore */ "./src/stores/translationStore.ts");
+/* harmony import */ var _stores_controlStore__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ../stores/controlStore */ "./src/stores/controlStore.ts");
+/* harmony import */ var _stores_uiStore__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ../stores/uiStore */ "./src/stores/uiStore.ts");
+/* harmony import */ var _utils_perfLogger__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ../utils/perfLogger */ "./src/utils/perfLogger.ts");
+/* harmony import */ var _utils_reactPerfMonitor__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ../utils/reactPerfMonitor */ "./src/utils/reactPerfMonitor.ts");
+
+
+
 
 
 
@@ -362343,7 +362349,7 @@ class App extends (react__WEBPACK_IMPORTED_MODULE_1___default().Component) {
         const settingsParam = urlParams.get('settings');
         if (settingsParam) {
             try {
-                _stores_controlStore__WEBPACK_IMPORTED_MODULE_21__["default"].pendingState = JSON.parse(decodeURIComponent(settingsParam));
+                _stores_controlStore__WEBPACK_IMPORTED_MODULE_22__["default"].pendingState = JSON.parse(decodeURIComponent(settingsParam));
             }
             catch (e) {
                 console.error('Failed to parse settings from URL', e);
@@ -362351,23 +362357,28 @@ class App extends (react__WEBPACK_IMPORTED_MODULE_1___default().Component) {
         }
     }
     componentDidMount() {
-        _stores_uiStore__WEBPACK_IMPORTED_MODULE_22__.uiStore.initMobileDetection();
+        _stores_uiStore__WEBPACK_IMPORTED_MODULE_23__.uiStore.initMobileDetection();
+        (0,_utils_reactPerfMonitor__WEBPACK_IMPORTED_MODULE_25__.startFPSMonitor)(1000);
+        console.log('[ReactPerf] FPS monitor started. Stats will be logged after 60s or on manual trigger.');
+    }
+    componentWillUnmount() {
+        (0,_utils_reactPerfMonitor__WEBPACK_IMPORTED_MODULE_25__.logAllRenderStats)();
     }
     render() {
         const fitAll = { position: 'absolute', top: 0, left: 0, bottom: 0, right: 0 };
         const stores = {
             entryStore: _stores_entryStore__WEBPACK_IMPORTED_MODULE_2__["default"],
-            controlStore: _stores_controlStore__WEBPACK_IMPORTED_MODULE_21__["default"],
-            uiStore: _stores_uiStore__WEBPACK_IMPORTED_MODULE_22__.uiStore
+            controlStore: _stores_controlStore__WEBPACK_IMPORTED_MODULE_22__["default"],
+            uiStore: _stores_uiStore__WEBPACK_IMPORTED_MODULE_23__.uiStore
         };
-        const isMobile = _stores_uiStore__WEBPACK_IMPORTED_MODULE_22__.uiStore.isMobileView;
+        const isMobile = _stores_uiStore__WEBPACK_IMPORTED_MODULE_23__.uiStore.isMobileView;
         const appBarHeight = isMobile ? 48 : 64;
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: fitAll, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(mobx_react__WEBPACK_IMPORTED_MODULE_10__.Provider, { ...stores, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_disclaimerModal__WEBPACK_IMPORTED_MODULE_8__["default"], { fullScreen: isMobile }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_appBar__WEBPACK_IMPORTED_MODULE_9__["default"], { menuClicked: this.toggleControls.bind(this) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { position: 'absolute', top: appBarHeight, bottom: isMobile ? 48 : 0, left: 0, right: 0 }, children: isMobile ? this.renderMobileLayout() : this.renderDesktopLayout() }), isMobile && this.renderMobileFooter(), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_11__["default"], { anchor: "right", open: _stores_uiStore__WEBPACK_IMPORTED_MODULE_22__.uiStore.controlPaneOpen && isMobile, onClose: this.closeDrawer.bind(this), PaperProps: {
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: fitAll, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(mobx_react__WEBPACK_IMPORTED_MODULE_10__.Provider, { ...stores, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_disclaimerModal__WEBPACK_IMPORTED_MODULE_8__["default"], { fullScreen: isMobile }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_appBar__WEBPACK_IMPORTED_MODULE_9__["default"], { menuClicked: this.toggleControls.bind(this) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { position: 'absolute', top: appBarHeight, bottom: isMobile ? 48 : 0, left: 0, right: 0 }, children: isMobile ? this.renderMobileLayout() : this.renderDesktopLayout() }), isMobile && this.renderMobileFooter(), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_11__["default"], { anchor: "right", open: _stores_uiStore__WEBPACK_IMPORTED_MODULE_23__.uiStore.controlPaneOpen && isMobile, onClose: this.closeDrawer.bind(this), PaperProps: {
                             sx: { width: '100%', maxWidth: '400px', backgroundColor: '#fff' }
                         }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlPane__WEBPACK_IMPORTED_MODULE_7__["default"], {}) })] }) }));
     }
     renderDesktopLayout() {
-        const t = _stores_translationStore__WEBPACK_IMPORTED_MODULE_20__["default"].t;
+        const t = _stores_translationStore__WEBPACK_IMPORTED_MODULE_21__["default"].t;
         return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(allotment__WEBPACK_IMPORTED_MODULE_5__.Allotment, { ref: this.controlPane, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(allotment__WEBPACK_IMPORTED_MODULE_5__.Allotment.Pane, { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { position: 'relative', top: 0, left: 0, right: 0 }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material__WEBPACK_IMPORTED_MODULE_12__["default"], { value: this.state.tabIndex, onChange: this.changeTab, variant: "scrollable", scrollButtons: "auto", sx: {
                                     '& .MuiTabs-indicator': {
                                         backgroundColor: '#F48024'
@@ -362379,14 +362390,10 @@ class App extends (react__WEBPACK_IMPORTED_MODULE_1___default().Component) {
                                             fontWeight: 500
                                         }
                                     }
-                                }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_13__["default"], { label: t.salaryTab }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_13__["default"], { label: t.participationTab }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_13__["default"], { label: t.consideredDataTab }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_13__["default"], { label: t.currencyRatesTab }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_13__["default"], { label: t.estimatorTab })] }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { position: 'relative', top: 0, left: 0, right: 0, height: 'calc(100% - 48px)', width: '100%' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { width: '100%', height: '100%', overflow: 'auto' }, children: this.state.tabIndex === 0 ? (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_boxplot__WEBPACK_IMPORTED_MODULE_3__["default"], {}) :
-                                    this.state.tabIndex === 1 ? (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_barplot__WEBPACK_IMPORTED_MODULE_4__["default"], {}) :
-                                        this.state.tabIndex === 2 ? (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_consideredDataTable__WEBPACK_IMPORTED_MODULE_17__["default"], {}) :
-                                            this.state.tabIndex === 3 ? (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_currencyConversionTable__WEBPACK_IMPORTED_MODULE_18__["default"], {}) :
-                                                (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_salaryEstimator__WEBPACK_IMPORTED_MODULE_19__["default"], {}) }) })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(allotment__WEBPACK_IMPORTED_MODULE_5__.Allotment.Pane, { snap: true, maxSize: 400, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlPane__WEBPACK_IMPORTED_MODULE_7__["default"], {}) })] }));
+                                }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_13__["default"], { label: t.salaryTab }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_13__["default"], { label: t.participationTab }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_13__["default"], { label: t.histogramTab }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_13__["default"], { label: t.consideredDataTab }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_13__["default"], { label: t.currencyRatesTab }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_13__["default"], { label: t.estimatorTab })] }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { position: 'relative', top: 0, left: 0, right: 0, height: 'calc(100% - 48px)', width: '100%' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { width: '100%', height: '100%', overflow: 'auto' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(react__WEBPACK_IMPORTED_MODULE_1__.Profiler, { id: "BoxPlot", onRender: (0,_utils_reactPerfMonitor__WEBPACK_IMPORTED_MODULE_25__.trackRender)('BoxPlot'), children: this.state.tabIndex === 0 ? (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_boxplot__WEBPACK_IMPORTED_MODULE_3__["default"], {}) : null }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(react__WEBPACK_IMPORTED_MODULE_1__.Profiler, { id: "BarPlot", onRender: (0,_utils_reactPerfMonitor__WEBPACK_IMPORTED_MODULE_25__.trackRender)('BarPlot'), children: this.state.tabIndex === 1 ? (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_barplot__WEBPACK_IMPORTED_MODULE_4__["default"], {}) : null }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(react__WEBPACK_IMPORTED_MODULE_1__.Profiler, { id: "HistogramTab", onRender: (0,_utils_reactPerfMonitor__WEBPACK_IMPORTED_MODULE_25__.trackRender)('HistogramTab'), children: this.state.tabIndex === 2 ? (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_histogramTab__WEBPACK_IMPORTED_MODULE_20__["default"], {}) : null }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(react__WEBPACK_IMPORTED_MODULE_1__.Profiler, { id: "ConsideredDataTable", onRender: (0,_utils_reactPerfMonitor__WEBPACK_IMPORTED_MODULE_25__.trackRender)('ConsideredDataTable'), children: this.state.tabIndex === 3 ? (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_consideredDataTable__WEBPACK_IMPORTED_MODULE_17__["default"], {}) : null }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(react__WEBPACK_IMPORTED_MODULE_1__.Profiler, { id: "CurrencyConversionTable", onRender: (0,_utils_reactPerfMonitor__WEBPACK_IMPORTED_MODULE_25__.trackRender)('CurrencyConversionTable'), children: this.state.tabIndex === 4 ? (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_currencyConversionTable__WEBPACK_IMPORTED_MODULE_18__["default"], {}) : null }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(react__WEBPACK_IMPORTED_MODULE_1__.Profiler, { id: "SalaryEstimator", onRender: (0,_utils_reactPerfMonitor__WEBPACK_IMPORTED_MODULE_25__.trackRender)('SalaryEstimator'), children: this.state.tabIndex === 5 ? (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_salaryEstimator__WEBPACK_IMPORTED_MODULE_19__["default"], {}) : null })] }) })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(allotment__WEBPACK_IMPORTED_MODULE_5__.Allotment.Pane, { snap: true, maxSize: 400, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlPane__WEBPACK_IMPORTED_MODULE_7__["default"], {}) })] }));
     }
     renderMobileLayout() {
-        const t = _stores_translationStore__WEBPACK_IMPORTED_MODULE_20__["default"].t;
+        const t = _stores_translationStore__WEBPACK_IMPORTED_MODULE_21__["default"].t;
         return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { width: '100%', height: '100%' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { position: 'relative', top: 0, left: 0, right: 0 }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material__WEBPACK_IMPORTED_MODULE_12__["default"], { value: this.state.tabIndex, onChange: this.changeTab, variant: "scrollable", scrollButtons: "auto", sx: {
                             '& .MuiTabs-indicator': {
                                 backgroundColor: '#F48024'
@@ -362398,14 +362405,10 @@ class App extends (react__WEBPACK_IMPORTED_MODULE_1___default().Component) {
                                     fontWeight: 500
                                 }
                             }
-                        }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_13__["default"], { label: t.salaryTab }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_13__["default"], { label: t.participationTab }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_13__["default"], { label: t.consideredDataTab }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_13__["default"], { label: t.currencyRatesTab }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_13__["default"], { label: t.estimatorTab })] }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { position: 'relative', top: 0, left: 0, right: 0, height: 'calc(100% - 48px)', width: '100%' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { width: '100%', height: '100%' }, children: this.state.tabIndex === 0 ? (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_boxplot__WEBPACK_IMPORTED_MODULE_3__["default"], {}) :
-                            this.state.tabIndex === 1 ? (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_barplot__WEBPACK_IMPORTED_MODULE_4__["default"], {}) :
-                                this.state.tabIndex === 2 ? (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_consideredDataTable__WEBPACK_IMPORTED_MODULE_17__["default"], {}) :
-                                    this.state.tabIndex === 3 ? (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_currencyConversionTable__WEBPACK_IMPORTED_MODULE_18__["default"], {}) :
-                                        (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_salaryEstimator__WEBPACK_IMPORTED_MODULE_19__["default"], {}) }) })] }));
+                        }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_13__["default"], { label: t.salaryTab }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_13__["default"], { label: t.participationTab }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_13__["default"], { label: t.histogramTab }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_13__["default"], { label: t.consideredDataTab }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_13__["default"], { label: t.currencyRatesTab }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_13__["default"], { label: t.estimatorTab })] }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { position: 'relative', top: 0, left: 0, right: 0, height: 'calc(100% - 48px)', width: '100%' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { width: '100%', height: '100%' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(react__WEBPACK_IMPORTED_MODULE_1__.Profiler, { id: "BoxPlot", onRender: (0,_utils_reactPerfMonitor__WEBPACK_IMPORTED_MODULE_25__.trackRender)('BoxPlot'), children: this.state.tabIndex === 0 ? (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_boxplot__WEBPACK_IMPORTED_MODULE_3__["default"], {}) : null }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(react__WEBPACK_IMPORTED_MODULE_1__.Profiler, { id: "BarPlot", onRender: (0,_utils_reactPerfMonitor__WEBPACK_IMPORTED_MODULE_25__.trackRender)('BarPlot'), children: this.state.tabIndex === 1 ? (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_barplot__WEBPACK_IMPORTED_MODULE_4__["default"], {}) : null }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(react__WEBPACK_IMPORTED_MODULE_1__.Profiler, { id: "HistogramTab", onRender: (0,_utils_reactPerfMonitor__WEBPACK_IMPORTED_MODULE_25__.trackRender)('HistogramTab'), children: this.state.tabIndex === 2 ? (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_histogramTab__WEBPACK_IMPORTED_MODULE_20__["default"], {}) : null }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(react__WEBPACK_IMPORTED_MODULE_1__.Profiler, { id: "ConsideredDataTable", onRender: (0,_utils_reactPerfMonitor__WEBPACK_IMPORTED_MODULE_25__.trackRender)('ConsideredDataTable'), children: this.state.tabIndex === 3 ? (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_consideredDataTable__WEBPACK_IMPORTED_MODULE_17__["default"], {}) : null }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(react__WEBPACK_IMPORTED_MODULE_1__.Profiler, { id: "CurrencyConversionTable", onRender: (0,_utils_reactPerfMonitor__WEBPACK_IMPORTED_MODULE_25__.trackRender)('CurrencyConversionTable'), children: this.state.tabIndex === 4 ? (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_currencyConversionTable__WEBPACK_IMPORTED_MODULE_18__["default"], {}) : null }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(react__WEBPACK_IMPORTED_MODULE_1__.Profiler, { id: "SalaryEstimator", onRender: (0,_utils_reactPerfMonitor__WEBPACK_IMPORTED_MODULE_25__.trackRender)('SalaryEstimator'), children: this.state.tabIndex === 5 ? (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_salaryEstimator__WEBPACK_IMPORTED_MODULE_19__["default"], {}) : null })] }) })] }));
     }
     renderMobileFooter() {
-        const t = _stores_translationStore__WEBPACK_IMPORTED_MODULE_20__["default"].t;
+        const t = _stores_translationStore__WEBPACK_IMPORTED_MODULE_21__["default"].t;
         return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: {
                 position: 'absolute',
                 bottom: 0,
@@ -362418,20 +362421,24 @@ class App extends (react__WEBPACK_IMPORTED_MODULE_1___default().Component) {
                 justifyContent: 'flex-end',
                 padding: '0 16px',
                 zIndex: 10
-            }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_14__["default"], { options: ['en', 'de'], value: _stores_controlStore__WEBPACK_IMPORTED_MODULE_21__["default"].language ?? 'en', onChange: (_event, value) => {
+            }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_14__["default"], { options: ['en', 'de'], value: _stores_controlStore__WEBPACK_IMPORTED_MODULE_22__["default"].language ?? 'en', disableClearable: true, onChange: (_event, value) => {
                     if (value) {
-                        _stores_controlStore__WEBPACK_IMPORTED_MODULE_21__["default"].setLanguage(value);
+                        _stores_controlStore__WEBPACK_IMPORTED_MODULE_22__["default"].setLanguage(value);
                     }
                 }, renderInput: (params) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_15__["default"], { ...params, label: t.language, size: "small", color: "secondary", style: { width: 120, color: '#fff' } })) }) }));
     }
     changeTab = (event, newValue) => {
-        this.setState({ tabIndex: Number(newValue) });
+        (0,_utils_perfLogger__WEBPACK_IMPORTED_MODULE_24__.mark)('app-change-tab-start');
+        this.setState({ tabIndex: Number(newValue) }, () => {
+            const duration = (0,_utils_perfLogger__WEBPACK_IMPORTED_MODULE_24__.measure)('app-change-tab', 'app-change-tab-start');
+            console.log(`[PERF] Tab change: ${duration.toFixed(0)}ms, tab=${Number(newValue)}`);
+        });
     };
     toggleControls() {
-        _stores_uiStore__WEBPACK_IMPORTED_MODULE_22__.uiStore.setControlPaneOpen(!_stores_uiStore__WEBPACK_IMPORTED_MODULE_22__.uiStore.controlPaneOpen);
+        _stores_uiStore__WEBPACK_IMPORTED_MODULE_23__.uiStore.setControlPaneOpen(!_stores_uiStore__WEBPACK_IMPORTED_MODULE_23__.uiStore.controlPaneOpen);
     }
     closeDrawer() {
-        _stores_uiStore__WEBPACK_IMPORTED_MODULE_22__.uiStore.setControlPaneOpen(false);
+        _stores_uiStore__WEBPACK_IMPORTED_MODULE_23__.uiStore.setControlPaneOpen(false);
     }
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,mobx_react__WEBPACK_IMPORTED_MODULE_10__.observer)(App));
@@ -362484,7 +362491,7 @@ __webpack_require__.r(__webpack_exports__);
 
 const LanguageSelector = () => {
     const t = _stores_translationStore__WEBPACK_IMPORTED_MODULE_15__["default"].t;
-    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { padding: 'auto', position: 'absolute', right: '125px' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_6__["default"], { options: ['en', 'de'], value: _stores_controlStore__WEBPACK_IMPORTED_MODULE_14__["default"].language ?? 'en', onChange: (_event, value) => {
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { padding: 'auto', position: 'absolute', right: '125px' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_6__["default"], { options: ['en', 'de'], value: _stores_controlStore__WEBPACK_IMPORTED_MODULE_14__["default"].language ?? 'en', disableClearable: true, onChange: (_event, value) => {
                 if (value) {
                     _stores_controlStore__WEBPACK_IMPORTED_MODULE_14__["default"].setLanguage(value);
                 }
@@ -362496,7 +362503,7 @@ class MenuAppBar extends (react__WEBPACK_IMPORTED_MODULE_1___default().Component
     render() {
         const t = _stores_translationStore__WEBPACK_IMPORTED_MODULE_15__["default"].t;
         const isMobile = _stores_uiStore__WEBPACK_IMPORTED_MODULE_13__.uiStore.isMobileView;
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_AppBar__WEBPACK_IMPORTED_MODULE_2__["default"], { position: 'static', children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material_Toolbar__WEBPACK_IMPORTED_MODULE_3__["default"], { variant: isMobile ? 'dense' : 'regular', children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_IconButton__WEBPACK_IMPORTED_MODULE_4__["default"], { onClick: this.props.menuClicked, color: 'inherit', "aria-label": 'Menu', children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_icons_material_Menu__WEBPACK_IMPORTED_MODULE_5__["default"], {}) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_8__["default"], { variant: isMobile ? 'subtitle1' : 'h5', noWrap: true, sx: { flexGrow: 1 }, children: t.title }), this.loader, !isMobile && this.languageSelector] }) }) }));
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_AppBar__WEBPACK_IMPORTED_MODULE_2__["default"], { position: 'static', children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material_Toolbar__WEBPACK_IMPORTED_MODULE_3__["default"], { variant: isMobile ? 'dense' : 'regular', children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_IconButton__WEBPACK_IMPORTED_MODULE_4__["default"], { onClick: this.props.menuClicked, color: 'inherit', "aria-label": 'Menu', children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_icons_material_Menu__WEBPACK_IMPORTED_MODULE_5__["default"], { visibility: isMobile ? 'visible' : 'hidden' }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_8__["default"], { variant: isMobile ? 'subtitle1' : 'h5', noWrap: true, sx: { flexGrow: 1 }, children: t.title }), this.loader, !isMobile && this.languageSelector] }) }) }));
     }
     get languageSelector() {
         return (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(LanguageSelector, {});
@@ -363032,17 +363039,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _mui_material__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @mui/material */ "./node_modules/@mui/material/esm/Slider/Slider.js");
 /* harmony import */ var _mui_icons_material_MoreVert__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @mui/icons-material/MoreVert */ "./node_modules/@mui/icons-material/esm/MoreVert.js");
 /* harmony import */ var _mui_material_Menu__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @mui/material/Menu */ "./node_modules/@mui/material/esm/Menu/Menu.js");
-/* harmony import */ var _mui_material_MenuItem__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @mui/material/MenuItem */ "./node_modules/@mui/material/esm/MenuItem/MenuItem.js");
-/* harmony import */ var mobx_react__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! mobx-react */ "./node_modules/mobx-react/dist/mobxreact.esm.js");
-/* harmony import */ var _stores_storeHelper__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../stores/storeHelper */ "./src/stores/storeHelper.ts");
-/* harmony import */ var _mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! @mui/material/Autocomplete */ "./node_modules/@mui/material/esm/Autocomplete/Autocomplete.js");
-/* harmony import */ var _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../mapper/AbstractCsvRowMapper */ "./src/mapper/AbstractCsvRowMapper.ts");
-/* harmony import */ var _model_gender__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../model/gender */ "./src/model/gender.ts");
-/* harmony import */ var _model_currency__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ../model/currency */ "./src/model/currency.ts");
-/* harmony import */ var _controlComponentWrapper__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./controlComponentWrapper */ "./src/components/controlComponentWrapper.tsx");
-/* harmony import */ var _model_constantMetaData__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ../model/constantMetaData */ "./src/model/constantMetaData.ts");
-/* harmony import */ var _stores_uiStore__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ../stores/uiStore */ "./src/stores/uiStore.ts");
-/* harmony import */ var _stores_translationStore__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ../stores/translationStore */ "./src/stores/translationStore.ts");
+/* harmony import */ var _mui_icons_material_Menu__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @mui/icons-material/Menu */ "./node_modules/@mui/icons-material/esm/Menu.js");
+/* harmony import */ var _mui_material_MenuItem__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! @mui/material/MenuItem */ "./node_modules/@mui/material/esm/MenuItem/MenuItem.js");
+/* harmony import */ var mobx_react__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! mobx-react */ "./node_modules/mobx-react/dist/mobxreact.esm.js");
+/* harmony import */ var _stores_storeHelper__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../stores/storeHelper */ "./src/stores/storeHelper.ts");
+/* harmony import */ var _mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! @mui/material/Autocomplete */ "./node_modules/@mui/material/esm/Autocomplete/Autocomplete.js");
+/* harmony import */ var _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../mapper/AbstractCsvRowMapper */ "./src/mapper/AbstractCsvRowMapper.ts");
+/* harmony import */ var _model_gender__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ../model/gender */ "./src/model/gender.ts");
+/* harmony import */ var _model_currency__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ../model/currency */ "./src/model/currency.ts");
+/* harmony import */ var _controlComponentWrapper__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./controlComponentWrapper */ "./src/components/controlComponentWrapper.tsx");
+/* harmony import */ var _model_constantMetaData__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ../model/constantMetaData */ "./src/model/constantMetaData.ts");
+/* harmony import */ var _stores_uiStore__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ../stores/uiStore */ "./src/stores/uiStore.ts");
+/* harmony import */ var _stores_translationStore__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ../stores/translationStore */ "./src/stores/translationStore.ts");
+
 
 
 
@@ -363079,12 +363088,12 @@ class ControlPane extends (react__WEBPACK_IMPORTED_MODULE_1___default().Componen
         const cs = this.props.controlStore;
         if (cs.pendingState) {
             const targetYear = cs.pendingState.selectedYear;
-            const dataReady = _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_16__.AbstractCsvRowMapper.abilities.size > 0 && _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_16__.AbstractCsvRowMapper.countries.size > 0;
+            const dataReady = _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_17__.AbstractCsvRowMapper.abilities.size > 0 && _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_17__.AbstractCsvRowMapper.countries.size > 0;
             if (dataReady && !this.loadedPendingState) {
                 this.loadedPendingState = true;
                 cs.loadPendingState();
-                if (targetYear && targetYear !== _model_constantMetaData__WEBPACK_IMPORTED_MODULE_20__.AVAILABLE_YEARS[_model_constantMetaData__WEBPACK_IMPORTED_MODULE_20__.AVAILABLE_YEARS.length - 1]) {
-                    _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_16__.AbstractCsvRowMapper.clearDistinctValues();
+                if (targetYear && targetYear !== _model_constantMetaData__WEBPACK_IMPORTED_MODULE_21__.AVAILABLE_YEARS[_model_constantMetaData__WEBPACK_IMPORTED_MODULE_21__.AVAILABLE_YEARS.length - 1]) {
+                    _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_17__.AbstractCsvRowMapper.clearDistinctValues();
                     this.props.entryStore.initParser(targetYear);
                 }
                 this.setState({ refreshKey: this.state.refreshKey + 1 });
@@ -363092,16 +363101,20 @@ class ControlPane extends (react__WEBPACK_IMPORTED_MODULE_1___default().Componen
         }
     }
     render() {
-        const t = _stores_translationStore__WEBPACK_IMPORTED_MODULE_22__["default"].t;
-        const lastUpdate = _stores_uiStore__WEBPACK_IMPORTED_MODULE_21__.uiStore.lastFilterUpdateTime;
+        const t = _stores_translationStore__WEBPACK_IMPORTED_MODULE_23__["default"].t;
+        const lastUpdate = _stores_uiStore__WEBPACK_IMPORTED_MODULE_22__.uiStore.lastFilterUpdateTime;
         const lastUpdateTime = lastUpdate > 0 ? new Date(lastUpdate).toLocaleTimeString() : 'Not yet updated';
-        const isMobile = _stores_uiStore__WEBPACK_IMPORTED_MODULE_21__.uiStore.isMobileView;
+        const isMobile = _stores_uiStore__WEBPACK_IMPORTED_MODULE_22__.uiStore.isMobileView;
         return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { padding: isMobile ? 12 : 20, overflow: 'auto', position: 'relative', top: 0, left: 0, right: 0, maxHeight: '100%' }, children: [this.headerWithMenu, (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material__WEBPACK_IMPORTED_MODULE_2__["default"], { variant: "caption", style: { fontSize: '0.7em', color: '#888', display: 'block', marginBottom: '10px' }, children: [t.lastFilterUpdate, ": ", lastUpdateTime] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_3__["default"], { sx: { display: 'flex' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_4__["default"], { focused: false, component: "fieldset", variant: "standard", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material__WEBPACK_IMPORTED_MODULE_5__["default"], { children: [this.years, this.currency, (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_2__["default"], { variant: "body2", style: { color: '#666', fontSize: '0.85em', marginTop: '10px' }, children: t.controlPaneHint }), this.slider, this.abilities, this.companySizeInputs, this.countries, this.degrees, this.gender, this.salaryFilter] }, 1) }) })] }, this.state.refreshKey));
     }
     get headerWithMenu() {
-        const t = _stores_translationStore__WEBPACK_IMPORTED_MODULE_22__["default"].t;
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_2__["default"], { variant: "h6", style: { fontFamily: 'Roboto, Helvetica, Arial, sans-serif' }, children: t.filters }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_6__["default"], { onClick: this.handleMenuClick.bind(this), size: "small", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_icons_material_MoreVert__WEBPACK_IMPORTED_MODULE_10__["default"], {}) }), this.menu] }));
+        const t = _stores_translationStore__WEBPACK_IMPORTED_MODULE_23__["default"].t;
+        const isMobile = _stores_uiStore__WEBPACK_IMPORTED_MODULE_22__.uiStore.isMobileView;
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_2__["default"], { variant: "h6", style: { fontFamily: 'Roboto, Helvetica, Arial, sans-serif' }, children: t.filters }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_6__["default"], { onClick: this.closeMenu.bind(this), size: "small", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_icons_material_Menu__WEBPACK_IMPORTED_MODULE_12__["default"], { visibility: isMobile ? 'visible' : 'hidden' }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_6__["default"], { onClick: this.handleMenuClick.bind(this), size: "small", children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_icons_material_MoreVert__WEBPACK_IMPORTED_MODULE_10__["default"], {}) }), this.menu] }));
     }
+    closeMenu = (event) => {
+        _stores_uiStore__WEBPACK_IMPORTED_MODULE_22__.uiStore.setControlPaneOpen(false);
+    };
     handleMenuClick = (event) => {
         this.setState({ anchorEl: event.currentTarget });
     };
@@ -363109,68 +363122,68 @@ class ControlPane extends (react__WEBPACK_IMPORTED_MODULE_1___default().Componen
         this.setState({ anchorEl: null });
     };
     get menu() {
-        const t = _stores_translationStore__WEBPACK_IMPORTED_MODULE_22__["default"].t;
+        const t = _stores_translationStore__WEBPACK_IMPORTED_MODULE_23__["default"].t;
         const anchorEl = this.state.anchorEl;
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material_Menu__WEBPACK_IMPORTED_MODULE_11__["default"], { anchorEl: anchorEl, open: Boolean(anchorEl), onClose: this.handleMenuClose, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_MenuItem__WEBPACK_IMPORTED_MODULE_12__["default"], { onClick: this.handleSaveToSession, children: t.saveToSession }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_MenuItem__WEBPACK_IMPORTED_MODULE_12__["default"], { onClick: this.handleLoadFromSession, children: t.loadFromSession }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_MenuItem__WEBPACK_IMPORTED_MODULE_12__["default"], { onClick: this.handleDownloadJson, children: t.downloadJson }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_MenuItem__WEBPACK_IMPORTED_MODULE_12__["default"], { onClick: this.handleUploadJson, children: t.uploadJson }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_MenuItem__WEBPACK_IMPORTED_MODULE_12__["default"], { onClick: this.handleShareLink, children: t.shareLink })] }));
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material_Menu__WEBPACK_IMPORTED_MODULE_11__["default"], { anchorEl: anchorEl, open: Boolean(anchorEl), onClose: this.handleMenuClose, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_MenuItem__WEBPACK_IMPORTED_MODULE_13__["default"], { onClick: this.handleSaveToSession, children: t.saveToSession }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_MenuItem__WEBPACK_IMPORTED_MODULE_13__["default"], { onClick: this.handleLoadFromSession, children: t.loadFromSession }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_MenuItem__WEBPACK_IMPORTED_MODULE_13__["default"], { onClick: this.handleDownloadJson, children: t.downloadJson }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_MenuItem__WEBPACK_IMPORTED_MODULE_13__["default"], { onClick: this.handleUploadJson, children: t.uploadJson }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_MenuItem__WEBPACK_IMPORTED_MODULE_13__["default"], { onClick: this.handleShareLink, children: t.shareLink })] }));
     }
     get years() {
-        const t = _stores_translationStore__WEBPACK_IMPORTED_MODULE_22__["default"].t;
+        const t = _stores_translationStore__WEBPACK_IMPORTED_MODULE_23__["default"].t;
         const config = this.props.controlStore;
         const selectedYear = config.controlState.selectedYear;
-        const filteredValues = _model_constantMetaData__WEBPACK_IMPORTED_MODULE_20__.AVAILABLE_YEARS;
-        const autoCompleteComponent = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_15__["default"], { options: filteredValues, value: selectedYear, onChange: this.handleYearChange.bind(this), renderOption: (props, option, { selected }) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("li", { ...props, children: option })), style: { width: '100%' }, slotProps: { popper: { style: { width: 'auto', minWidth: 'auto', maxWidth: 400 } } }, renderInput: (params) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_7__["default"], { style: {}, ...params, label: t.yearLabel, color: "secondary", fullWidth: true })) }));
+        const filteredValues = _model_constantMetaData__WEBPACK_IMPORTED_MODULE_21__.AVAILABLE_YEARS;
+        const autoCompleteComponent = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_16__["default"], { options: filteredValues, value: selectedYear, onChange: this.handleYearChange.bind(this), renderOption: (props, option, { selected }) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("li", { ...props, children: option })), style: { width: '100%' }, slotProps: { popper: { style: { width: 'auto', minWidth: 'auto', maxWidth: 400 } } }, renderInput: (params) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_7__["default"], { style: {}, ...params, label: t.yearLabel, color: "secondary", fullWidth: true })) }));
         return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { marginTop: '8px' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_2__["default"], { variant: "body1", color: "secondary", children: t.yearLabel }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_2__["default"], { variant: "body2", style: { color: '#666', fontSize: '0.85em' }, children: "(2011 - 2025)" })] }), autoCompleteComponent] }));
     }
     get currency() {
-        const t = _stores_translationStore__WEBPACK_IMPORTED_MODULE_22__["default"].t;
-        const allCurrencies = Object.values(_model_currency__WEBPACK_IMPORTED_MODULE_18__.Currency);
-        const autoCompleteComponent = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_15__["default"], { options: allCurrencies, value: this.props.controlStore.selectedCurrency, onChange: this.handleCurrencyChange.bind(this), renderOption: (props, option) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("li", { ...props, children: option })), style: { width: '100%' }, slotProps: { popper: { style: { width: 'auto', minWidth: 'auto', maxWidth: 400 } } }, renderInput: (params) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_7__["default"], { style: {}, ...params, label: t.currencyLabel, color: "secondary", fullWidth: true })) }));
+        const t = _stores_translationStore__WEBPACK_IMPORTED_MODULE_23__["default"].t;
+        const allCurrencies = Object.values(_model_currency__WEBPACK_IMPORTED_MODULE_19__.Currency);
+        const autoCompleteComponent = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_16__["default"], { options: allCurrencies, value: this.props.controlStore.selectedCurrency, onChange: this.handleCurrencyChange.bind(this), renderOption: (props, option) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("li", { ...props, children: option })), style: { width: '100%' }, slotProps: { popper: { style: { width: 'auto', minWidth: 'auto', maxWidth: 400 } } }, renderInput: (params) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_7__["default"], { style: {}, ...params, label: t.currencyLabel, color: "secondary", fullWidth: true })) }));
         return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { marginTop: '8px' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_2__["default"], { variant: "body1", color: "secondary", children: t.currencyLabel }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material__WEBPACK_IMPORTED_MODULE_2__["default"], { variant: "body2", style: { color: '#666', fontSize: '0.85em' }, children: ["(", allCurrencies.length, ")"] })] }), autoCompleteComponent] }));
     }
     handleYearChange = (event, value) => {
         if (value !== null) {
             console.log('[DEBUG] Year changed to:', value);
             this.props.controlStore.setSelectedYear(value);
-            _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_16__.AbstractCsvRowMapper.clearDistinctValues();
+            _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_17__.AbstractCsvRowMapper.clearDistinctValues();
             this.props.entryStore.initParser(value);
         }
     };
     get abilities() {
-        const t = _stores_translationStore__WEBPACK_IMPORTED_MODULE_22__["default"].t;
-        const allAbilities = Array.from(_mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_16__.AbstractCsvRowMapper.abilities).map(([k, v]) => ({ key: k, label: v.label }));
-        const autoCompleteComponent = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_15__["default"], { multiple: true, id: "checkboxes-tags-demo", options: allAbilities, getOptionLabel: (option) => option.label, isOptionEqualToValue: (option, value) => option.key === value?.key, disableCloseOnSelect: true, value: allAbilities.filter(a => this.props.controlStore.abilities.includes(a.key)), onChange: this.handleChangesForAbilities.bind(this), renderOption: (props, option, state) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("li", { ...props, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_8__["default"], { style: { marginRight: 8 }, checked: state.selected }), option.label] })), style: { width: '100%' }, slotProps: { popper: { style: { width: 'auto', minWidth: 'auto', maxWidth: 400 } } }, renderInput: (params) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_7__["default"], { style: {}, ...params, label: t.abilitiesLabel, color: "secondary", fullWidth: true })) }));
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_19__["default"], { title: t.abilitiesLabel, controlComponent: autoCompleteComponent, isEnabled: this.props.controlStore.abilitiesFilterActive, enable: (event, value) => { this.props.controlStore.setAbilitiesFilterActive(value); }, count: allAbilities.length }));
+        const t = _stores_translationStore__WEBPACK_IMPORTED_MODULE_23__["default"].t;
+        const allAbilities = Array.from(_mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_17__.AbstractCsvRowMapper.abilities).map(([k, v]) => ({ key: k, label: v.label }));
+        const autoCompleteComponent = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_16__["default"], { multiple: true, id: "checkboxes-tags-demo", options: allAbilities, getOptionLabel: (option) => option.label, isOptionEqualToValue: (option, value) => option.key === value?.key, disableCloseOnSelect: true, value: allAbilities.filter(a => this.props.controlStore.abilities.includes(a.key)), onChange: this.handleChangesForAbilities.bind(this), renderOption: (props, option, state) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("li", { ...props, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_8__["default"], { style: { marginRight: 8 }, checked: state.selected }), option.label] })), style: { width: '100%' }, slotProps: { popper: { style: { width: 'auto', minWidth: 'auto', maxWidth: 400 } } }, renderInput: (params) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_7__["default"], { style: {}, ...params, label: t.abilitiesLabel, color: "secondary", fullWidth: true })) }));
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_20__["default"], { title: t.abilitiesLabel, controlComponent: autoCompleteComponent, isEnabled: this.props.controlStore.abilitiesFilterActive, enable: (event, value) => { this.props.controlStore.setAbilitiesFilterActive(value); }, count: allAbilities.length }));
     }
     get slider() {
-        const t = _stores_translationStore__WEBPACK_IMPORTED_MODULE_22__["default"].t;
+        const t = _stores_translationStore__WEBPACK_IMPORTED_MODULE_23__["default"].t;
         const slider = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_9__["default"], { style: { width: '90%', minWidth: '200px' }, value: this.valuesForExp, min: 0, step: 1, max: 40, onChange: this.handleChange.bind(this), valueLabelDisplay: "auto", "aria-labelledby": "non-linear-slider", color: "secondary" }));
-        const experienceCount = _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_16__.AbstractCsvRowMapper.years.size;
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_19__["default"], { title: t.experienceLabel, controlComponent: slider, isEnabled: this.props.controlStore.expirienceFilterActive, enable: (event, value) => { this.props.controlStore.setExpirienceFilterActive(value); }, count: experienceCount }));
+        const experienceCount = _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_17__.AbstractCsvRowMapper.years.size;
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_20__["default"], { title: t.experienceLabel, controlComponent: slider, isEnabled: this.props.controlStore.expirienceFilterActive, enable: (event, value) => { this.props.controlStore.setExpirienceFilterActive(value); }, count: experienceCount }));
     }
     get countries() {
-        const t = _stores_translationStore__WEBPACK_IMPORTED_MODULE_22__["default"].t;
-        const allCountries = Array.from(_mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_16__.AbstractCsvRowMapper.countries).map(([k, v]) => ({ key: k, label: v.label }));
-        const autoCompleteComponent = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_15__["default"], { multiple: true, id: "checkboxes-tags-demo", options: allCountries, getOptionLabel: (option) => option.label, isOptionEqualToValue: (option, value) => option.key === value?.key, disableCloseOnSelect: true, value: allCountries.filter(a => this.props.controlStore.countries.includes(a.key)), onChange: this.handleChangesForCountries.bind(this), renderOption: (props, option, state) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("li", { ...props, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_8__["default"], { style: { marginRight: 8 }, checked: state.selected }), option.label] })), style: { width: '100%' }, slotProps: { popper: { style: { width: 'auto', minWidth: 'auto', maxWidth: 400 } } }, renderInput: (params) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_7__["default"], { style: {}, ...params, label: t.countriesLabel, color: "secondary", fullWidth: true })) }));
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_19__["default"], { title: t.countriesLabel, controlComponent: autoCompleteComponent, isEnabled: this.props.controlStore.countriesFilterActive, enable: (event, value) => { this.props.controlStore.setCountriesFilterActive(value); }, count: allCountries.length }));
+        const t = _stores_translationStore__WEBPACK_IMPORTED_MODULE_23__["default"].t;
+        const allCountries = Array.from(_mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_17__.AbstractCsvRowMapper.countries).map(([k, v]) => ({ key: k, label: v.label }));
+        const autoCompleteComponent = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_16__["default"], { multiple: true, id: "checkboxes-tags-demo", options: allCountries, getOptionLabel: (option) => option.label, isOptionEqualToValue: (option, value) => option.key === value?.key, disableCloseOnSelect: true, value: allCountries.filter(a => this.props.controlStore.countries.includes(a.key)), onChange: this.handleChangesForCountries.bind(this), renderOption: (props, option, state) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("li", { ...props, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_8__["default"], { style: { marginRight: 8 }, checked: state.selected }), option.label] })), style: { width: '100%' }, slotProps: { popper: { style: { width: 'auto', minWidth: 'auto', maxWidth: 400 } } }, renderInput: (params) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_7__["default"], { style: {}, ...params, label: t.countriesLabel, color: "secondary", fullWidth: true })) }));
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_20__["default"], { title: t.countriesLabel, controlComponent: autoCompleteComponent, isEnabled: this.props.controlStore.countriesFilterActive, enable: (event, value) => { this.props.controlStore.setCountriesFilterActive(value); }, count: allCountries.length }));
     }
     get degrees() {
-        const t = _stores_translationStore__WEBPACK_IMPORTED_MODULE_22__["default"].t;
-        const allDegrees = Array.from(_mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_16__.AbstractCsvRowMapper.educations).map(([k, v]) => ({ key: k, label: v.label }));
-        const autoCompleteComponent = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_15__["default"], { multiple: true, id: "checkboxes-tags-demo", options: allDegrees, getOptionLabel: (option) => option.label, isOptionEqualToValue: (option, value) => option.key === value?.key, disableCloseOnSelect: true, value: allDegrees.filter(a => this.props.controlStore.degrees.includes(a.key)), onChange: this.handleChangesForDegree.bind(this), renderOption: (props, option, state) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("li", { ...props, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_8__["default"], { style: { marginRight: 8 }, checked: state.selected }), option.label] })), style: { width: '100%' }, slotProps: { popper: { style: { width: 'auto', minWidth: 'auto', maxWidth: 400 } } }, renderInput: (params) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_7__["default"], { style: {}, ...params, label: t.degreeLabel, color: "secondary", fullWidth: true })) }));
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_19__["default"], { title: t.degreeLabel, controlComponent: autoCompleteComponent, isEnabled: this.props.controlStore.degreeFilterActive, enable: (event, value) => { this.props.controlStore.setDegreeFilterActive(value); }, count: allDegrees.length }));
+        const t = _stores_translationStore__WEBPACK_IMPORTED_MODULE_23__["default"].t;
+        const allDegrees = Array.from(_mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_17__.AbstractCsvRowMapper.educations).map(([k, v]) => ({ key: k, label: v.label }));
+        const autoCompleteComponent = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Autocomplete__WEBPACK_IMPORTED_MODULE_16__["default"], { multiple: true, id: "checkboxes-tags-demo", options: allDegrees, getOptionLabel: (option) => option.label, isOptionEqualToValue: (option, value) => option.key === value?.key, disableCloseOnSelect: true, value: allDegrees.filter(a => this.props.controlStore.degrees.includes(a.key)), onChange: this.handleChangesForDegree.bind(this), renderOption: (props, option, state) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("li", { ...props, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_8__["default"], { style: { marginRight: 8 }, checked: state.selected }), option.label] })), style: { width: '100%' }, slotProps: { popper: { style: { width: 'auto', minWidth: 'auto', maxWidth: 400 } } }, renderInput: (params) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_7__["default"], { style: {}, ...params, label: t.degreeLabel, color: "secondary", fullWidth: true })) }));
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_20__["default"], { title: t.degreeLabel, controlComponent: autoCompleteComponent, isEnabled: this.props.controlStore.degreeFilterActive, enable: (event, value) => { this.props.controlStore.setDegreeFilterActive(value); }, count: allDegrees.length }));
     }
     get valuesForExp() {
         return this.props.controlStore.expirienceInYears;
     }
     get gender() {
-        const t = _stores_translationStore__WEBPACK_IMPORTED_MODULE_22__["default"].t;
+        const t = _stores_translationStore__WEBPACK_IMPORTED_MODULE_23__["default"].t;
         const values = this.props.controlStore.genders;
-        const checkboxes = this.getCheckboxesForValues(values, Object.values(_model_gender__WEBPACK_IMPORTED_MODULE_17__.Gender).filter((v) => typeof v === 'string'));
-        const genderCount = _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_16__.AbstractCsvRowMapper.genders.size;
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_19__["default"], { title: t.genderLabel, controlComponent: checkboxes, isEnabled: this.props.controlStore.gendersFilterActive, enable: (event, value) => { this.props.controlStore.setGendersFilterActive(value); }, count: genderCount }));
+        const checkboxes = this.getCheckboxesForValues(values, Object.values(_model_gender__WEBPACK_IMPORTED_MODULE_18__.Gender).filter((v) => typeof v === 'string'));
+        const genderCount = _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_17__.AbstractCsvRowMapper.genders.size;
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_20__["default"], { title: t.genderLabel, controlComponent: checkboxes, isEnabled: this.props.controlStore.gendersFilterActive, enable: (event, value) => { this.props.controlStore.setGendersFilterActive(value); }, count: genderCount }));
     }
     getCheckboxesForValues(selectedValues, enumKeys) {
-        const t = _stores_translationStore__WEBPACK_IMPORTED_MODULE_22__["default"].t;
+        const t = _stores_translationStore__WEBPACK_IMPORTED_MODULE_23__["default"].t;
         const genderTranslations = {
             MALE: t.genderMale,
             FEMALE: t.genderFemale,
@@ -363178,24 +363191,28 @@ class ControlPane extends (react__WEBPACK_IMPORTED_MODULE_1___default().Componen
         };
         const values = enumKeys.map(g => g.toString());
         const checkboxes = values.map(value => {
-            const check = selectedValues.includes(_model_gender__WEBPACK_IMPORTED_MODULE_17__.Gender[value]);
-            return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { display: 'flex', alignItems: 'center', gap: '8px' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_8__["default"], { checked: check, color: "secondary", onChange: () => { this.props.controlStore.setGenders(_model_gender__WEBPACK_IMPORTED_MODULE_17__.Gender[value]); } }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_2__["default"], { variant: "body1", children: genderTranslations[value] || value })] }, this.key++));
+            const check = selectedValues.includes(_model_gender__WEBPACK_IMPORTED_MODULE_18__.Gender[value]);
+            return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { display: 'flex', alignItems: 'center', gap: '8px' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_8__["default"], { checked: check, color: "secondary", onChange: () => { this.props.controlStore.setGenders(_model_gender__WEBPACK_IMPORTED_MODULE_18__.Gender[value]); } }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_2__["default"], { variant: "body1", children: genderTranslations[value] || value })] }, this.key++));
         });
         return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { display: 'flex', flexDirection: 'column', gap: '4px' }, children: checkboxes }));
     }
     get companySizeInputs() {
-        const t = _stores_translationStore__WEBPACK_IMPORTED_MODULE_22__["default"].t;
-        const isMobile = _stores_uiStore__WEBPACK_IMPORTED_MODULE_21__.uiStore.isMobileView;
+        const t = _stores_translationStore__WEBPACK_IMPORTED_MODULE_23__["default"].t;
+        const isMobile = _stores_uiStore__WEBPACK_IMPORTED_MODULE_22__.uiStore.isMobileView;
         const currentMin = this.props.controlStore.companySize[0];
         const currentMax = this.props.controlStore.companySize[1];
         const values = this.props.controlStore.companySizeValues;
-        const allCompanySizes = _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_16__.AbstractCsvRowMapper.companySize ?? new Map();
+        const allCompanySizes = _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_17__.AbstractCsvRowMapper.companySize ?? new Map();
         const inputs = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { display: 'flex', gap: '8px', flexWrap: 'wrap' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_7__["default"], { label: t.companySizeFrom, type: "number", value: currentMin ?? '', onChange: this.handleMinCompanySizeChange.bind(this), inputProps: { min: values.min, max: values.max, step: 1 }, style: { width: isMobile ? '45%' : 120 }, color: "secondary" }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_7__["default"], { label: t.companySizeTo, type: "number", value: currentMax ?? '', onChange: this.handleMaxCompanySizeChange.bind(this), inputProps: { min: values.min, max: values.max, step: 1 }, style: { width: isMobile ? '45%' : 120 }, color: "secondary" })] }));
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_19__["default"], { title: t.companySizeLabel, controlComponent: inputs, isEnabled: this.props.controlStore.companySizeFilterActive, enable: (event, value) => { this.props.controlStore.setCompanySizeFilterActive(value); }, count: allCompanySizes.size }));
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_20__["default"], { title: t.companySizeLabel, controlComponent: inputs, isEnabled: this.props.controlStore.companySizeFilterActive, enable: (event, value) => { this.props.controlStore.setCompanySizeFilterActive(value); }, count: allCompanySizes.size }));
     }
     get salaryFilter() {
-        const t = _stores_translationStore__WEBPACK_IMPORTED_MODULE_22__["default"].t;
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { marginBottom: '16px' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_19__["default"], { title: t.salaryFilterLabel, controlComponent: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_2__["default"], { variant: "body2", style: { color: '#666', fontSize: '0.85em' }, children: t.salaryFilterHint }), isEnabled: this.props.controlStore.enableSalaryFilter, enable: (event, value) => { this.props.controlStore.setEnableSalaryFilter(value); } }) }));
+        const t = _stores_translationStore__WEBPACK_IMPORTED_MODULE_23__["default"].t;
+        const cs = this.props.controlStore;
+        const salaryMin = cs.salaryThresholdMin;
+        const salaryMax = cs.salaryThresholdMax;
+        const slider = ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_9__["default"], { style: { width: '90%', minWidth: '200px' }, value: [salaryMin, salaryMax], min: 0, step: 10000, max: 500000, onChange: this.handleSalaryThresholdChange.bind(this), valueLabelDisplay: "auto", valueLabelFormat: (value) => `${(value / 1000).toLocaleString()}k`, disableSwap: true, color: "secondary" }));
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { marginBottom: '16px' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_controlComponentWrapper__WEBPACK_IMPORTED_MODULE_20__["default"], { title: t.salaryFilterLabel, controlComponent: slider, isEnabled: this.props.controlStore.enableSalaryFilter, enable: (event, value) => { this.props.controlStore.setEnableSalaryFilter(value); } }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material__WEBPACK_IMPORTED_MODULE_2__["default"], { variant: "body2", style: { color: '#666', fontSize: '0.85em', marginTop: '10px' }, children: t.salaryFilterHint })] }));
     }
     handleMinCompanySizeChange = (event) => {
         const value = event.target.value === '' ? null : parseInt(event.target.value, 10);
@@ -363204,6 +363221,13 @@ class ControlPane extends (react__WEBPACK_IMPORTED_MODULE_1___default().Componen
     handleMaxCompanySizeChange = (event) => {
         const value = event.target.value === '' ? null : parseInt(event.target.value, 10);
         this.props.controlStore.setCompanySizeFromMax(value);
+    };
+    handleSalaryThresholdChange = (_event, value) => {
+        const cs = this.props.controlStore;
+        if (Array.isArray(value) && value.length === 2) {
+            cs.setSalaryThresholdMin(value[0]);
+            cs.setSalaryThresholdMax(value[1]);
+        }
     };
     handleChangesForCountries(event, value) {
         this.props.controlStore.setCountries(value.map(v => v.key));
@@ -363268,7 +363292,7 @@ class ControlPane extends (react__WEBPACK_IMPORTED_MODULE_1___default().Componen
         this.handleMenuClose();
     };
     handleShareLink = () => {
-        const t = _stores_translationStore__WEBPACK_IMPORTED_MODULE_22__["default"].t;
+        const t = _stores_translationStore__WEBPACK_IMPORTED_MODULE_23__["default"].t;
         const state = this.props.controlStore.getSessionState();
         const encoded = encodeURIComponent(JSON.stringify(state));
         const url = `${window.location.origin}${window.location.pathname}?settings=${encoded}`;
@@ -363278,7 +363302,7 @@ class ControlPane extends (react__WEBPACK_IMPORTED_MODULE_1___default().Componen
         this.handleMenuClose();
     };
 }
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,mobx_react__WEBPACK_IMPORTED_MODULE_13__.inject)(..._stores_storeHelper__WEBPACK_IMPORTED_MODULE_14__.injectClause)((0,mobx_react__WEBPACK_IMPORTED_MODULE_13__.observer)(ControlPane)));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,mobx_react__WEBPACK_IMPORTED_MODULE_14__.inject)(..._stores_storeHelper__WEBPACK_IMPORTED_MODULE_15__.injectClause)((0,mobx_react__WEBPACK_IMPORTED_MODULE_14__.observer)(ControlPane)));
 
 
 /***/ },
@@ -363429,6 +363453,100 @@ class DisclaimerModal extends (react__WEBPACK_IMPORTED_MODULE_1___default().Comp
     }
 }
 const mobileDialog = (DisclaimerModal);
+
+
+/***/ },
+
+/***/ "./src/components/histogramTab.tsx"
+/*!*****************************************!*\
+  !*** ./src/components/histogramTab.tsx ***!
+  \*****************************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
+/* harmony import */ var mobx_react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! mobx-react */ "./node_modules/mobx-react/dist/mobxreact.esm.js");
+/* harmony import */ var react_plotly_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-plotly.js */ "./node_modules/react-plotly.js/react-plotly.js");
+/* harmony import */ var _stores_uiStore__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../stores/uiStore */ "./src/stores/uiStore.ts");
+/* harmony import */ var _stores_controlStore__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../stores/controlStore */ "./src/stores/controlStore.ts");
+/* harmony import */ var _stores_entryStore__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../stores/entryStore */ "./src/stores/entryStore.ts");
+/* harmony import */ var _stores_translationStore__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../stores/translationStore */ "./src/stores/translationStore.ts");
+
+
+
+
+
+
+
+const HistogramTab = (0,mobx_react__WEBPACK_IMPORTED_MODULE_1__.observer)(() => {
+    const t = _stores_translationStore__WEBPACK_IMPORTED_MODULE_6__["default"].t;
+    const selectedYearNum = parseInt(_stores_controlStore__WEBPACK_IMPORTED_MODULE_4__["default"].selectedYear, 10);
+    const selectedYearData = _stores_entryStore__WEBPACK_IMPORTED_MODULE_5__["default"].parsedDataByYear[selectedYearNum];
+    const selectedCurrency = _stores_controlStore__WEBPACK_IMPORTED_MODULE_4__["default"].selectedCurrency;
+    const filteredData = _stores_uiStore__WEBPACK_IMPORTED_MODULE_3__.uiStore.filteredData[selectedYearNum] ?? [];
+    const mappedData = selectedYearData?.resultSet ?? [];
+    const isLoading = mappedData.length === 0;
+    if (isLoading) {
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { textAlign: 'center', padding: '40px' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("p", { children: [t.noDataAvailable || t.salaryTab, "... ", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("br", {}), "Loading large dataset, please wait."] }) }));
+    }
+    if (filteredData.length === 0) {
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { flex: 1, minHeight: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("p", { style: { color: '#666' }, children: "No data available for histogram" }) }));
+    }
+    const currencyValues = _stores_entryStore__WEBPACK_IMPORTED_MODULE_5__["default"].currencyValues;
+    const salaries = filteredData.map(entry => {
+        const rawSalary = entry._salary;
+        const entryCurrencyRatio = currencyValues?.getRatioByCode(entry.currency) ?? 1;
+        const usdSalary = entry.salaryIsUsd ? rawSalary : rawSalary / entryCurrencyRatio;
+        const targetCurrencyRatio = currencyValues?.getRatioByCode(selectedCurrency) ?? 1;
+        return usdSalary * targetCurrencyRatio;
+    });
+    const binSize = 10000;
+    const maxSalary = Math.max(...salaries);
+    const maxBin = Math.max(Math.ceil(maxSalary / binSize) * binSize, binSize * 2);
+    const numBins = maxBin / binSize;
+    const bins = new Array(numBins).fill(0);
+    salaries.forEach(salary => {
+        const binIndex = Math.min(Math.floor(salary / binSize), bins.length - 1);
+        if (binIndex >= 0 && binIndex < bins.length) {
+            bins[binIndex]++;
+        }
+    });
+    const xLabels = bins.map((_, i) => {
+        const from = i * binSize;
+        const to = (i + 1) * binSize;
+        return `${(from / 1000)}k - ${(to / 1000)}k`;
+    });
+    const histogramData = [{
+            x: xLabels,
+            y: bins,
+            type: 'bar',
+            marker: { color: '#F48024' }
+        }];
+    const histogramLayout = {
+        title: { text: 'Salary Distribution' },
+        xaxis: {
+            title: { text: `Salary (${selectedCurrency})` },
+            tickangle: -45
+        },
+        yaxis: {
+            title: { text: 'Number of Salaries' }
+        },
+        paper_bgcolor: '#FF000000',
+        plot_bgcolor: '#FF000000',
+        margin: {
+            l: 60,
+            r: 30,
+            t: 60,
+            b: 120
+        }
+    };
+    return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { flex: 1, minHeight: 0, overflow: 'auto' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(react_plotly_js__WEBPACK_IMPORTED_MODULE_2__["default"], { data: histogramData, layout: histogramLayout, style: { width: '100%', height: '100%' } }) }));
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (HistogramTab);
 
 
 /***/ },
@@ -363691,28 +363809,28 @@ class SalaryEstimator extends (react__WEBPACK_IMPORTED_MODULE_1___default().Comp
         if (base.abilities.length > 0) {
             const without = { ...base, abilities: [] };
             result.push({
-                label: _stores_translationStore__WEBPACK_IMPORTED_MODULE_4__["default"].t.estimatorAbilities + ': -',
+                label: _stores_translationStore__WEBPACK_IMPORTED_MODULE_4__["default"].t.estimatorAbilities + ':',
                 stats: this.computeStats(all.filter(e => this.matchesFilter(e, without)))
             });
         }
         if (base.countries.length > 0) {
             const without = { ...base, countries: [] };
             result.push({
-                label: _stores_translationStore__WEBPACK_IMPORTED_MODULE_4__["default"].t.estimatorCountries + ': -',
+                label: _stores_translationStore__WEBPACK_IMPORTED_MODULE_4__["default"].t.estimatorCountries + ':',
                 stats: this.computeStats(all.filter(e => this.matchesFilter(e, without)))
             });
         }
         if (base.degrees.length > 0) {
             const without = { ...base, degrees: [] };
             result.push({
-                label: _stores_translationStore__WEBPACK_IMPORTED_MODULE_4__["default"].t.estimatorDegree + ': -',
+                label: _stores_translationStore__WEBPACK_IMPORTED_MODULE_4__["default"].t.estimatorDegree + ':',
                 stats: this.computeStats(all.filter(e => this.matchesFilter(e, without)))
             });
         }
         if (base.genders.length > 0) {
             const without = { ...base, genders: [] };
             result.push({
-                label: _stores_translationStore__WEBPACK_IMPORTED_MODULE_4__["default"].t.estimatorGender + ': -',
+                label: _stores_translationStore__WEBPACK_IMPORTED_MODULE_4__["default"].t.estimatorGender + ':',
                 stats: this.computeStats(all.filter(e => this.matchesFilter(e, without)))
             });
         }
@@ -363773,7 +363891,7 @@ class SalaryEstimator extends (react__WEBPACK_IMPORTED_MODULE_1___default().Comp
         const quality = this.qualityLabel(stats);
         const similar = this.state.calculated ? this.similarDatasets : [];
         const baseMedian = stats?.median ?? 0;
-        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { padding: 20, overflow: 'auto', height: '100%' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Typography__WEBPACK_IMPORTED_MODULE_11__["default"], { variant: "body1", style: { marginBottom: '16px' }, children: t.estimatorIntro }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material_Box__WEBPACK_IMPORTED_MODULE_12__["default"], { sx: { display: 'flex', flexWrap: 'wrap', gap: '24px' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material_Paper__WEBPACK_IMPORTED_MODULE_13__["default"], { elevation: 2, sx: { padding: '16px', flex: '1 1 320px', minWidth: 300 }, children: [this.renderField(t.estimatorExperience, this.experienceField), this.renderField(t.estimatorAbilities, this.abilitiesField), this.renderField(t.estimatorCountries, this.countriesField), this.renderField(t.estimatorDegree, this.degreesField), this.renderField(t.estimatorCompanySize, this.companySizeField), this.renderField(t.estimatorGender, this.gendersField), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { float: 'right' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Button__WEBPACK_IMPORTED_MODULE_10__["default"], { variant: "contained", color: "secondary", onClick: () => this.setState({ calculated: true }), style: { color: 'white' }, children: t.estimatorCalculate }) })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material_Box__WEBPACK_IMPORTED_MODULE_12__["default"], { sx: { flex: '1 1 320px', minWidth: 300 }, children: [!this.state.calculated && ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Paper__WEBPACK_IMPORTED_MODULE_13__["default"], { elevation: 2, sx: { padding: '16px' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Typography__WEBPACK_IMPORTED_MODULE_11__["default"], { variant: "body2", style: { color: '#888' }, children: t.estimatorIntro }) })), stats && ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material_Paper__WEBPACK_IMPORTED_MODULE_13__["default"], { elevation: 2, sx: { padding: '16px', marginBottom: '16px' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Typography__WEBPACK_IMPORTED_MODULE_11__["default"], { variant: "h6", style: { color: '#F48024' }, children: t.estimatorResultTitle }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Typography__WEBPACK_IMPORTED_MODULE_11__["default"], { variant: "h4", style: { fontWeight: 700, margin: '8px 0' }, children: fmt(stats.median) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Typography__WEBPACK_IMPORTED_MODULE_11__["default"], { variant: "caption", style: { color: '#888' }, children: t.estimatorSampleSize.replace('{count}', String(stats.count)) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material_Box__WEBPACK_IMPORTED_MODULE_12__["default"], { sx: { marginTop: '12px' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material_Typography__WEBPACK_IMPORTED_MODULE_11__["default"], { variant: "body2", children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("b", { children: [t.estimatorTypicalRange, ":"] }), " ", fmt(stats.lower), " \u2013 ", fmt(stats.upper)] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material_Typography__WEBPACK_IMPORTED_MODULE_11__["default"], { variant: "body2", children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("b", { children: [t.meanLabel, ":"] }), " ", fmt(stats.mean), " | ", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("b", { children: [t.stdLabel, ":"] }), " ", fmt(stats.std)] })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Box__WEBPACK_IMPORTED_MODULE_12__["default"], { sx: { marginTop: '12px', padding: '8px', backgroundColor: '#F5F5F5', borderRadius: '4px' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material_Typography__WEBPACK_IMPORTED_MODULE_11__["default"], { variant: "body2", children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("b", { children: [t.estimatorDataQuality, ":"] }), " ", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("span", { style: { color: quality.color, fontWeight: 600 }, children: quality.text })] }) })] })), this.state.calculated && !stats && ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Paper__WEBPACK_IMPORTED_MODULE_13__["default"], { elevation: 2, sx: { padding: '16px' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Typography__WEBPACK_IMPORTED_MODULE_11__["default"], { variant: "body1", style: { color: '#b00020' }, children: t.estimatorNoData }) })), similar.length > 0 && ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material_Paper__WEBPACK_IMPORTED_MODULE_13__["default"], { elevation: 2, sx: { padding: '16px' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Typography__WEBPACK_IMPORTED_MODULE_11__["default"], { variant: "h6", style: { color: '#F48024', marginBottom: '4px' }, children: t.estimatorSimilarTitle }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Typography__WEBPACK_IMPORTED_MODULE_11__["default"], { variant: "caption", style: { color: '#888', display: 'block', marginBottom: '8px' }, children: t.estimatorSimilarHint }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material_Table__WEBPACK_IMPORTED_MODULE_14__["default"], { size: "small", children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_TableHead__WEBPACK_IMPORTED_MODULE_17__["default"], { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material_TableRow__WEBPACK_IMPORTED_MODULE_18__["default"], { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_TableCell__WEBPACK_IMPORTED_MODULE_16__["default"], { children: t.estimatorSameAsSelected }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_TableCell__WEBPACK_IMPORTED_MODULE_16__["default"], { align: "right", children: t.medianLabel }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_TableCell__WEBPACK_IMPORTED_MODULE_16__["default"], { align: "right", children: t.estimatorDifference })] }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material_TableBody__WEBPACK_IMPORTED_MODULE_15__["default"], { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material_TableRow__WEBPACK_IMPORTED_MODULE_18__["default"], { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_TableCell__WEBPACK_IMPORTED_MODULE_16__["default"], { children: t.estimatorSameAsSelected }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_TableCell__WEBPACK_IMPORTED_MODULE_16__["default"], { align: "right", children: fmt(baseMedian) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_TableCell__WEBPACK_IMPORTED_MODULE_16__["default"], { align: "right", children: "-" })] }), similar.map((s, i) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material_TableRow__WEBPACK_IMPORTED_MODULE_18__["default"], { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_TableCell__WEBPACK_IMPORTED_MODULE_16__["default"], { children: s.label }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_TableCell__WEBPACK_IMPORTED_MODULE_16__["default"], { align: "right", children: s.stats ? fmt(s.stats.median) : '-' }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_TableCell__WEBPACK_IMPORTED_MODULE_16__["default"], { align: "right", children: s.stats ? fmt(s.stats.median - baseMedian) : '-' })] }, i)))] })] })] }))] })] })] }));
+        return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("div", { style: { padding: 20, overflow: 'auto', height: '100%' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Typography__WEBPACK_IMPORTED_MODULE_11__["default"], { variant: "body1", style: { marginBottom: '16px' }, children: t.estimatorIntro }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material_Box__WEBPACK_IMPORTED_MODULE_12__["default"], { sx: { display: 'flex', flexWrap: 'wrap', gap: '24px' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material_Paper__WEBPACK_IMPORTED_MODULE_13__["default"], { elevation: 2, sx: { padding: '16px', flex: '1 1 320px', minWidth: 300 }, children: [this.renderField(t.estimatorExperience, this.experienceField), this.renderField(t.estimatorAbilities, this.abilitiesField), this.renderField(t.estimatorCountries, this.countriesField), this.renderField(t.estimatorDegree, this.degreesField), this.renderField(t.estimatorCompanySize, this.companySizeField), this.renderField(t.estimatorGender, this.gendersField), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("div", { style: { float: 'right' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Button__WEBPACK_IMPORTED_MODULE_10__["default"], { variant: "contained", color: "secondary", onClick: () => this.setState({ calculated: true }), style: { color: 'white' }, children: t.estimatorCalculate }) })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material_Box__WEBPACK_IMPORTED_MODULE_12__["default"], { sx: { flex: '1 1 320px', minWidth: 300 }, children: [!this.state.calculated && ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Paper__WEBPACK_IMPORTED_MODULE_13__["default"], { elevation: 2, sx: { padding: '16px' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Typography__WEBPACK_IMPORTED_MODULE_11__["default"], { variant: "body2", style: { color: '#888' }, children: t.estimatorIntro }) })), stats && ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material_Paper__WEBPACK_IMPORTED_MODULE_13__["default"], { elevation: 2, sx: { padding: '16px', marginBottom: '16px' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Typography__WEBPACK_IMPORTED_MODULE_11__["default"], { variant: "h6", style: { color: '#F48024' }, children: t.estimatorResultTitle }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Typography__WEBPACK_IMPORTED_MODULE_11__["default"], { variant: "h4", style: { fontWeight: 700, margin: '8px 0' }, children: fmt(stats.median) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Typography__WEBPACK_IMPORTED_MODULE_11__["default"], { variant: "caption", style: { color: '#888' }, children: t.estimatorSampleSize.replace('{count}', String(stats.count)) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material_Box__WEBPACK_IMPORTED_MODULE_12__["default"], { sx: { marginTop: '12px' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material_Typography__WEBPACK_IMPORTED_MODULE_11__["default"], { variant: "body2", children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("b", { children: [t.estimatorTypicalRange, ":"] }), " ", fmt(stats.lower), " \u2013 ", fmt(stats.upper)] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material_Typography__WEBPACK_IMPORTED_MODULE_11__["default"], { variant: "body2", children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("b", { children: [t.meanLabel, ":"] }), " ", fmt(stats.mean), " | ", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("b", { children: [t.stdLabel, ":"] }), " ", fmt(stats.std)] })] }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material_Box__WEBPACK_IMPORTED_MODULE_12__["default"], { sx: { marginTop: '12px', padding: '8px', backgroundColor: '#F5F5F5', borderRadius: '4px' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material_Typography__WEBPACK_IMPORTED_MODULE_11__["default"], { variant: "body2", children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)("b", { children: [t.estimatorDataQuality, ":"] }), " ", (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)("span", { style: { color: quality.color, fontWeight: 600 }, children: quality.text })] }), stats && stats.std > stats.mean / 2 && ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Typography__WEBPACK_IMPORTED_MODULE_11__["default"], { variant: "body2", style: { color: '#b00020', marginTop: '8px' }, children: t.estimatorHighSalaryWarning }))] })] })), this.state.calculated && !stats && ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Paper__WEBPACK_IMPORTED_MODULE_13__["default"], { elevation: 2, sx: { padding: '16px' }, children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Typography__WEBPACK_IMPORTED_MODULE_11__["default"], { variant: "body1", style: { color: '#b00020' }, children: t.estimatorNoData }) })), similar.length > 0 && ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material_Paper__WEBPACK_IMPORTED_MODULE_13__["default"], { elevation: 2, sx: { padding: '16px' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Typography__WEBPACK_IMPORTED_MODULE_11__["default"], { variant: "h6", style: { color: '#F48024', marginBottom: '4px' }, children: t.estimatorSimilarTitle }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Typography__WEBPACK_IMPORTED_MODULE_11__["default"], { variant: "caption", style: { color: '#888', display: 'block', marginBottom: '8px' }, children: t.estimatorSimilarHint }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material_Table__WEBPACK_IMPORTED_MODULE_14__["default"], { size: "small", children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_TableHead__WEBPACK_IMPORTED_MODULE_17__["default"], { children: (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material_TableRow__WEBPACK_IMPORTED_MODULE_18__["default"], { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_TableCell__WEBPACK_IMPORTED_MODULE_16__["default"], { children: t.estimatorSameAsSelected }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_TableCell__WEBPACK_IMPORTED_MODULE_16__["default"], { align: "right", children: t.medianLabel }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_TableCell__WEBPACK_IMPORTED_MODULE_16__["default"], { align: "right", children: t.estimatorDifference })] }) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material_TableBody__WEBPACK_IMPORTED_MODULE_15__["default"], { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material_TableRow__WEBPACK_IMPORTED_MODULE_18__["default"], { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_TableCell__WEBPACK_IMPORTED_MODULE_16__["default"], { children: t.estimatorSameAsSelected }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_TableCell__WEBPACK_IMPORTED_MODULE_16__["default"], { align: "right", children: fmt(baseMedian) }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_TableCell__WEBPACK_IMPORTED_MODULE_16__["default"], { align: "right", children: "-" })] }), similar.map((s, i) => ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material_TableRow__WEBPACK_IMPORTED_MODULE_18__["default"], { children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_TableCell__WEBPACK_IMPORTED_MODULE_16__["default"], { children: s.label }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_TableCell__WEBPACK_IMPORTED_MODULE_16__["default"], { align: "right", children: s.stats ? fmt(s.stats.median) : '-' }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_TableCell__WEBPACK_IMPORTED_MODULE_16__["default"], { align: "right", children: s.stats ? fmt(baseMedian - s.stats.median) : '-' })] }, i)))] })] })] }))] })] })] }));
     }
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,mobx_react__WEBPACK_IMPORTED_MODULE_2__.inject)(..._stores_storeHelper__WEBPACK_IMPORTED_MODULE_3__.injectClause)((0,mobx_react__WEBPACK_IMPORTED_MODULE_2__.observer)(SalaryEstimator)));
@@ -363790,7 +363908,7 @@ class SalaryEstimator extends (react__WEBPACK_IMPORTED_MODULE_1___default().Comp
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ StatisticsModal)
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react/jsx-runtime */ "./node_modules/react/jsx-runtime.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
@@ -363804,6 +363922,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _mui_material_Typography__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @mui/material/Typography */ "./node_modules/@mui/material/esm/Typography/Typography.js");
 /* harmony import */ var _mui_material_Box__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @mui/material/Box */ "./node_modules/@mui/material/esm/Box/Box.js");
 /* harmony import */ var _stores_translationStore__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../stores/translationStore */ "./src/stores/translationStore.ts");
+/* harmony import */ var mobx_react__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! mobx-react */ "./node_modules/mobx-react/dist/mobxreact.esm.js");
+
 
 
 
@@ -363840,6 +363960,7 @@ class StatisticsModal extends (react__WEBPACK_IMPORTED_MODULE_1___default().Comp
 function Section({ title, text, noMargin }) {
     return ((0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxs)(_mui_material_Box__WEBPACK_IMPORTED_MODULE_9__["default"], { sx: { marginBottom: noMargin ? 0 : '16px' }, children: [(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_Typography__WEBPACK_IMPORTED_MODULE_8__["default"], { variant: "subtitle1", style: { color: '#F48024', fontWeight: 600 }, children: title }), (0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx)(_mui_material_DialogContentText__WEBPACK_IMPORTED_MODULE_6__["default"], { children: text })] }));
 }
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,mobx_react__WEBPACK_IMPORTED_MODULE_11__.observer)(StatisticsModal));
 
 
 /***/ },
@@ -364807,6 +364928,8 @@ class ControlState {
     degreeFilterActive = false;
     countriesFilterActive = false;
     enableSalaryFilter = true;
+    salaryThresholdMin = 10000;
+    salaryThresholdMax = 250000;
     constructor(partial) {
         Object.assign(this, partial);
     }
@@ -364827,7 +364950,7 @@ class ControlState {
         const entryStore = _surveyEntry__WEBPACK_IMPORTED_MODULE_0__["default"].entryStore;
         const currencyValues = entryStore?.currencyValues;
         const usdSalary = entry.salaryIsUsd ? rawSalary : rawSalary / (currencyValues?.getRatioByCode(entry.currency) ?? 1);
-        return usdSalary >= 10000 && usdSalary <= 250000;
+        return usdSalary >= this.salaryThresholdMin && usdSalary <= this.salaryThresholdMax;
     }
     filterByAbilities(entry) {
         if (this.abilities.length === 0 || this.abilitiesFilterActive === false) {
@@ -365346,89 +365469,102 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var papaparse__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! papaparse */ "./node_modules/papaparse/papaparse.min.js");
 /* harmony import */ var papaparse__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(papaparse__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var mobx__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! mobx */ "./node_modules/mobx/dist/mobx.esm.js");
-/* harmony import */ var _mapper_CsvRowMapper__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../mapper/CsvRowMapper */ "./src/mapper/CsvRowMapper.ts");
-/* harmony import */ var _model_constantMetaData__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../model/constantMetaData */ "./src/model/constantMetaData.ts");
+/* harmony import */ var _mapper_CsvRowMapper__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../mapper/CsvRowMapper */ "./src/mapper/CsvRowMapper.ts");
+/* harmony import */ var _model_constantMetaData__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../model/constantMetaData */ "./src/model/constantMetaData.ts");
+/* harmony import */ var _utils_perfLogger__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/perfLogger */ "./src/utils/perfLogger.ts");
 
 
 
 
+(0,_utils_perfLogger__WEBPACK_IMPORTED_MODULE_3__.logLongTasks)();
 class StackOverflowCsvReader {
     static UNNAMED_COLUMN_PREFIX = 'columnIndex-';
     static BASIC_CONFIG = {
         download: true,
-        worker: false,
-        /*
-Uncaught DataCloneError: Failed to execute 'postMessage' on 'Worker': function (header, index) {
-            const UNNAMED_COLUMN_PREFIX = 'columnIndex-';
-            if (header =...<omitted>... } could not be cloned.
-        */
+        worker: true,
         delimiter: ',',
-        header: true,
-        transformHeader: function (header, index) {
-            const UNNAMED_COLUMN_PREFIX = 'columnIndex-';
-            if (header == null || header === '') {
-                return UNNAMED_COLUMN_PREFIX + index;
-            }
-            return header;
-        }
+        header: true
     };
-    startWorkerForYear(resultsetForYear, consumer, completed, onValidEntry) {
-        let validRows = [];
-        let invalidCount = 0;
-        let totalCount = 0;
-        let rawRows = [];
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const config = {
-            ...StackOverflowCsvReader.BASIC_CONFIG,
-            step: (row) => {
-                const mapper = new _mapper_CsvRowMapper__WEBPACK_IMPORTED_MODULE_2__.CsvRowMapper(resultsetForYear.year);
-                const rowEntry = mapper.map(row);
-                if (rowEntry.isValid) {
-                    validRows.push(rowEntry);
-                    onValidEntry?.(rowEntry);
-                }
-                else {
-                    invalidCount++;
-                }
-                totalCount++;
-                // Store raw CSV row for raw data table
-                rawRows.push(row.data);
-                consumer(row);
-            },
-            complete: () => {
-                // Batch update observables once per chunk within a transaction
-                (0,mobx__WEBPACK_IMPORTED_MODULE_1__.transaction)(() => {
-                    // Replace array entirely to avoid multiple MobX notifications
-                    resultsetForYear.resultSet = [...resultsetForYear.resultSet, ...validRows];
-                    resultsetForYear.invalidEntryCount += invalidCount;
-                    resultsetForYear.overallEntryCount += totalCount;
-                });
-                const chunkRawRows = rawRows;
-                validRows = [];
-                rawRows = [];
-                invalidCount = 0;
-                totalCount = 0;
-                this.handleNextChunk(resultsetForYear, config);
-                // Hand the raw CSV rows of this chunk to the caller for storage
-                completed(chunkRawRows);
-            }
-        };
+    async startWorkerForYear(resultsetForYear, consumer, completed, onValidEntry) {
         const year = resultsetForYear.year.toString();
-        const chunkCountForYear = _model_constantMetaData__WEBPACK_IMPORTED_MODULE_3__.CHUNK_COUNT_PER_YEAR[year];
+        const chunkCountForYear = _model_constantMetaData__WEBPACK_IMPORTED_MODULE_2__.CHUNK_COUNT_PER_YEAR[year];
         resultsetForYear.chunksParsed = 0;
         resultsetForYear.chunksAvailable = chunkCountForYear;
-        this.handleNextChunk(resultsetForYear, config);
+        await this.handleNextChunk(resultsetForYear, consumer, completed, onValidEntry);
     }
-    handleNextChunk(resultsetForYear, config) {
+    async handleNextChunk(resultsetForYear, consumer, completed, onValidEntry) {
         resultsetForYear.chunksParsed++;
         if (resultsetForYear.chunksParsed > resultsetForYear.chunksAvailable) {
-            // All chunks processed, nothing more to do
             return;
         }
         const fileName = this.generateFileName(resultsetForYear.year.toString(), resultsetForYear.chunksParsed);
         const fileUrl = this.baseUrl + '/' + fileName;
-        papaparse__WEBPACK_IMPORTED_MODULE_0___default().parse(fileUrl, config);
+        const validRows = [];
+        let invalidCount = 0;
+        let totalCount = 0;
+        const rawRows = [];
+        let normalizedFields = null;
+        const chunkStart = performance.now();
+        (0,_utils_perfLogger__WEBPACK_IMPORTED_MODULE_3__.mark)(`chunk-${fileName}-start`);
+        await new Promise((resolve, reject) => {
+            papaparse__WEBPACK_IMPORTED_MODULE_0___default().parse(fileUrl, {
+                ...StackOverflowCsvReader.BASIC_CONFIG,
+                complete: (results) => {
+                    const parseEnd = performance.now();
+                    (0,_utils_perfLogger__WEBPACK_IMPORTED_MODULE_3__.measure)('chunk-parse', `chunk-${fileName}-start`, `chunk-${fileName}-parse-end`);
+                    (0,_utils_perfLogger__WEBPACK_IMPORTED_MODULE_3__.mark)(`chunk-${fileName}-parse-end`);
+                    if (!normalizedFields && results.meta && results.meta.fields) {
+                        normalizedFields = results.meta.fields.map((field, index) => field == null || field === '' ? `${StackOverflowCsvReader.UNNAMED_COLUMN_PREFIX}${index}` : field);
+                    }
+                    const mapper = new _mapper_CsvRowMapper__WEBPACK_IMPORTED_MODULE_1__.CsvRowMapper(resultsetForYear.year);
+                    const data = results.data;
+                    for (const row of data) {
+                        const normalizedData = {};
+                        if (normalizedFields && results.meta && results.meta.fields) {
+                            for (let i = 0; i < results.meta.fields.length; i++) {
+                                const originalKey = results.meta.fields[i];
+                                const normalizedKey = normalizedFields[i];
+                                if (normalizedKey !== undefined && originalKey !== undefined) {
+                                    normalizedData[normalizedKey] = row[originalKey];
+                                }
+                            }
+                        }
+                        const normalizedRow = { ...row, ...normalizedData };
+                        const rowEntry = mapper.map({ data: normalizedRow, meta: { fields: normalizedFields || Object.keys(normalizedData) } });
+                        if (rowEntry.isValid) {
+                            validRows.push(rowEntry);
+                            onValidEntry?.(rowEntry);
+                        }
+                        else {
+                            invalidCount++;
+                        }
+                        totalCount++;
+                        rawRows.push(row);
+                    }
+                    const mapEnd = performance.now();
+                    (0,_utils_perfLogger__WEBPACK_IMPORTED_MODULE_3__.measure)('chunk-map', `chunk-${fileName}-parse-end`, `chunk-${fileName}-map-end`);
+                    (0,_utils_perfLogger__WEBPACK_IMPORTED_MODULE_3__.mark)(`chunk-${fileName}-map-end`);
+                    completed(rawRows, validRows, invalidCount, totalCount);
+                    const txEnd = performance.now();
+                    (0,_utils_perfLogger__WEBPACK_IMPORTED_MODULE_3__.measure)('chunk-mobx-tx', `chunk-${fileName}-map-end`, `chunk-${fileName}-tx-end`);
+                    (0,_utils_perfLogger__WEBPACK_IMPORTED_MODULE_3__.mark)(`chunk-${fileName}-tx-end`);
+                    const chunkEnd = performance.now();
+                    (0,_utils_perfLogger__WEBPACK_IMPORTED_MODULE_3__.measure)('chunk-total', `chunk-${fileName}-start`, `chunk-${fileName}-total-end`);
+                    (0,_utils_perfLogger__WEBPACK_IMPORTED_MODULE_3__.mark)(`chunk-${fileName}-total-end`);
+                    console.log(`[PERF] ${fileName}: total=${(chunkEnd - chunkStart).toFixed(0)}ms ` +
+                        `parse=${(parseEnd - chunkStart).toFixed(0)}ms ` +
+                        `map=${(mapEnd - parseEnd).toFixed(0)}ms ` +
+                        `tx=${(txEnd - mapEnd).toFixed(0)}ms ` +
+                        `rows=${totalCount}`);
+                    resolve();
+                },
+                error: (err) => {
+                    console.error('Papa parse error for chunk', fileName, err);
+                    reject(err);
+                }
+            });
+        });
+        await this.handleNextChunk(resultsetForYear, consumer, completed, onValidEntry);
     }
     generateFileName(year, chunk) {
         return year + '-chunk-' + chunk + '.csv';
@@ -365479,6 +365615,8 @@ class ControlStore {
     degreeFilterActive = false;
     countriesFilterActive = false;
     enableSalaryFilter = true;
+    salaryThresholdMin = 10000;
+    salaryThresholdMax = 250000;
     pendingState = null;
     constructor() {
         (0,mobx__WEBPACK_IMPORTED_MODULE_0__.makeAutoObservable)(this);
@@ -365502,6 +365640,8 @@ class ControlStore {
         const degreeFilterActive = this.degreeFilterActive;
         const countriesFilterActive = this.countriesFilterActive;
         const enableSalaryFilter = this.enableSalaryFilter;
+        const salaryThresholdMin = this.salaryThresholdMin;
+        const salaryThresholdMax = this.salaryThresholdMax;
         return new _model_controlState__WEBPACK_IMPORTED_MODULE_1__["default"]({
             selectedYear,
             expirienceInYears,
@@ -365517,7 +365657,9 @@ class ControlStore {
             companySizeFilterActive,
             degreeFilterActive,
             countriesFilterActive,
-            enableSalaryFilter
+            enableSalaryFilter,
+            salaryThresholdMin,
+            salaryThresholdMax
         });
     }
     get companySizeValues() {
@@ -365585,6 +365727,12 @@ class ControlStore {
     setEnableSalaryFilter(enableSalaryFilter) {
         this.enableSalaryFilter = enableSalaryFilter;
     }
+    setSalaryThresholdMin(salaryThresholdMin) {
+        this.salaryThresholdMin = salaryThresholdMin;
+    }
+    setSalaryThresholdMax(salaryThresholdMax) {
+        this.salaryThresholdMax = salaryThresholdMax;
+    }
     setSelectedCurrency(currency) {
         this.selectedCurrency = currency;
     }
@@ -365626,6 +365774,10 @@ class ControlStore {
                 this.countriesFilterActive = state.countriesFilterActive;
             if (state.enableSalaryFilter !== undefined)
                 this.enableSalaryFilter = state.enableSalaryFilter;
+            if (state.salaryThresholdMin !== undefined)
+                this.salaryThresholdMin = state.salaryThresholdMin;
+            if (state.salaryThresholdMax !== undefined)
+                this.salaryThresholdMax = state.salaryThresholdMax;
         }
     }
     getSessionState() {
@@ -365645,7 +365797,9 @@ class ControlStore {
             companySizeFilterActive: this.companySizeFilterActive,
             degreeFilterActive: this.degreeFilterActive,
             countriesFilterActive: this.countriesFilterActive,
-            enableSalaryFilter: this.enableSalaryFilter
+            enableSalaryFilter: this.enableSalaryFilter,
+            salaryThresholdMin: this.salaryThresholdMin,
+            salaryThresholdMax: this.salaryThresholdMax
         };
     }
     loadFromSessionState(state) {
@@ -365682,6 +365836,10 @@ class ControlStore {
             this.countriesFilterActive = state.countriesFilterActive;
         if (state.enableSalaryFilter !== undefined)
             this.enableSalaryFilter = state.enableSalaryFilter;
+        if (state.salaryThresholdMin !== undefined)
+            this.salaryThresholdMin = state.salaryThresholdMin;
+        if (state.salaryThresholdMax !== undefined)
+            this.salaryThresholdMax = state.salaryThresholdMax;
     }
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (new ControlStore());
@@ -365708,6 +365866,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _model_constantMetaData__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../model/constantMetaData */ "./src/model/constantMetaData.ts");
 /* harmony import */ var _mapper_AbstractCsvRowMapper__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../mapper/AbstractCsvRowMapper */ "./src/mapper/AbstractCsvRowMapper.ts");
 /* harmony import */ var _services_idbRawStore__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../services/idbRawStore */ "./src/services/idbRawStore.ts");
+/* harmony import */ var _utils_perfLogger__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../utils/perfLogger */ "./src/utils/perfLogger.ts");
+
 
 
 
@@ -365739,14 +365899,27 @@ class EntryStore {
     currencyValues;
     reader;
     selectedYear = _model_constantMetaData__WEBPACK_IMPORTED_MODULE_4__.AVAILABLE_YEARS[_model_constantMetaData__WEBPACK_IMPORTED_MODULE_4__.AVAILABLE_YEARS.length - 1];
+    isParsing = false;
     // Sink that receives every valid parsed entry during streaming (wired by uiStore)
     streamSink = null;
     // Buffer of raw CSV rows for the year currently being parsed, flushed to IndexedDB per page
     rawBuffer = [];
     rawPageCount = 0;
     rawBufferYear = -1;
+    // Buffer for parsed entries during chunked loading; flushed to observables only after final chunk
+    pendingValidRows = [];
+    pendingInvalidCount = 0;
+    pendingTotalCount = 0;
     constructor() {
-        (0,mobx__WEBPACK_IMPORTED_MODULE_0__.makeAutoObservable)(this);
+        (0,mobx__WEBPACK_IMPORTED_MODULE_0__.makeAutoObservable)(this, {
+            isParsing: mobx__WEBPACK_IMPORTED_MODULE_0__.observable,
+            pendingValidRows: false,
+            pendingInvalidCount: false,
+            pendingTotalCount: false,
+            rawBuffer: false,
+            rawPageCount: false,
+            rawBufferYear: false
+        });
         this.loadData();
     }
     setStreamSink(sink) {
@@ -365778,6 +365951,7 @@ class EntryStore {
     }
     initParser(year) {
         this.selectedYear = year;
+        this.isParsing = true;
         const resultsetForYear = this.parsedDataByYear[parseInt(year)];
         // Only clear if no existing data
         if (resultsetForYear.overallEntryCount === 0) {
@@ -365797,27 +365971,39 @@ class EntryStore {
         this.rawBuffer = [];
         this.rawPageCount = 0;
         this.rawBufferYear = parseInt(year);
+        // Reset parsed-entry buffering
+        this.pendingValidRows = [];
+        this.pendingInvalidCount = 0;
+        this.pendingTotalCount = 0;
         this.reader.startWorkerForYear(yearData, this.addRow, this.handleRawChunk.bind(this), (entry) => { this.streamSink?.(entry); });
     }
-    handleRawChunk(rawRows) {
+    handleRawChunk(rawRows, validRows, invalidCount, totalCount) {
         const yearData = this.parsedDataByYear[this.rawBufferYear];
         if (!yearData)
             return;
         const parsed = yearData.chunksParsed;
         const available = yearData.chunksAvailable;
-        const invalidEntryCount = yearData.invalidEntryCount;
         const overallEntryCount = yearData.overallEntryCount;
+        const invalidEntryCount = yearData.invalidEntryCount;
         // eslint-disable-next-line no-console
         console.log('Finished parsing a chunk for year: ' + this.rawBufferYear + '\n'
             + '\t chunks parsed ' + parsed + ' chunks to go ' + available + '\n '
             + '\t entries parsed ' + overallEntryCount + ' invalid ones ' + invalidEntryCount + ' ');
-        // Buffer raw CSV rows and flush full pages to IndexedDB (never keep it all in RAM)
-        this.rawBuffer.push(...rawRows);
+        (0,_utils_perfLogger__WEBPACK_IMPORTED_MODULE_7__.mark)('chunk-buffer-start');
+        Array.prototype.push.apply(this.pendingValidRows, validRows);
+        this.pendingInvalidCount += invalidCount;
+        this.pendingTotalCount += totalCount;
+        Array.prototype.push.apply(this.rawBuffer, rawRows);
+        const bufferDuration = (0,_utils_perfLogger__WEBPACK_IMPORTED_MODULE_7__.measure)('chunk-buffer', 'chunk-buffer-start');
+        console.log(`[PERF] Chunk buffer: ${bufferDuration.toFixed(0)}ms, pending=${this.pendingValidRows.length}, rawBuffer=${this.rawBuffer.length}`);
+        (0,_utils_perfLogger__WEBPACK_IMPORTED_MODULE_7__.mark)('idb-write-start');
         while (this.rawBuffer.length >= _services_idbRawStore__WEBPACK_IMPORTED_MODULE_6__.RAW_PAGE_SIZE) {
             const page = this.rawBuffer.splice(0, _services_idbRawStore__WEBPACK_IMPORTED_MODULE_6__.RAW_PAGE_SIZE);
             void _services_idbRawStore__WEBPACK_IMPORTED_MODULE_6__.idbRawStore.savePage(this.rawBufferYear, this.rawPageCount, page);
             this.rawPageCount++;
         }
+        const idbDuration = (0,_utils_perfLogger__WEBPACK_IMPORTED_MODULE_7__.measure)('idb-write', 'idb-write-start');
+        console.log(`[PERF] IndexedDB flush: ${idbDuration.toFixed(0)}ms, pages=${this.rawPageCount}`);
         const isLastChunk = parsed > 0 && parsed >= available;
         if (isLastChunk) {
             if (this.rawBuffer.length > 0) {
@@ -365825,14 +366011,21 @@ class EntryStore {
                 this.rawPageCount++;
                 this.rawBuffer = [];
             }
-            this.streamSinkFinalize?.();
+            (0,_utils_perfLogger__WEBPACK_IMPORTED_MODULE_7__.mark)('final-tx-start');
+            (0,mobx__WEBPACK_IMPORTED_MODULE_0__.transaction)(() => {
+                Array.prototype.push.apply(yearData.resultSet, this.pendingValidRows);
+                yearData.invalidEntryCount += this.pendingInvalidCount;
+                yearData.overallEntryCount += this.pendingTotalCount;
+            });
+            const txDuration = (0,_utils_perfLogger__WEBPACK_IMPORTED_MODULE_7__.measure)('final-tx', 'final-tx-start');
+            console.log(`[PERF] Final MobX tx: ${txDuration.toFixed(0)}ms, entries=${this.pendingValidRows.length}`);
+            this.pendingValidRows = [];
+            this.pendingInvalidCount = 0;
+            this.pendingTotalCount = 0;
+            this.isParsing = false;
             // Only save parsed entries to session storage on the LAST chunk
             this.saveToSession(String(this.rawBufferYear));
         }
-    }
-    streamSinkFinalize = null;
-    setStreamFinalize(fn) {
-        this.streamSinkFinalize = fn;
     }
     saveToSession(year) {
         // Raw CSV rows are persisted to IndexedDB (paginated) instead of sessionStorage
@@ -365859,7 +366052,7 @@ class EntryStore {
                     this.parsedDataByYear[yearNum].resultSet = data.resultSet || [];
                     this.parsedDataByYear[yearNum].overallEntryCount = data.overallEntryCount || 0;
                     this.parsedDataByYear[yearNum].invalidEntryCount = data.invalidEntryCount || 0;
-                    this.parsedData.resultSet = [...this.parsedData.resultSet, ...(data.resultSet || [])];
+                    Array.prototype.push.apply(this.parsedData.resultSet, data.resultSet || []);
                     // Populate distinct values for filters
                     this.populateDistinctValues(data.resultSet || []);
                     return true;
@@ -366053,7 +366246,7 @@ const translations = {
         countriesLabel: 'Countries',
         degreeLabel: 'Highest Degree',
         salaryFilterLabel: 'Salary Threshold Filter',
-        salaryFilterHint: 'When disabled: consider all salaries. When enabled: filter 10k-250k',
+        salaryFilterHint: 'When disabled: consider all salaries. When enabled: filter by salary range in USD',
         companySizeFrom: 'From',
         companySizeTo: 'To',
         saveToSession: 'Save to Session',
@@ -366066,6 +366259,7 @@ const translations = {
         rawCsvTab: 'Raw CSV',
         mappedTab: 'Mapped All',
         filteredTab: 'Filtered',
+        histogramTab: 'Histogram',
         entries: 'entries',
         page: 'Page',
         salaryRaw: 'Salary (raw)',
@@ -366101,7 +366295,7 @@ const translations = {
         statisticsRealisticTitle: 'Where are realistic salaries?',
         statisticsRealisticText: 'For a normal distribution, roughly 68% of all developers earn between "Mean − Std" and "Mean + Std". This range is a good estimate of what a realistic salary looks like.',
         // Estimator
-        estimatorIntro: 'Enter your profile and we estimate the salary you could expect, based on the Stack Overflow data. You can also compare similar datasets.',
+        estimatorIntro: 'Enter your profile and we estimate the salary you could expect, based on the Stack Overflow data. Salary thresholds are not considered to be unbiased.',
         estimatorExperience: 'Years of experience',
         estimatorAbilities: 'Tools and Technologies',
         estimatorCountries: 'Countries',
@@ -366117,6 +366311,7 @@ const translations = {
         estimatorQualityGood: 'Good - enough data and a consistent spread',
         estimatorQualityMedium: 'Medium - the estimate is an approximation',
         estimatorQualityLow: 'Low - too little data or very high spread, treat with caution',
+        estimatorHighSalaryWarning: 'Warning: The standard deviation is very high compared to the mean. This indicates many unusually high salaries that might be fake or CEO salaries, which are not competitive benchmarks.',
         estimatorSimilarTitle: 'Similar datasets to compare',
         estimatorSimilarHint: 'Datasets that differ in only one criterion from your selection, so you can see its effect on the salary.',
         estimatorDifference: 'Difference',
@@ -366153,7 +366348,7 @@ const translations = {
         countriesLabel: 'Länder',
         degreeLabel: 'Höchster Abschluss',
         salaryFilterLabel: 'Gehaltsfilter',
-        salaryFilterHint: 'Wenn deaktiviert: alle Gehälter berücksichtigen. Wenn aktiviert: Filter 10k-250k',
+        salaryFilterHint: 'Wenn deaktiviert: alle Gehälter berücksichtigen. Wenn aktiviert: Nach Gehaltsbereich in USD filtern',
         companySizeFrom: 'Von',
         companySizeTo: 'Bis',
         saveToSession: 'In Sitzung speichern',
@@ -366161,12 +366356,13 @@ const translations = {
         downloadJson: 'JSON herunterladen',
         uploadJson: 'JSON hochladen',
         shareLink: 'Link teilen',
-        shareLinkSuccess: 'Link in die Zwischenablage kopieren!',
+        shareLinkSuccess: 'Link in die Zwischenablage kopiert!',
         // ConsideredDataTable
         dataTables: 'Daten Tabellen',
         rawCsvTab: 'Roh CSV',
         mappedTab: 'Alle gemappt',
         filteredTab: 'Gefiltert',
+        histogramTab: 'Histogramm',
         entries: 'Einträge',
         page: 'Seite',
         salaryRaw: 'Gehalt (roh)',
@@ -366202,7 +366398,7 @@ const translations = {
         statisticsRealisticTitle: 'Wo liegen realistische Gehälter?',
         statisticsRealisticText: 'Bei einer Normalverteilung liegen etwa 68% aller Entwickler zwischen "Mittelwert − Std" und "Mittelwert + Std". Dieser Bereich ist eine gute Schätzung für ein realistisches Gehalt.',
         // Estimator
-        estimatorIntro: 'Gib dein Profil ein und wir schätzen das Gehalt, das du erwarten kannst, basierend auf den Stack-Overflow-Daten. Du kannst auch ähnliche Datensätze vergleichen.',
+        estimatorIntro: 'Gib dein Profil ein und wir schätzen das Gehalt, das du erwarten kannst, basierend auf den Stack-Overflow-Daten. Gehaltsfilter werden nicht berücksichtigt.',
         estimatorExperience: 'Jahre Erfahrung',
         estimatorAbilities: 'Tools und Technologien',
         estimatorCountries: 'Länder',
@@ -366210,7 +366406,7 @@ const translations = {
         estimatorCompanySize: 'Firmengröße',
         estimatorGender: 'Geschlecht',
         estimatorCalculate: 'Erwartetes Gehalt schätzen',
-        estimatorResultTitle: 'Geschätztes erwartetes Gehalt',
+        estimatorResultTitle: 'Geschätztes erwartete Gehalt',
         estimatorNoData: 'Nicht genug Daten für diese Filterkombination. Versuche, deine Auswahl zu erweitern.',
         estimatorSampleSize: 'Basiert auf {count} Datenpunkten',
         estimatorTypicalRange: 'Typischer realistischer Bereich',
@@ -366218,6 +366414,7 @@ const translations = {
         estimatorQualityGood: 'Gut - genug Daten und konsistente Streuung',
         estimatorQualityMedium: 'Mittel - die Schätzung ist eine Näherung',
         estimatorQualityLow: 'Niedrig - zu wenig Daten oder sehr hohe Streuung, mit Vorsicht genießen',
+        estimatorHighSalaryWarning: 'Warnung: Die Standardabweichung ist sehr hoch im Vergleich zum Mittelwert. Dies deutet auf viele ungewöhnlich hohe Gehälter hin, die möglicherweise gefälscht sind oder Gehälter von Geschäftsführern darstellen, die keine wettbewerbsfähigen Vergleichswerte sind.',
         estimatorSimilarTitle: 'Ähnliche Datensätze zum Vergleich',
         estimatorSimilarHint: 'Datensätze, die sich in nur einem Kriterium von deiner Auswahl unterscheiden, damit du den Effekt auf das Gehalt siehst.',
         estimatorDifference: 'Differenz',
@@ -366271,6 +366468,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _controlStore__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./controlStore */ "./src/stores/controlStore.ts");
 /* harmony import */ var _entryStore__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./entryStore */ "./src/stores/entryStore.ts");
 /* harmony import */ var _statsAccumulator__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./statsAccumulator */ "./src/stores/statsAccumulator.ts");
+/* harmony import */ var _utils_perfLogger__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../utils/perfLogger */ "./src/utils/perfLogger.ts");
+
 
 
 
@@ -366283,7 +366482,6 @@ class UiStore {
     boxStats = null;
     boxAccumulator = new _statsAccumulator__WEBPACK_IMPORTED_MODULE_3__.StatsAccumulator();
     boxStatsYear = -1;
-    isStreaming = false;
     streamCounter = 0;
     flushInterval = 5000;
     controlStore;
@@ -366304,7 +366502,6 @@ class UiStore {
             setMobileView: mobx__WEBPACK_IMPORTED_MODULE_0__.action,
             setControlPaneOpen: mobx__WEBPACK_IMPORTED_MODULE_0__.action,
             recordStreamEntry: mobx__WEBPACK_IMPORTED_MODULE_0__.action,
-            finalizeStream: mobx__WEBPACK_IMPORTED_MODULE_0__.action,
             rebuildBoxStats: mobx__WEBPACK_IMPORTED_MODULE_0__.action,
         });
         this.initMobileDetection();
@@ -366338,6 +366535,8 @@ class UiStore {
                 degrees: cs.degrees,
                 companySizeFilterActive: cs.companySizeFilterActive,
                 enableSalaryFilter: cs.enableSalaryFilter,
+                salaryThresholdMin: cs.salaryThresholdMin,
+                salaryThresholdMax: cs.salaryThresholdMax,
                 selectedCurrency: cs.selectedCurrency,
                 currencyValuesReady: this.entryStore.currencyValues != null
             };
@@ -366349,9 +366548,9 @@ class UiStore {
             this.debounceTimer = setTimeout(() => {
                 if (this.latestReactionData) {
                     this.lastFilterUpdateTime = Date.now();
-                    console.log('[DEBUG] UiStore filtering triggered at', new Date(this.lastFilterUpdateTime).toISOString());
-                    this.updateFilteredData();
-                    if (!this.isStreaming) {
+                    console.log('[DEBUG] UiStore filtering triggered at', new Date(this.lastFilterUpdateTime).toISOString(), 'isParsing=', this.entryStore.isParsing);
+                    if (!this.entryStore.isParsing) {
+                        this.updateFilteredData();
                         this.rebuildBoxStats();
                     }
                 }
@@ -366363,6 +366562,7 @@ class UiStore {
         const selectedYearNum = parseInt(this.entryStore.selectedYear, 10);
         const parsedData = this.entryStore.parsedDataByYear[selectedYearNum];
         const controlState = this.controlStore.controlState;
+        (0,_utils_perfLogger__WEBPACK_IMPORTED_MODULE_4__.mark)('ui-update-filtered-start');
         if (parsedData?.resultSet) {
             this.filteredData[selectedYearNum] = [...parsedData.resultSet]
                 .filter(controlState.filterByState.bind(controlState));
@@ -366370,6 +366570,8 @@ class UiStore {
         else {
             this.filteredData[selectedYearNum] = [];
         }
+        const duration = (0,_utils_perfLogger__WEBPACK_IMPORTED_MODULE_4__.measure)('ui-update-filtered', 'ui-update-filtered-start');
+        console.log(`[PERF] updateFilteredData: ${duration.toFixed(0)}ms, results=${this.filteredData[selectedYearNum].length}`);
     };
     setMobileView = (value) => {
         this.isMobileView = value;
@@ -366386,28 +366588,20 @@ class UiStore {
         return usdSalary * targetCurrencyRatio;
     }
     isSalaryInRange(usdValue) {
-        return usdValue >= 10000 && usdValue <= 250000;
+        return usdValue >= this.controlStore.salaryThresholdMin && usdValue <= this.controlStore.salaryThresholdMax;
     }
     recordStreamEntry = (entry) => {
         const year = parseInt(this.entryStore.selectedYear, 10);
         if (year !== this.boxStatsYear) {
             this.boxAccumulator.reset();
             this.boxStatsYear = year;
-            this.isStreaming = true;
             this.streamCounter = 0;
-        }
-        if (!this.controlStore.controlState.filterByState(entry)) {
-            return;
         }
         this.boxAccumulator.add(this.convertSalary(entry));
         this.streamCounter++;
         if (this.streamCounter % this.flushInterval === 0) {
             this.boxStats = this.boxAccumulator.toBoxStats();
         }
-    };
-    finalizeStream = () => {
-        this.boxStats = this.boxAccumulator.toBoxStats();
-        this.isStreaming = false;
     };
     rebuildBoxStatsRequestId = 0;
     rebuildBoxStats = () => {
@@ -366416,6 +366610,7 @@ class UiStore {
         this.boxStatsYear = year;
         const parsedData = this.entryStore.parsedDataByYear[year];
         const controlState = this.controlStore.controlState;
+        (0,_utils_perfLogger__WEBPACK_IMPORTED_MODULE_4__.mark)('ui-rebuild-boxstats-start');
         if (parsedData?.resultSet) {
             const entries = parsedData.resultSet;
             const chunkSize = 1000;
@@ -366436,6 +366631,8 @@ class UiStore {
                 }
                 else {
                     this.boxStats = this.boxAccumulator.toBoxStats();
+                    const duration = (0,_utils_perfLogger__WEBPACK_IMPORTED_MODULE_4__.measure)('ui-rebuild-boxstats', 'ui-rebuild-boxstats-start');
+                    console.log(`[PERF] rebuildBoxStats: ${duration.toFixed(0)}ms, entries=${entries.length}`);
                 }
             };
             requestAnimationFrame(processChunk);
@@ -366455,7 +366652,147 @@ class UiStore {
 }
 const uiStore = new UiStore(_controlStore__WEBPACK_IMPORTED_MODULE_1__["default"], _entryStore__WEBPACK_IMPORTED_MODULE_2__["default"]);
 _entryStore__WEBPACK_IMPORTED_MODULE_2__["default"].setStreamSink((entry) => uiStore.recordStreamEntry(entry));
-_entryStore__WEBPACK_IMPORTED_MODULE_2__["default"].setStreamFinalize(() => uiStore.finalizeStream());
+
+
+/***/ },
+
+/***/ "./src/utils/perfLogger.ts"
+/*!*********************************!*\
+  !*** ./src/utils/perfLogger.ts ***!
+  \*********************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   logLongTasks: () => (/* binding */ logLongTasks),
+/* harmony export */   mark: () => (/* binding */ mark),
+/* harmony export */   measure: () => (/* binding */ measure)
+/* harmony export */ });
+const MARK_PREFIX = 'salary-guide:';
+function mark(name) {
+    try {
+        performance.mark(`${MARK_PREFIX}${name}`);
+    }
+    catch {
+        // ignore if performance API is unavailable or mark already exists
+    }
+}
+function measure(name, startMark, endMark) {
+    try {
+        const start = `${MARK_PREFIX}${startMark}`;
+        const end = endMark ? `${MARK_PREFIX}${endMark}` : undefined;
+        const measureName = `${MARK_PREFIX}${name}`;
+        if (end) {
+            performance.measure(measureName, { start, end });
+        }
+        else {
+            performance.measure(measureName, { start });
+        }
+        const entries = performance.getEntriesByName(measureName);
+        const last = entries[entries.length - 1];
+        return last ? last.duration : 0;
+    }
+    catch {
+        return 0;
+    }
+}
+function logLongTasks(thresholdMs = 50) {
+    if (typeof PerformanceObserver === 'undefined') {
+        return null;
+    }
+    try {
+        const observer = new PerformanceObserver((list) => {
+            for (const entry of list.getEntries()) {
+                if (entry.duration >= thresholdMs) {
+                    console.warn(`[PERF] Long task detected: ${entry.duration.toFixed(1)}ms (start: ${entry.startTime.toFixed(0)}ms)`);
+                }
+            }
+        });
+        observer.observe({ type: 'longtask', buffered: true });
+        return () => observer.disconnect();
+    }
+    catch {
+        return null;
+    }
+}
+
+
+/***/ },
+
+/***/ "./src/utils/reactPerfMonitor.ts"
+/*!***************************************!*\
+  !*** ./src/utils/reactPerfMonitor.ts ***!
+  \***************************************/
+(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   getRenderCount: () => (/* binding */ getRenderCount),
+/* harmony export */   getRenderStats: () => (/* binding */ getRenderStats),
+/* harmony export */   logAllRenderStats: () => (/* binding */ logAllRenderStats),
+/* harmony export */   resetRenderStats: () => (/* binding */ resetRenderStats),
+/* harmony export */   startFPSMonitor: () => (/* binding */ startFPSMonitor),
+/* harmony export */   trackRender: () => (/* binding */ trackRender)
+/* harmony export */ });
+const PREFIX = '[ReactPerf]';
+const renderCounts = new Map();
+const renderDurations = new Map();
+function getRenderCount(displayName) {
+    return renderCounts.get(displayName) || 0;
+}
+function getRenderStats(displayName) {
+    const count = renderCounts.get(displayName) || 0;
+    const durations = renderDurations.get(displayName) || [];
+    const avgMs = durations.length > 0 ? durations.reduce((a, b) => a + b, 0) / durations.length : 0;
+    const maxMs = durations.length > 0 ? Math.max(...durations) : 0;
+    return { count, avgMs, maxMs };
+}
+function resetRenderStats() {
+    renderCounts.clear();
+    renderDurations.clear();
+}
+function trackRender(displayName) {
+    return (_id, _phase, actualDuration) => {
+        renderCounts.set(displayName, (renderCounts.get(displayName) || 0) + 1);
+        const durations = renderDurations.get(displayName) || [];
+        durations.push(actualDuration);
+        renderDurations.set(displayName, durations);
+    };
+}
+function startFPSMonitor(intervalMs = 1000) {
+    if (typeof window === 'undefined' || typeof requestAnimationFrame === 'undefined') {
+        return null;
+    }
+    let frameCount = 0;
+    let lastTime = performance.now();
+    let rafId;
+    const tick = (time) => {
+        frameCount++;
+        const elapsed = time - lastTime;
+        if (elapsed >= intervalMs) {
+            const fps = (frameCount * 1000) / elapsed;
+            const minFps = Math.min(fps, 60);
+            if (minFps < 30) {
+                console.warn(`${PREFIX} Low FPS: ${minFps.toFixed(1)} (avg ${fps.toFixed(1)})`);
+            }
+            frameCount = 0;
+            lastTime = time;
+        }
+        rafId = requestAnimationFrame(tick);
+    };
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
+}
+function logAllRenderStats() {
+    console.group(`${PREFIX} Render Statistics`);
+    for (const name of renderCounts.keys()) {
+        const stats = getRenderStats(name);
+        console.log(`${name}: renders=${stats.count}, avg=${stats.avgMs.toFixed(1)}ms, max=${stats.maxMs.toFixed(1)}ms`);
+    }
+    console.groupEnd();
+}
 
 
 /***/ },
