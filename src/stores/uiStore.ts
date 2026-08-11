@@ -23,6 +23,8 @@ type ReactionData = {
     degrees: string[]
     companySizeFilterActive: boolean
     enableSalaryFilter: boolean
+    salaryThresholdMin: number
+    salaryThresholdMax: number
 }
 
 export class UiStore {
@@ -97,6 +99,8 @@ export class UiStore {
                     degrees: cs.degrees,
                     companySizeFilterActive: cs.companySizeFilterActive,
                     enableSalaryFilter: cs.enableSalaryFilter,
+                    salaryThresholdMin: cs.salaryThresholdMin,
+                    salaryThresholdMax: cs.salaryThresholdMax,
                     selectedCurrency: cs.selectedCurrency,
                     currencyValuesReady: this.entryStore.currencyValues != null
                 }
@@ -153,26 +157,26 @@ export class UiStore {
     }
 
     isSalaryInRange(usdValue: number): boolean {
-        return usdValue >= 10000 && usdValue <= 250000
+        return usdValue >= this.controlStore.salaryThresholdMin && usdValue <= this.controlStore.salaryThresholdMax
     }
 
-recordStreamEntry = (entry: SurveyEntry): void => {
-    const year = parseInt(this.entryStore.selectedYear, 10)
-    if (year !== this.boxStatsYear) {
-        this.boxAccumulator.reset()
-        this.boxStatsYear = year
-        this.isStreaming = true
-        this.streamCounter = 0
+    recordStreamEntry = (entry: SurveyEntry): void => {
+        const year = parseInt(this.entryStore.selectedYear, 10)
+        if (year !== this.boxStatsYear) {
+            this.boxAccumulator.reset()
+            this.boxStatsYear = year
+            this.isStreaming = true
+            this.streamCounter = 0
+        }
+        if (!this.controlStore.controlState.filterByState(entry)) {
+            return
+        }
+        this.boxAccumulator.add(this.convertSalary(entry))
+        this.streamCounter++
+        if (this.streamCounter % this.flushInterval === 0) {
+            this.boxStats = this.boxAccumulator.toBoxStats()
+        }
     }
-    if (!this.controlStore.controlState.filterByState(entry)) {
-        return
-    }
-    this.boxAccumulator.add(this.convertSalary(entry))
-    this.streamCounter++
-    if (this.streamCounter % this.flushInterval === 0) {
-        this.boxStats = this.boxAccumulator.toBoxStats()
-    }
-}
 
     finalizeStream = (): void => {
         this.boxStats = this.boxAccumulator.toBoxStats()
@@ -181,37 +185,37 @@ recordStreamEntry = (entry: SurveyEntry): void => {
 
     private rebuildBoxStatsRequestId = 0
 
-rebuildBoxStats = (): void => {
-    const year = parseInt(this.entryStore.selectedYear, 10)
-    this.boxAccumulator.reset()
-    this.boxStatsYear = year
-    const parsedData = this.entryStore.parsedDataByYear[year]
-    const controlState = this.controlStore.controlState
-    if (parsedData?.resultSet) {
-        const entries = parsedData.resultSet
-        const chunkSize = 1000
-        let index = 0
-        const requestId = ++this.rebuildBoxStatsRequestId
-        const processChunk = (): void => {
-            if (requestId !== this.rebuildBoxStatsRequestId) return
-            const end = Math.min(index + chunkSize, entries.length)
-            for (let i = index; i < end; i++) {
-                if (controlState.filterByState(entries[i])) {
-                    this.boxAccumulator.add(this.convertSalary(entries[i]))
+    rebuildBoxStats = (): void => {
+        const year = parseInt(this.entryStore.selectedYear, 10)
+        this.boxAccumulator.reset()
+        this.boxStatsYear = year
+        const parsedData = this.entryStore.parsedDataByYear[year]
+        const controlState = this.controlStore.controlState
+        if (parsedData?.resultSet) {
+            const entries = parsedData.resultSet
+            const chunkSize = 1000
+            let index = 0
+            const requestId = ++this.rebuildBoxStatsRequestId
+            const processChunk = (): void => {
+                if (requestId !== this.rebuildBoxStatsRequestId) return
+                const end = Math.min(index + chunkSize, entries.length)
+                for (let i = index; i < end; i++) {
+                    if (controlState.filterByState(entries[i])) {
+                        this.boxAccumulator.add(this.convertSalary(entries[i]))
+                    }
+                }
+                index = end
+                if (index < entries.length) {
+                    requestAnimationFrame(processChunk)
+                } else {
+                    this.boxStats = this.boxAccumulator.toBoxStats()
                 }
             }
-            index = end
-            if (index < entries.length) {
-                requestAnimationFrame(processChunk)
-            } else {
-                this.boxStats = this.boxAccumulator.toBoxStats()
-            }
+            requestAnimationFrame(processChunk)
+        } else {
+            this.boxStats = this.boxAccumulator.toBoxStats()
         }
-        requestAnimationFrame(processChunk)
-    } else {
-        this.boxStats = this.boxAccumulator.toBoxStats()
     }
-}
 
     destroy(): void {
         if (this.reactionDisposer) {

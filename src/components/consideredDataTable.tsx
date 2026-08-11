@@ -5,9 +5,11 @@ import Loader from 'react-loader-spinner'
 import { uiStore } from '../stores/uiStore'
 import controlStore from '../stores/controlStore'
 import entryStore from '../stores/entryStore'
-import { Tabs, Tab } from '@mui/material'
+import { Tabs, Tab, Typography } from '@mui/material'
 import translationStore from '../stores/translationStore'
 import RawCsvDataGrid from './rawCsvDataGrid'
+import Plot from 'react-plotly.js'
+import { Data, Layout } from 'plotly.js'
 
 const formatValueForDisplay = (value: unknown): string => {
     if (value === null || value === undefined) {
@@ -58,6 +60,7 @@ const formatGenderValue = (value: unknown, t: typeof translationStore.t): string
 
 const ConsideredDataTable = observer(() => {
     const [tabIndex, setTabIndex] = React.useState(0)
+    const plotRef = React.useRef<HTMLDivElement>(null)
     const selectedYearNum = parseInt(controlStore.selectedYear, 10)
     const selectedYearData = entryStore.parsedDataByYear[selectedYearNum]
     const selectedCurrency = controlStore.selectedCurrency
@@ -71,6 +74,18 @@ const ConsideredDataTable = observer(() => {
     const changeTab = (_event: React.ChangeEvent<unknown>, newValue: number): void => {
         setTabIndex(newValue)
     }
+
+    React.useEffect(() => {
+        const timer = setTimeout(() => {
+            if (plotRef.current) {
+                const plotlyEl = plotRef.current.querySelector('.js-plotly-plot') as HTMLElement & { Plotly?: { relayout: (el: HTMLElement, layout: Partial<Layout>) => void } }
+                if (plotlyEl && plotlyEl.Plotly) {
+                    plotlyEl.Plotly.relayout(plotlyEl, { autosize: true })
+                }
+            }
+        }, 0)
+        return () => clearTimeout(timer)
+    }, [tabIndex])
 
     if (isLoading) {
         return (
@@ -127,19 +142,19 @@ const ConsideredDataTable = observer(() => {
         }
     ]
 
-const renderMappedTable = (): JSX.Element => {
-    const rowsWithId = mappedData.map((entry, index) => {
-        const rawSalary = entry._salary
-        const entryCurrencyRatio = entryStore.currencyValues?.getRatioByCode(entry.currency) ?? 1
-        const usdSalary = entry.salaryIsUsd ? rawSalary : rawSalary / entryCurrencyRatio
-        const targetCurrencyRatio = entryStore.currencyValues?.getRatioByCode(selectedCurrency) ?? 1
-        return {
-            ...entry,
-            id: `mapped-${index}`,
-            convertedSalary: usdSalary * targetCurrencyRatio,
-            salary: rawSalary
-        }
-    })
+    const renderMappedTable = (): JSX.Element => {
+        const rowsWithId = mappedData.map((entry, index) => {
+            const rawSalary = entry._salary
+            const entryCurrencyRatio = entryStore.currencyValues?.getRatioByCode(entry.currency) ?? 1
+            const usdSalary = entry.salaryIsUsd ? rawSalary : rawSalary / entryCurrencyRatio
+            const targetCurrencyRatio = entryStore.currencyValues?.getRatioByCode(selectedCurrency) ?? 1
+            return {
+                ...entry,
+                id: `mapped-${index}`,
+                convertedSalary: usdSalary * targetCurrencyRatio,
+                salary: rawSalary
+            }
+        })
 
         return (
             <div style={{flex: 1, minHeight: 0}}>
@@ -185,6 +200,80 @@ const renderMappedTable = (): JSX.Element => {
         )
     }
 
+    const renderHistogram = (): JSX.Element => {
+        if (filteredData.length === 0) {
+            return (
+                <div style={{flex: 1, minHeight: 0, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                    <Typography variant="body2" style={{ color: '#666' }}>No data available for histogram</Typography>
+                </div>
+            )
+        }
+
+        const currencyValues = entryStore.currencyValues
+        const salaries = filteredData.map(entry => {
+            const rawSalary = entry._salary
+            const entryCurrencyRatio = currencyValues?.getRatioByCode(entry.currency) ?? 1
+            const usdSalary = entry.salaryIsUsd ? rawSalary : rawSalary / entryCurrencyRatio
+            const targetCurrencyRatio = currencyValues?.getRatioByCode(selectedCurrency) ?? 1
+            return usdSalary * targetCurrencyRatio
+        })
+
+        const binSize = 10000
+        const maxSalary = Math.max(...salaries)
+        const maxBin = Math.max(Math.ceil(maxSalary / binSize) * binSize, binSize * 2)
+        const numBins = maxBin / binSize
+
+        const bins: number[] = new Array(numBins).fill(0)
+        salaries.forEach(salary => {
+            const binIndex = Math.min(Math.floor(salary / binSize), bins.length - 1)
+            if (binIndex >= 0 && binIndex < bins.length) {
+                bins[binIndex]++
+            }
+        })
+
+        const xLabels = bins.map((_, i) => {
+            const from = i * binSize
+            const to = (i + 1) * binSize
+            return `${(from / 1000)}k - ${(to / 1000)}k`
+        })
+
+        const histogramData: Data[] = [{
+            x: xLabels,
+            y: bins,
+            type: 'bar',
+            marker: { color: '#F48024' }
+        }]
+
+        const histogramLayout: Partial<Layout> = {
+            title: { text: 'Salary Distribution' },
+            xaxis: {
+                title: { text: `Salary (${selectedCurrency})` },
+                tickangle: -45
+            },
+            yaxis: {
+                title: { text: 'Number of Salaries' }
+            },
+            paper_bgcolor: '#FF000000',
+            plot_bgcolor: '#FF000000',
+            margin: {
+                l: 60,
+                r: 30,
+                t: 60,
+                b: 120
+            }
+        }
+
+        return (
+            <div ref={plotRef} style={{flex: 1, minHeight: 0, overflow: 'auto'}}>
+                <Plot
+                    data={histogramData}
+                    layout={histogramLayout}
+                    style={{width: '100%', height: '100%'}}
+                />
+            </div>
+        )
+    }
+
     return (
         <div style={{padding: '20px', display: 'flex', flexDirection: 'column'}}>
             <Tabs
@@ -202,10 +291,12 @@ const renderMappedTable = (): JSX.Element => {
                 <Tab label={`${t.filteredTab} (${filteredData.length})`} />
                 <Tab label={`${t.mappedTab} (${mappedData.length})`} />
                 <Tab label={t.rawCsvTab} />
+                <Tab label={t.histogramTab} />
             </Tabs>
             {tabIndex === 0 && renderFilteredTable()}
             {tabIndex === 1 && renderMappedTable()}
             {tabIndex === 2 && renderRawCsvTable()}
+            {tabIndex === 3 && renderHistogram()}
         </div>
     )
 })

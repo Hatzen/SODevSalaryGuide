@@ -25,6 +25,8 @@ export class ControlStore {
     countriesFilterActive = false
 
     enableSalaryFilter = true
+    salaryThresholdMin = 10000
+    salaryThresholdMax = 250000
 
     pendingState: any = null
 
@@ -55,6 +57,8 @@ export class ControlStore {
         const degreeFilterActive = this.degreeFilterActive
         const countriesFilterActive = this.countriesFilterActive
         const enableSalaryFilter = this.enableSalaryFilter
+        const salaryThresholdMin = this.salaryThresholdMin
+        const salaryThresholdMax = this.salaryThresholdMax
 
         return new ControlState({
             selectedYear,
@@ -71,7 +75,9 @@ export class ControlStore {
             companySizeFilterActive,
             degreeFilterActive,
             countriesFilterActive,
-            enableSalaryFilter
+            enableSalaryFilter,
+            salaryThresholdMin,
+            salaryThresholdMax
         } as ControlState)
     }
 
@@ -156,6 +162,14 @@ export class ControlStore {
         this.enableSalaryFilter = enableSalaryFilter
     }
 
+    setSalaryThresholdMin(salaryThresholdMin: number): void {
+        this.salaryThresholdMin = salaryThresholdMin
+    }
+
+    setSalaryThresholdMax(salaryThresholdMax: number): void {
+        this.salaryThresholdMax = salaryThresholdMax
+    }
+
     setSelectedCurrency(currency: Currency): void {
         this.selectedCurrency = currency
     }
@@ -184,6 +198,8 @@ export class ControlStore {
             if (state.degreeFilterActive !== undefined) this.degreeFilterActive = state.degreeFilterActive
             if (state.countriesFilterActive !== undefined) this.countriesFilterActive = state.countriesFilterActive
             if (state.enableSalaryFilter !== undefined) this.enableSalaryFilter = state.enableSalaryFilter
+            if (state.salaryThresholdMin !== undefined) this.salaryThresholdMin = state.salaryThresholdMin
+            if (state.salaryThresholdMax !== undefined) this.salaryThresholdMax = state.salaryThresholdMax
         }
     }
 
@@ -204,7 +220,9 @@ export class ControlStore {
             companySizeFilterActive: this.companySizeFilterActive,
             degreeFilterActive: this.degreeFilterActive,
             countriesFilterActive: this.countriesFilterActive,
-            enableSalaryFilter: this.enableSalaryFilter
+            enableSalaryFilter: this.enableSalaryFilter,
+            salaryThresholdMin: this.salaryThresholdMin,
+            salaryThresholdMax: this.salaryThresholdMax
         }
     }
 
@@ -227,6 +245,8 @@ export class ControlStore {
         if (state.degreeFilterActive !== undefined) this.degreeFilterActive = state.degreeFilterActive
         if (state.countriesFilterActive !== undefined) this.countriesFilterActive = state.countriesFilterActive
         if (state.enableSalaryFilter !== undefined) this.enableSalaryFilter = state.enableSalaryFilter
+        if (state.salaryThresholdMin !== undefined) this.salaryThresholdMin = state.salaryThresholdMin
+        if (state.salaryThresholdMax !== undefined) this.salaryThresholdMax = state.salaryThresholdMax
     }
 }
 

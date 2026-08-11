@@ -419,10 +419,29 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
 
     get salaryFilter(): JSX.Element {
         const t = translationStore.t
+        const cs = this.props.controlStore!
+        const salaryMin = cs.salaryThresholdMin
+        const salaryMax = cs.salaryThresholdMax
+
+        const slider = (
+            <Slider
+                style={{ width: '90%', minWidth: '200px' }}
+                value={[salaryMin, salaryMax]}
+                min={0}
+                step={10000}
+                max={500000}
+                onChange={this.handleSalaryThresholdChange.bind(this)}
+                valueLabelDisplay="auto"
+                valueLabelFormat={(value: number) => `${(value / 1000).toLocaleString()}k`}
+                disableSwap
+                color="secondary"
+            />
+        )
+
         return (<div style={{marginBottom: '16px'}}>
             <ControlComponentWrapper
                 title={t.salaryFilterLabel}
-                controlComponent={<Typography variant="body2" style={{ color: '#666', fontSize: '0.85em' }}>{t.salaryFilterHint}</Typography>}
+                controlComponent={slider}
                 isEnabled={this.props.controlStore!.enableSalaryFilter}
                 enable={(event, value) => { this.props.controlStore!.setEnableSalaryFilter(value)}}>
             </ControlComponentWrapper>
@@ -437,6 +456,14 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
     handleMaxCompanySizeChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
         const value = event.target.value === '' ? null : parseInt(event.target.value, 10)
         this.props.controlStore!.setCompanySizeFromMax(value)
+    }
+
+    handleSalaryThresholdChange = (_event: Event | React.SyntheticEvent, value: number | number[]): void => {
+        const cs = this.props.controlStore!
+        if (Array.isArray(value) && value.length === 2) {
+            cs.setSalaryThresholdMin(value[0])
+            cs.setSalaryThresholdMax(value[1])
+        }
     }
 
     handleChangesForCountries(event: React.ChangeEvent<unknown>, value: { key: string, label: string }[]): void {
