@@ -30,7 +30,7 @@ const translations = {
         countriesLabel: 'Countries',
         degreeLabel: 'Highest Degree',
         salaryFilterLabel: 'Salary Threshold Filter',
-        salaryFilterHint: 'When disabled: consider all salaries. When enabled: filter by salary range',
+        salaryFilterHint: 'When disabled: consider all salaries. When enabled: filter by salary range in USD',
         companySizeFrom: 'From',
         companySizeTo: 'To',
         saveToSession: 'Save to Session',
@@ -84,7 +84,7 @@ const translations = {
         statisticsRealisticText: 'For a normal distribution, roughly 68% of all developers earn between "Mean − Std" and "Mean + Std". This range is a good estimate of what a realistic salary looks like.',
 
         // Estimator
-        estimatorIntro: 'Enter your profile and we estimate the salary you could expect, based on the Stack Overflow data. You can also compare similar datasets.',
+        estimatorIntro: 'Enter your profile and we estimate the salary you could expect, based on the Stack Overflow data. Salary thresholds are not considered to be unbiased.',
         estimatorExperience: 'Years of experience',
         estimatorAbilities: 'Tools and Technologies',
         estimatorCountries: 'Countries',
@@ -140,7 +140,7 @@ const translations = {
         countriesLabel: 'Länder',
         degreeLabel: 'Höchster Abschluss',
         salaryFilterLabel: 'Gehaltsfilter',
-        salaryFilterHint: 'Wenn deaktiviert: alle Gehälter berücksichtigen. Wenn aktiviert: Nach Gehaltsbereich filtern',
+        salaryFilterHint: 'Wenn deaktiviert: alle Gehälter berücksichtigen. Wenn aktiviert: Nach Gehaltsbereich in USD filtern',
         companySizeFrom: 'Von',
         companySizeTo: 'Bis',
         saveToSession: 'In Sitzung speichern',
@@ -195,7 +195,7 @@ const translations = {
         statisticsRealisticText: 'Bei einer Normalverteilung liegen etwa 68% aller Entwickler zwischen "Mittelwert − Std" und "Mittelwert + Std". Dieser Bereich ist eine gute Schätzung für ein realistisches Gehalt.',
 
         // Estimator
-        estimatorIntro: 'Gib dein Profil ein und wir schätzen das Gehalt, das du erwarten kannst, basierend auf den Stack-Overflow-Daten. Du kannst auch ähnliche Datensätze vergleichen.',
+        estimatorIntro: 'Gib dein Profil ein und wir schätzen das Gehalt, das du erwarten kannst, basierend auf den Stack-Overflow-Daten. Gehaltsfilter werden nicht berücksichtigt.',
         estimatorExperience: 'Jahre Erfahrung',
         estimatorAbilities: 'Tools und Technologien',
         estimatorCountries: 'Länder',

@@ -2,6 +2,7 @@ import React from 'react'
 import { Checkbox, FormGroup, FormControl, Slider, Box, TextField, Typography, IconButton } from '@mui/material'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import Menu from '@mui/material/Menu'
+import MenuIcon from '@mui/icons-material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import { inject, observer } from 'mobx-react'
 import { injectClause, StoreProps } from '../stores/storeHelper'
@@ -91,17 +92,25 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
 
     get headerWithMenu(): JSX.Element {
         const t = translationStore.t
+        const isMobile = uiStore.isMobileView
         return (
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
                 <Typography variant="h6" style={{ fontFamily: 'Roboto, Helvetica, Arial, sans-serif' }}>
                     {t.filters}
                 </Typography>
+                <IconButton onClick={this.closeMenu.bind(this)} size="small">
+                    <MenuIcon visibility={isMobile ? 'visible' : 'hidden'} />
+                </IconButton>
                 <IconButton onClick={this.handleMenuClick.bind(this)} size="small">
                     <MoreVertIcon />
                 </IconButton>
                 {this.menu}
             </div>
         )
+    }
+
+    closeMenu = (event: React.MouseEvent<HTMLElement>): void => {
+        uiStore.setControlPaneOpen(false)
     }
 
     handleMenuClick = (event: React.MouseEvent<HTMLElement>): void => {
@@ -445,6 +454,7 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
                 isEnabled={this.props.controlStore!.enableSalaryFilter}
                 enable={(event, value) => { this.props.controlStore!.setEnableSalaryFilter(value)}}>
             </ControlComponentWrapper>
+            <Typography variant="body2" style={{ color: '#666', fontSize: '0.85em', marginTop: '10px'}}>{t.salaryFilterHint}</Typography>
         </div>)
     }
 

@@ -67,7 +67,7 @@ class MenuAppBar extends React.Component<MenuAppBarProps> {
                 <AppBar position='static'>
                     <Toolbar variant={isMobile ? 'dense' : 'regular'}>
                         <IconButton onClick={this.props.menuClicked} color='inherit' aria-label='Menu'>
-                            <MenuIcon />
+                            <MenuIcon visibility={isMobile ? 'visible' : 'hidden'}/>
                         </IconButton>
                         <Typography variant={isMobile ? 'subtitle1' : 'h5'} noWrap sx={{ flexGrow: 1 }}>
                             {t.title}
