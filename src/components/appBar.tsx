@@ -19,6 +19,7 @@ export const LanguageSelector: React.FC = () => {
             <Autocomplete
                 options={['en', 'de']}
                 value={controlStore.language ?? 'en'}
+                disableClearable
                 onChange={(_event, value) => {
                     if (value) {
                         controlStore.setLanguage(value as 'en' | 'de')

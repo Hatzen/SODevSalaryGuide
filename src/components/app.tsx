@@ -14,6 +14,7 @@ import SurveyEntry from '../model/surveyEntry'
 import ConsideredDataTable from './consideredDataTable'
 import CurrencyConversionTable from './currencyConversionTable'
 import SalaryEstimator from './salaryEstimator'
+import HistogramTab from './histogramTab'
 import translationStore from '../stores/translationStore'
 import controlStore from '../stores/controlStore'
 import { uiStore } from '../stores/uiStore'
@@ -107,6 +108,7 @@ class App extends React.Component<Record<string, unknown>, AppState> {
                             }}>
                             <Tab label={t.salaryTab} />
                             <Tab label={t.participationTab} />
+                            <Tab label={t.histogramTab} />
                             <Tab label={t.consideredDataTab} />
                             <Tab label={t.currencyRatesTab} />
                             <Tab label={t.estimatorTab} />
@@ -116,9 +118,10 @@ class App extends React.Component<Record<string, unknown>, AppState> {
                         <div style={{width: '100%', height: '100%', overflow: 'auto'}}>
                             {this.state.tabIndex === 0 ? <BoxPlot /> :
                                 this.state.tabIndex === 1 ? <BarPlot /> :
-                                    this.state.tabIndex === 2 ? <ConsideredDataTable /> :
-                                        this.state.tabIndex === 3 ? <CurrencyConversionTable /> :
-                                            <SalaryEstimator />}
+                                    this.state.tabIndex === 2 ? <HistogramTab /> :
+                                        this.state.tabIndex === 3 ? <ConsideredDataTable /> :
+                                            this.state.tabIndex === 4 ? <CurrencyConversionTable /> :
+                                                <SalaryEstimator />}
                         </div>
                     </div>
                 </Allotment.Pane>
@@ -153,6 +156,7 @@ class App extends React.Component<Record<string, unknown>, AppState> {
                         }}>
                         <Tab label={t.salaryTab} />
                         <Tab label={t.participationTab} />
+                        <Tab label={t.histogramTab} />
                         <Tab label={t.consideredDataTab} />
                         <Tab label={t.currencyRatesTab} />
                         <Tab label={t.estimatorTab} />
@@ -162,9 +166,10 @@ class App extends React.Component<Record<string, unknown>, AppState> {
                     <div style={{width: '100%', height: '100%'}}>
                         {this.state.tabIndex === 0 ? <BoxPlot /> :
                             this.state.tabIndex === 1 ? <BarPlot /> :
-                                this.state.tabIndex === 2 ? <ConsideredDataTable /> :
-                                    this.state.tabIndex === 3 ? <CurrencyConversionTable /> :
-                                        <SalaryEstimator />}
+                                this.state.tabIndex === 2 ? <HistogramTab /> :
+                                    this.state.tabIndex === 3 ? <ConsideredDataTable /> :
+                                        this.state.tabIndex === 4 ? <CurrencyConversionTable /> :
+                                            <SalaryEstimator />}
                     </div>
                 </div>
             </div>
@@ -190,6 +195,7 @@ class App extends React.Component<Record<string, unknown>, AppState> {
                 <Autocomplete
                     options={['en', 'de']}
                     value={controlStore.language ?? 'en'}
+                    disableClearable
                     onChange={(_event, value) => {
                         if (value) {
                             controlStore.setLanguage(value as 'en' | 'de')

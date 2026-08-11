@@ -375,6 +375,11 @@ class SalaryEstimator extends React.Component<StoreProps, EstimatorState> {
                                 </Box>
                                 <Box sx={{ marginTop: '12px', padding: '8px', backgroundColor: '#F5F5F5', borderRadius: '4px' }}>
                                     <Typography variant="body2"><b>{t.estimatorDataQuality}:</b> <span style={{ color: quality.color, fontWeight: 600 }}>{quality.text}</span></Typography>
+                                    {stats && stats.std > stats.mean / 2 && (
+                                        <Typography variant="body2" style={{ color: '#b00020', marginTop: '8px' }}>
+                                            {t.estimatorHighSalaryWarning}
+                                        </Typography>
+                                    )}
                                 </Box>
                             </Paper>
                         )}
