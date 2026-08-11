@@ -178,7 +178,7 @@ export class EntryStore {
                     this.parsedDataByYear[yearNum].resultSet = data.resultSet || []
                     this.parsedDataByYear[yearNum].overallEntryCount = data.overallEntryCount || 0
                     this.parsedDataByYear[yearNum].invalidEntryCount = data.invalidEntryCount || 0
-                    this.parsedData.resultSet = [...this.parsedData.resultSet, ...(data.resultSet || [])]
+                    Array.prototype.push.apply(this.parsedData.resultSet, data.resultSet || [])
                     // Populate distinct values for filters
                     this.populateDistinctValues(data.resultSet || [])
                     return true

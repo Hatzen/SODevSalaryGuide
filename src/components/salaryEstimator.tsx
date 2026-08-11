@@ -159,28 +159,28 @@ class SalaryEstimator extends React.Component<StoreProps, EstimatorState> {
         if (base.abilities.length > 0) {
             const without = { ...base, abilities: [] as string[] }
             result.push({
-                label: translationStore.t.estimatorAbilities + ': -',
+                label: translationStore.t.estimatorAbilities + ':',
                 stats: this.computeStats(all.filter(e => this.matchesFilter(e, without)))
             })
         }
         if (base.countries.length > 0) {
             const without = { ...base, countries: [] as string[] }
             result.push({
-                label: translationStore.t.estimatorCountries + ': -',
+                label: translationStore.t.estimatorCountries + ':',
                 stats: this.computeStats(all.filter(e => this.matchesFilter(e, without)))
             })
         }
         if (base.degrees.length > 0) {
             const without = { ...base, degrees: [] as string[] }
             result.push({
-                label: translationStore.t.estimatorDegree + ': -',
+                label: translationStore.t.estimatorDegree + ':',
                 stats: this.computeStats(all.filter(e => this.matchesFilter(e, without)))
             })
         }
         if (base.genders.length > 0) {
             const without = { ...base, genders: [] as Gender[] }
             result.push({
-                label: translationStore.t.estimatorGender + ': -',
+                label: translationStore.t.estimatorGender + ':',
                 stats: this.computeStats(all.filter(e => this.matchesFilter(e, without)))
             })
         }
@@ -411,7 +411,7 @@ class SalaryEstimator extends React.Component<StoreProps, EstimatorState> {
                                             <TableRow key={i}>
                                                 <TableCell>{s.label}</TableCell>
                                                 <TableCell align="right">{s.stats ? fmt(s.stats.median) : '-'}</TableCell>
-                                                <TableCell align="right">{s.stats ? fmt(s.stats.median - baseMedian) : '-'}</TableCell>
+                                                <TableCell align="right">{s.stats ? fmt(baseMedian - s.stats.median) : '-'}</TableCell>
                                             </TableRow>
                                         ))}
                                     </TableBody>
