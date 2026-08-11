@@ -21,6 +21,8 @@ export default class ControlState {
     countriesFilterActive = false
 
     enableSalaryFilter = true
+    salaryThresholdMin = 10000
+    salaryThresholdMax = 250000
 
     constructor (partial: ControlState) {
         Object.assign(this, partial)
@@ -38,13 +40,13 @@ export default class ControlState {
 
     private filterBySalary(entry: SurveyEntry): boolean {
         if (!this.enableSalaryFilter) {
-            return true;
+            return true
         }
         const rawSalary = entry._salary
         const entryStore = SurveyEntry.entryStore
         const currencyValues = entryStore?.currencyValues
         const usdSalary = entry.salaryIsUsd ? rawSalary : rawSalary / (currencyValues?.getRatioByCode(entry.currency) ?? 1)
-        return usdSalary >= 10000 && usdSalary <= 250000;
+        return usdSalary >= this.salaryThresholdMin && usdSalary <= this.salaryThresholdMax
     }
 
     private filterByAbilities(entry: SurveyEntry): boolean {

@@ -1,5 +1,5 @@
 import FreeCurrency from '../model/currencyValues'
-import { makeAutoObservable } from 'mobx'
+import { makeAutoObservable, observable, transaction } from 'mobx'
 import CurrencyService from '../services/currencyService'
 import StackOverflowCsvReader from '../services/stackOverflowCsvReader'
 import { ParseStepResult } from 'papaparse'
@@ -9,6 +9,7 @@ import { AVAILABLE_YEARS } from '../model/constantMetaData'
 import { AbstractCsvRowMapper } from '../mapper/AbstractCsvRowMapper'
 import { idbRawStore, RAW_PAGE_SIZE } from '../services/idbRawStore'
 import SurveyEntry from '../model/surveyEntry'
+import { mark, measure } from '../utils/perfLogger'
 
 const STORAGE_KEY_PREFIX = 'salaryGuide-'
 
@@ -37,17 +38,31 @@ export class EntryStore {
     currencyValues!: FreeCurrency
     reader!: StackOverflowCsvReader
     selectedYear = AVAILABLE_YEARS[AVAILABLE_YEARS.length - 1]
+    isParsing = false
 
     // Sink that receives every valid parsed entry during streaming (wired by uiStore)
     private streamSink: ((entry: SurveyEntry) => void) | null = null
 
     // Buffer of raw CSV rows for the year currently being parsed, flushed to IndexedDB per page
-    private rawBuffer: CsvRow[] = []
-    private rawPageCount = 0
-    private rawBufferYear = -1
+    public rawBuffer: CsvRow[] = []
+    public rawPageCount = 0
+    public rawBufferYear = -1
+
+    // Buffer for parsed entries during chunked loading; flushed to observables only after final chunk
+    public pendingValidRows: SurveyEntry[] = []
+    public pendingInvalidCount = 0
+    public pendingTotalCount = 0
 
     constructor() {
-        makeAutoObservable(this)
+        makeAutoObservable(this, {
+            isParsing: observable,
+            pendingValidRows: false,
+            pendingInvalidCount: false,
+            pendingTotalCount: false,
+            rawBuffer: false,
+            rawPageCount: false,
+            rawBufferYear: false
+        })
         this.loadData()
     }
 
@@ -84,6 +99,7 @@ export class EntryStore {
 
     initParser (year: string): void {
         this.selectedYear = year
+        this.isParsing = true
         
         const resultsetForYear = this.parsedDataByYear[parseInt(year)]
         // Only clear if no existing data
@@ -105,6 +121,11 @@ export class EntryStore {
         this.rawBuffer = []
         this.rawPageCount = 0
         this.rawBufferYear = parseInt(year)
+
+        // Reset parsed-entry buffering
+        this.pendingValidRows = []
+        this.pendingInvalidCount = 0
+        this.pendingTotalCount = 0
         
         this.reader.startWorkerForYear(
             yearData,
@@ -114,25 +135,34 @@ export class EntryStore {
         )
     }
 
-    private handleRawChunk(rawRows: CsvRow[]): void {
+    private handleRawChunk(rawRows: CsvRow[], validRows: SurveyEntry[], invalidCount: number, totalCount: number): void {
         const yearData = this.parsedDataByYear[this.rawBufferYear]
         if (!yearData) return
         const parsed = yearData.chunksParsed
         const available = yearData.chunksAvailable
-        const invalidEntryCount = yearData.invalidEntryCount
         const overallEntryCount = yearData.overallEntryCount
+        const invalidEntryCount = yearData.invalidEntryCount
         // eslint-disable-next-line no-console
         console.log('Finished parsing a chunk for year: ' + this.rawBufferYear + '\n'
                 + '\t chunks parsed ' + parsed + ' chunks to go ' + available + '\n '
                 + '\t entries parsed ' + overallEntryCount + ' invalid ones ' + invalidEntryCount + ' ')
 
-        // Buffer raw CSV rows and flush full pages to IndexedDB (never keep it all in RAM)
-        this.rawBuffer.push(...rawRows)
+        mark('chunk-buffer-start')
+        Array.prototype.push.apply(this.pendingValidRows, validRows)
+        this.pendingInvalidCount += invalidCount
+        this.pendingTotalCount += totalCount
+        Array.prototype.push.apply(this.rawBuffer, rawRows)
+        const bufferDuration = measure('chunk-buffer', 'chunk-buffer-start')
+        console.log(`[PERF] Chunk buffer: ${bufferDuration.toFixed(0)}ms, pending=${this.pendingValidRows.length}, rawBuffer=${this.rawBuffer.length}`)
+
+        mark('idb-write-start')
         while (this.rawBuffer.length >= RAW_PAGE_SIZE) {
             const page = this.rawBuffer.splice(0, RAW_PAGE_SIZE)
             void idbRawStore.savePage(this.rawBufferYear, this.rawPageCount, page)
             this.rawPageCount++
         }
+        const idbDuration = measure('idb-write', 'idb-write-start')
+        console.log(`[PERF] IndexedDB flush: ${idbDuration.toFixed(0)}ms, pages=${this.rawPageCount}`)
 
         const isLastChunk = parsed > 0 && parsed >= available
         if (isLastChunk) {
@@ -141,16 +171,21 @@ export class EntryStore {
                 this.rawPageCount++
                 this.rawBuffer = []
             }
-            this.streamSinkFinalize?.()
+            mark('final-tx-start')
+            transaction(() => {
+                Array.prototype.push.apply(yearData.resultSet, this.pendingValidRows)
+                yearData.invalidEntryCount += this.pendingInvalidCount
+                yearData.overallEntryCount += this.pendingTotalCount
+            })
+            const txDuration = measure('final-tx', 'final-tx-start')
+            console.log(`[PERF] Final MobX tx: ${txDuration.toFixed(0)}ms, entries=${this.pendingValidRows.length}`)
+            this.pendingValidRows = []
+            this.pendingInvalidCount = 0
+            this.pendingTotalCount = 0
+            this.isParsing = false
             // Only save parsed entries to session storage on the LAST chunk
             this.saveToSession(String(this.rawBufferYear))
         }
-    }
-
-    private streamSinkFinalize: (() => void) | null = null
-
-    setStreamFinalize(fn: () => void): void {
-        this.streamSinkFinalize = fn
     }
 
     saveToSession(year: string): void {
@@ -178,7 +213,7 @@ export class EntryStore {
                     this.parsedDataByYear[yearNum].resultSet = data.resultSet || []
                     this.parsedDataByYear[yearNum].overallEntryCount = data.overallEntryCount || 0
                     this.parsedDataByYear[yearNum].invalidEntryCount = data.invalidEntryCount || 0
-                    this.parsedData.resultSet = [...this.parsedData.resultSet, ...(data.resultSet || [])]
+                    Array.prototype.push.apply(this.parsedData.resultSet, data.resultSet || [])
                     // Populate distinct values for filters
                     this.populateDistinctValues(data.resultSet || [])
                     return true

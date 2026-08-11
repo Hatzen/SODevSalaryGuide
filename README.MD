@@ -13,9 +13,10 @@ We use the raw data and try not to process the data to much. Just give some filt
 
 Outdated Version; Current version is prettier and more stable but just to get an impression  
 <div>
+Desktop:
 <img src="https://github.com/Hatzen/SODevSalaryGuide/blob/develop/docs/imgs/SOSalary-screenshot1.png?raw=true" width="1000">
+Mobile:
 <img src="https://github.com/Hatzen/SODevSalaryGuide/blob/develop/docs/imgs/SOSalary-screenshot2.png?raw=true" width="1000">
-<img src="https://github.com/Hatzen/SODevSalaryGuide/blob/develop/docs/imgs/SOSalary-screenshot3.png?raw=true" width="1000">
 </div>
 
 

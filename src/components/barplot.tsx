@@ -62,7 +62,7 @@ class BarPlot extends React.Component<StoreProps> {
         const invalidNumbers = [yearEntrySet.invalidEntryCount]
         const matchingFilterNumbers = [filteredYearList.length]
 
-return [
+        return [
             {
                 y: matchingFilterNumbers,
                 name: 'matching filter',

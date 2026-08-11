@@ -1,10 +1,12 @@
 import Papa, { ParseStepResult } from 'papaparse'
-import { transaction } from 'mobx'
 import { CsvRowMapper } from '../mapper/CsvRowMapper'
 import { CHUNK_COUNT_PER_YEAR } from '../model/constantMetaData'
 import CsvRow from '../model/csvRow'
 import ResultSetForYear from '../model/resultSetForYear'
 import SurveyEntry from '../model/surveyEntry'
+import { mark, measure, logLongTasks } from '../utils/perfLogger'
+
+logLongTasks()
 
 export default class StackOverflowCsvReader {
 
@@ -12,88 +14,118 @@ export default class StackOverflowCsvReader {
 
     static readonly BASIC_CONFIG ={
         download: true,
-        worker: false, // Using worker=true for better performance with large files
-        /*
-Uncaught DataCloneError: Failed to execute 'postMessage' on 'Worker': function (header, index) {
-            const UNNAMED_COLUMN_PREFIX = 'columnIndex-';
-            if (header =...<omitted>... } could not be cloned.
-        */
-        
+        worker: true,
         delimiter: ',',
-        header: true,
-        transformHeader: function(header: string, index: number): string {
-            const UNNAMED_COLUMN_PREFIX = 'columnIndex-'
-            if (header == null || header === '') {
-                return UNNAMED_COLUMN_PREFIX + index
-            }
-            return header
-        }
+        header: true
     }
 
-    startWorkerForYear (
+    async startWorkerForYear (
         resultsetForYear: ResultSetForYear,
         consumer: (row: Papa.ParseStepResult<CsvRow>) => void,
-        completed: (rawRows: CsvRow[]) => void,
+        completed: (rawRows: CsvRow[], validRows: SurveyEntry[], invalidCount: number, totalCount: number) => void,
         onValidEntry?: (entry: SurveyEntry) => void
-    ): void {
-        let validRows: SurveyEntry[] = []
-        let invalidCount = 0
-        let totalCount = 0
-        let rawRows: CsvRow[] = []
-        
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const config = {
-            ...StackOverflowCsvReader.BASIC_CONFIG,
-            step: (row: Papa.ParseStepResult<CsvRow>) => {
-                const mapper = new CsvRowMapper(resultsetForYear.year)
-                const rowEntry = mapper.map(row)
-                if (rowEntry.isValid) {
-                    validRows.push(rowEntry)
-                    onValidEntry?.(rowEntry)
-                } else {
-                    invalidCount++
-                }
-                totalCount++
-                // Store raw CSV row for raw data table
-                rawRows.push(row.data)
-                consumer(row)
-            },
-            complete: () => {
-                // Batch update observables once per chunk within a transaction
-                transaction(() => {
-                    // Replace array entirely to avoid multiple MobX notifications
-                    resultsetForYear.resultSet = [...resultsetForYear.resultSet, ...validRows]
-                    resultsetForYear.invalidEntryCount += invalidCount
-                    resultsetForYear.overallEntryCount += totalCount
-                })
-                const chunkRawRows = rawRows
-                validRows = []
-                rawRows = []
-                invalidCount = 0
-                totalCount = 0
-
-                this.handleNextChunk(resultsetForYear, config)
-                // Hand the raw CSV rows of this chunk to the caller for storage
-                completed(chunkRawRows)
-            }
-        } as Papa.ParseRemoteConfig<CsvRow>
+    ): Promise<void> {
         const year = resultsetForYear.year.toString()
         const chunkCountForYear = CHUNK_COUNT_PER_YEAR[year]
         resultsetForYear.chunksParsed = 0
         resultsetForYear.chunksAvailable = chunkCountForYear
         
-        this.handleNextChunk(resultsetForYear, config)
+        await this.handleNextChunk(resultsetForYear, consumer, completed, onValidEntry)
     }
 
-    private handleNextChunk (resultsetForYear: ResultSetForYear, config: Papa.ParseRemoteConfig<CsvRow>): void {
+    private async handleNextChunk (
+        resultsetForYear: ResultSetForYear,
+        consumer: (row: Papa.ParseStepResult<CsvRow>) => void,
+        completed: (rawRows: CsvRow[], validRows: SurveyEntry[], invalidCount: number, totalCount: number) => void,
+        onValidEntry?: (entry: SurveyEntry) => void
+    ): Promise<void> {
         resultsetForYear.chunksParsed++
         if (resultsetForYear.chunksParsed > resultsetForYear.chunksAvailable) {
-            // All chunks processed, nothing more to do
             return
         }
         const fileName = this.generateFileName(resultsetForYear.year.toString(), resultsetForYear.chunksParsed)
         const fileUrl = this.baseUrl + '/' + fileName
-        Papa.parse(fileUrl, config)
+
+        const validRows: SurveyEntry[] = []
+        let invalidCount = 0
+        let totalCount = 0
+        const rawRows: CsvRow[] = []
+        let normalizedFields: string[] | null = null
+
+        const chunkStart = performance.now()
+        mark(`chunk-${fileName}-start`)
+
+        await new Promise<void>((resolve, reject) => {
+            Papa.parse(fileUrl, {
+                ...StackOverflowCsvReader.BASIC_CONFIG,
+                complete: (results) => {
+                    const parseEnd = performance.now()
+                    measure('chunk-parse', `chunk-${fileName}-start`, `chunk-${fileName}-parse-end`)
+                    mark(`chunk-${fileName}-parse-end`)
+
+                    if (!normalizedFields && results.meta && results.meta.fields) {
+                        normalizedFields = results.meta.fields.map((field, index) =>
+                            field == null || field === '' ? `${StackOverflowCsvReader.UNNAMED_COLUMN_PREFIX}${index}` : field
+                        )
+                    }
+
+                    const mapper = new CsvRowMapper(resultsetForYear.year)
+                    const data = results.data as CsvRow[]
+                    for (const row of data) {
+                        const normalizedData: CsvRow = {}
+                        if (normalizedFields && results.meta && results.meta.fields) {
+                            for (let i = 0; i < results.meta.fields.length; i++) {
+                                const originalKey = results.meta.fields[i]
+                                const normalizedKey = normalizedFields[i]
+                                if (normalizedKey !== undefined && originalKey !== undefined) {
+                                    normalizedData[normalizedKey] = row[originalKey]
+                                }
+                            }
+                        }
+
+                        const normalizedRow = { ...row, ...normalizedData } as CsvRow
+                        const rowEntry = mapper.map({ data: normalizedRow, meta: { fields: normalizedFields || Object.keys(normalizedData) } } as Papa.ParseStepResult<CsvRow>)
+                        if (rowEntry.isValid) {
+                            validRows.push(rowEntry)
+                            onValidEntry?.(rowEntry)
+                        } else {
+                            invalidCount++
+                        }
+                        totalCount++
+                        rawRows.push(row)
+                    }
+
+                    const mapEnd = performance.now()
+                    measure('chunk-map', `chunk-${fileName}-parse-end`, `chunk-${fileName}-map-end`)
+                    mark(`chunk-${fileName}-map-end`)
+
+                    completed(rawRows, validRows, invalidCount, totalCount)
+
+                    const txEnd = performance.now()
+                    measure('chunk-mobx-tx', `chunk-${fileName}-map-end`, `chunk-${fileName}-tx-end`)
+                    mark(`chunk-${fileName}-tx-end`)
+
+                    const chunkEnd = performance.now()
+                    measure('chunk-total', `chunk-${fileName}-start`, `chunk-${fileName}-total-end`)
+                    mark(`chunk-${fileName}-total-end`)
+                    console.log(
+                        `[PERF] ${fileName}: total=${(chunkEnd - chunkStart).toFixed(0)}ms ` +
+                        `parse=${(parseEnd - chunkStart).toFixed(0)}ms ` +
+                        `map=${(mapEnd - parseEnd).toFixed(0)}ms ` +
+                        `tx=${(txEnd - mapEnd).toFixed(0)}ms ` +
+                        `rows=${totalCount}`
+                    )
+
+                    resolve()
+                },
+                error: (err: unknown) => {
+                    console.error('Papa parse error for chunk', fileName, err)
+                    reject(err)
+                }
+            } as Papa.ParseRemoteConfig<CsvRow>)
+        })
+
+        await this.handleNextChunk(resultsetForYear, consumer, completed, onValidEntry)
     }
 
     private generateFileName(year: string, chunk: number): string {

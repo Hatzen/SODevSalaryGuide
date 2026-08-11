@@ -9,6 +9,8 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import translationStore from '../stores/translationStore'
 
+import { observer } from 'mobx-react'
+
 interface IStatisticsModalProps {
     open: boolean
     onClose: () => void
@@ -19,7 +21,7 @@ interface IStatisticsModalState {
     open: boolean
 }
 
-export default class StatisticsModal extends React.Component<IStatisticsModalProps, IStatisticsModalState> {
+class StatisticsModal extends React.Component<IStatisticsModalProps, IStatisticsModalState> {
     constructor(props: IStatisticsModalProps) {
         super(props)
         this.state = {
@@ -93,3 +95,5 @@ function Section({ title, text, noMargin }: { title: string; text: string; noMar
         </Box>
     )
 }
+
+export default observer(StatisticsModal)

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Profiler } from 'react'
 import entryStore from '../stores/entryStore'
 import BoxPlot from './boxplot'
 import BarPlot from './barplot'
@@ -14,9 +14,12 @@ import SurveyEntry from '../model/surveyEntry'
 import ConsideredDataTable from './consideredDataTable'
 import CurrencyConversionTable from './currencyConversionTable'
 import SalaryEstimator from './salaryEstimator'
+import HistogramTab from './histogramTab'
 import translationStore from '../stores/translationStore'
 import controlStore from '../stores/controlStore'
 import { uiStore } from '../stores/uiStore'
+import { mark, measure } from '../utils/perfLogger'
+import { trackRender, startFPSMonitor, logAllRenderStats } from '../utils/reactPerfMonitor'
 
 interface AppState {
     tabIndex: number
@@ -45,6 +48,12 @@ class App extends React.Component<Record<string, unknown>, AppState> {
 
     componentDidMount(): void {
         uiStore.initMobileDetection()
+        startFPSMonitor(1000)
+        console.log('[ReactPerf] FPS monitor started. Stats will be logged after 60s or on manual trigger.')
+    }
+
+    componentWillUnmount(): void {
+        logAllRenderStats()
     }
 
     render(): JSX.Element {
@@ -107,6 +116,7 @@ class App extends React.Component<Record<string, unknown>, AppState> {
                             }}>
                             <Tab label={t.salaryTab} />
                             <Tab label={t.participationTab} />
+                            <Tab label={t.histogramTab} />
                             <Tab label={t.consideredDataTab} />
                             <Tab label={t.currencyRatesTab} />
                             <Tab label={t.estimatorTab} />
@@ -114,11 +124,24 @@ class App extends React.Component<Record<string, unknown>, AppState> {
                     </div>
                     <div style={{position: 'relative', top: 0, left: 0, right: 0, height: 'calc(100% - 48px)', width: '100%'}}>
                         <div style={{width: '100%', height: '100%', overflow: 'auto'}}>
-                            {this.state.tabIndex === 0 ? <BoxPlot /> :
-                                this.state.tabIndex === 1 ? <BarPlot /> :
-                                    this.state.tabIndex === 2 ? <ConsideredDataTable /> :
-                                        this.state.tabIndex === 3 ? <CurrencyConversionTable /> :
-                                            <SalaryEstimator />}
+                            <Profiler id="BoxPlot" onRender={trackRender('BoxPlot')}>
+                                {this.state.tabIndex === 0 ? <BoxPlot /> : null}
+                            </Profiler>
+                            <Profiler id="BarPlot" onRender={trackRender('BarPlot')}>
+                                {this.state.tabIndex === 1 ? <BarPlot /> : null}
+                            </Profiler>
+                            <Profiler id="HistogramTab" onRender={trackRender('HistogramTab')}>
+                                {this.state.tabIndex === 2 ? <HistogramTab /> : null}
+                            </Profiler>
+                            <Profiler id="ConsideredDataTable" onRender={trackRender('ConsideredDataTable')}>
+                                {this.state.tabIndex === 3 ? <ConsideredDataTable /> : null}
+                            </Profiler>
+                            <Profiler id="CurrencyConversionTable" onRender={trackRender('CurrencyConversionTable')}>
+                                {this.state.tabIndex === 4 ? <CurrencyConversionTable /> : null}
+                            </Profiler>
+                            <Profiler id="SalaryEstimator" onRender={trackRender('SalaryEstimator')}>
+                                {this.state.tabIndex === 5 ? <SalaryEstimator /> : null}
+                            </Profiler>
                         </div>
                     </div>
                 </Allotment.Pane>
@@ -153,6 +176,7 @@ class App extends React.Component<Record<string, unknown>, AppState> {
                         }}>
                         <Tab label={t.salaryTab} />
                         <Tab label={t.participationTab} />
+                        <Tab label={t.histogramTab} />
                         <Tab label={t.consideredDataTab} />
                         <Tab label={t.currencyRatesTab} />
                         <Tab label={t.estimatorTab} />
@@ -160,11 +184,24 @@ class App extends React.Component<Record<string, unknown>, AppState> {
                 </div>
                 <div style={{position: 'relative', top: 0, left: 0, right: 0, height: 'calc(100% - 48px)', width: '100%'}}>
                     <div style={{width: '100%', height: '100%'}}>
-                        {this.state.tabIndex === 0 ? <BoxPlot /> :
-                            this.state.tabIndex === 1 ? <BarPlot /> :
-                                this.state.tabIndex === 2 ? <ConsideredDataTable /> :
-                                    this.state.tabIndex === 3 ? <CurrencyConversionTable /> :
-                                        <SalaryEstimator />}
+                        <Profiler id="BoxPlot" onRender={trackRender('BoxPlot')}>
+                            {this.state.tabIndex === 0 ? <BoxPlot /> : null}
+                        </Profiler>
+                        <Profiler id="BarPlot" onRender={trackRender('BarPlot')}>
+                            {this.state.tabIndex === 1 ? <BarPlot /> : null}
+                        </Profiler>
+                        <Profiler id="HistogramTab" onRender={trackRender('HistogramTab')}>
+                            {this.state.tabIndex === 2 ? <HistogramTab /> : null}
+                        </Profiler>
+                        <Profiler id="ConsideredDataTable" onRender={trackRender('ConsideredDataTable')}>
+                            {this.state.tabIndex === 3 ? <ConsideredDataTable /> : null}
+                        </Profiler>
+                        <Profiler id="CurrencyConversionTable" onRender={trackRender('CurrencyConversionTable')}>
+                            {this.state.tabIndex === 4 ? <CurrencyConversionTable /> : null}
+                        </Profiler>
+                        <Profiler id="SalaryEstimator" onRender={trackRender('SalaryEstimator')}>
+                            {this.state.tabIndex === 5 ? <SalaryEstimator /> : null}
+                        </Profiler>
                     </div>
                 </div>
             </div>
@@ -190,6 +227,7 @@ class App extends React.Component<Record<string, unknown>, AppState> {
                 <Autocomplete
                     options={['en', 'de']}
                     value={controlStore.language ?? 'en'}
+                    disableClearable
                     onChange={(_event, value) => {
                         if (value) {
                             controlStore.setLanguage(value as 'en' | 'de')
@@ -210,7 +248,11 @@ class App extends React.Component<Record<string, unknown>, AppState> {
     }
 
     private changeTab = (event: React.ChangeEvent<unknown>, newValue: number | string): void => {
-        this.setState({tabIndex: Number(newValue)})
+        mark('app-change-tab-start')
+        this.setState({tabIndex: Number(newValue)}, () => {
+            const duration = measure('app-change-tab', 'app-change-tab-start')
+            console.log(`[PERF] Tab change: ${duration.toFixed(0)}ms, tab=${Number(newValue)}`)
+        })
     }
 
     private toggleControls(): void {

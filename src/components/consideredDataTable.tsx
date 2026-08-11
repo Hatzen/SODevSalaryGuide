@@ -127,19 +127,19 @@ const ConsideredDataTable = observer(() => {
         }
     ]
 
-const renderMappedTable = (): JSX.Element => {
-    const rowsWithId = mappedData.map((entry, index) => {
-        const rawSalary = entry._salary
-        const entryCurrencyRatio = entryStore.currencyValues?.getRatioByCode(entry.currency) ?? 1
-        const usdSalary = entry.salaryIsUsd ? rawSalary : rawSalary / entryCurrencyRatio
-        const targetCurrencyRatio = entryStore.currencyValues?.getRatioByCode(selectedCurrency) ?? 1
-        return {
-            ...entry,
-            id: `mapped-${index}`,
-            convertedSalary: usdSalary * targetCurrencyRatio,
-            salary: rawSalary
-        }
-    })
+    const renderMappedTable = (): JSX.Element => {
+        const rowsWithId = mappedData.map((entry, index) => {
+            const rawSalary = entry._salary
+            const entryCurrencyRatio = entryStore.currencyValues?.getRatioByCode(entry.currency) ?? 1
+            const usdSalary = entry.salaryIsUsd ? rawSalary : rawSalary / entryCurrencyRatio
+            const targetCurrencyRatio = entryStore.currencyValues?.getRatioByCode(selectedCurrency) ?? 1
+            return {
+                ...entry,
+                id: `mapped-${index}`,
+                convertedSalary: usdSalary * targetCurrencyRatio,
+                salary: rawSalary
+            }
+        })
 
         return (
             <div style={{flex: 1, minHeight: 0}}>

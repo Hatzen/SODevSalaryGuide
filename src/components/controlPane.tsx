@@ -2,6 +2,7 @@ import React from 'react'
 import { Checkbox, FormGroup, FormControl, Slider, Box, TextField, Typography, IconButton } from '@mui/material'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import Menu from '@mui/material/Menu'
+import MenuIcon from '@mui/icons-material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import { inject, observer } from 'mobx-react'
 import { injectClause, StoreProps } from '../stores/storeHelper'
@@ -91,17 +92,25 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
 
     get headerWithMenu(): JSX.Element {
         const t = translationStore.t
+        const isMobile = uiStore.isMobileView
         return (
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
                 <Typography variant="h6" style={{ fontFamily: 'Roboto, Helvetica, Arial, sans-serif' }}>
                     {t.filters}
                 </Typography>
+                <IconButton onClick={this.closeMenu.bind(this)} size="small">
+                    <MenuIcon visibility={isMobile ? 'visible' : 'hidden'} />
+                </IconButton>
                 <IconButton onClick={this.handleMenuClick.bind(this)} size="small">
                     <MoreVertIcon />
                 </IconButton>
                 {this.menu}
             </div>
         )
+    }
+
+    closeMenu = (event: React.MouseEvent<HTMLElement>): void => {
+        uiStore.setControlPaneOpen(false)
     }
 
     handleMenuClick = (event: React.MouseEvent<HTMLElement>): void => {
@@ -419,13 +428,33 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
 
     get salaryFilter(): JSX.Element {
         const t = translationStore.t
+        const cs = this.props.controlStore!
+        const salaryMin = cs.salaryThresholdMin
+        const salaryMax = cs.salaryThresholdMax
+
+        const slider = (
+            <Slider
+                style={{ width: '90%', minWidth: '200px' }}
+                value={[salaryMin, salaryMax]}
+                min={0}
+                step={10000}
+                max={500000}
+                onChange={this.handleSalaryThresholdChange.bind(this)}
+                valueLabelDisplay="auto"
+                valueLabelFormat={(value: number) => `${(value / 1000).toLocaleString()}k`}
+                disableSwap
+                color="secondary"
+            />
+        )
+
         return (<div style={{marginBottom: '16px'}}>
             <ControlComponentWrapper
                 title={t.salaryFilterLabel}
-                controlComponent={<Typography variant="body2" style={{ color: '#666', fontSize: '0.85em' }}>{t.salaryFilterHint}</Typography>}
+                controlComponent={slider}
                 isEnabled={this.props.controlStore!.enableSalaryFilter}
                 enable={(event, value) => { this.props.controlStore!.setEnableSalaryFilter(value)}}>
             </ControlComponentWrapper>
+            <Typography variant="body2" style={{ color: '#666', fontSize: '0.85em', marginTop: '10px'}}>{t.salaryFilterHint}</Typography>
         </div>)
     }
 
@@ -437,6 +466,14 @@ class ControlPane extends React.Component<StoreProps, ControlPaneState> {
     handleMaxCompanySizeChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
         const value = event.target.value === '' ? null : parseInt(event.target.value, 10)
         this.props.controlStore!.setCompanySizeFromMax(value)
+    }
+
+    handleSalaryThresholdChange = (_event: Event | React.SyntheticEvent, value: number | number[]): void => {
+        const cs = this.props.controlStore!
+        if (Array.isArray(value) && value.length === 2) {
+            cs.setSalaryThresholdMin(value[0])
+            cs.setSalaryThresholdMax(value[1])
+        }
     }
 
     handleChangesForCountries(event: React.ChangeEvent<unknown>, value: { key: string, label: string }[]): void {

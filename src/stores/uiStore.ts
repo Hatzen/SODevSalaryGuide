@@ -6,6 +6,7 @@ import controlStore from './controlStore'
 import entryStore from './entryStore'
 import { Gender } from '../model/gender'
 import { StatsAccumulator, BoxStats } from './statsAccumulator'
+import { mark, measure } from '../utils/perfLogger'
 
 type ReactionData = {
     years: string[]
@@ -23,6 +24,8 @@ type ReactionData = {
     degrees: string[]
     companySizeFilterActive: boolean
     enableSalaryFilter: boolean
+    salaryThresholdMin: number
+    salaryThresholdMax: number
 }
 
 export class UiStore {
@@ -35,7 +38,6 @@ export class UiStore {
     boxStats: BoxStats | null = null
     private boxAccumulator = new StatsAccumulator()
     private boxStatsYear = -1
-    private isStreaming = false
     private streamCounter = 0
     private readonly flushInterval = 5000
 
@@ -59,7 +61,6 @@ export class UiStore {
             setMobileView: action,
             setControlPaneOpen: action,
             recordStreamEntry: action,
-            finalizeStream: action,
             rebuildBoxStats: action,
         })
 
@@ -97,6 +98,8 @@ export class UiStore {
                     degrees: cs.degrees,
                     companySizeFilterActive: cs.companySizeFilterActive,
                     enableSalaryFilter: cs.enableSalaryFilter,
+                    salaryThresholdMin: cs.salaryThresholdMin,
+                    salaryThresholdMax: cs.salaryThresholdMax,
                     selectedCurrency: cs.selectedCurrency,
                     currencyValuesReady: this.entryStore.currencyValues != null
                 }
@@ -109,9 +112,9 @@ export class UiStore {
                 this.debounceTimer = setTimeout(() => {
                     if (this.latestReactionData) {
                         this.lastFilterUpdateTime = Date.now()
-                        console.log('[DEBUG] UiStore filtering triggered at', new Date(this.lastFilterUpdateTime).toISOString())
-                        this.updateFilteredData()
-                        if (!this.isStreaming) {
+                        console.log('[DEBUG] UiStore filtering triggered at', new Date(this.lastFilterUpdateTime).toISOString(), 'isParsing=', this.entryStore.isParsing)
+                        if (!this.entryStore.isParsing) {
+                            this.updateFilteredData()
                             this.rebuildBoxStats()
                         }
                     }
@@ -126,6 +129,7 @@ export class UiStore {
         const selectedYearNum = parseInt(this.entryStore.selectedYear, 10)
         const parsedData = this.entryStore.parsedDataByYear[selectedYearNum]
         const controlState = this.controlStore.controlState
+        mark('ui-update-filtered-start')
         
         if (parsedData?.resultSet) {
             this.filteredData[selectedYearNum] = [...parsedData.resultSet]
@@ -133,6 +137,9 @@ export class UiStore {
         } else {
             this.filteredData[selectedYearNum] = []
         }
+        
+        const duration = measure('ui-update-filtered', 'ui-update-filtered-start')
+        console.log(`[PERF] updateFilteredData: ${duration.toFixed(0)}ms, results=${this.filteredData[selectedYearNum].length}`)
     }
 
     setMobileView = (value: boolean): void => {
@@ -153,65 +160,60 @@ export class UiStore {
     }
 
     isSalaryInRange(usdValue: number): boolean {
-        return usdValue >= 10000 && usdValue <= 250000
+        return usdValue >= this.controlStore.salaryThresholdMin && usdValue <= this.controlStore.salaryThresholdMax
     }
 
-recordStreamEntry = (entry: SurveyEntry): void => {
-    const year = parseInt(this.entryStore.selectedYear, 10)
-    if (year !== this.boxStatsYear) {
-        this.boxAccumulator.reset()
-        this.boxStatsYear = year
-        this.isStreaming = true
-        this.streamCounter = 0
-    }
-    if (!this.controlStore.controlState.filterByState(entry)) {
-        return
-    }
-    this.boxAccumulator.add(this.convertSalary(entry))
-    this.streamCounter++
-    if (this.streamCounter % this.flushInterval === 0) {
-        this.boxStats = this.boxAccumulator.toBoxStats()
-    }
-}
-
-    finalizeStream = (): void => {
-        this.boxStats = this.boxAccumulator.toBoxStats()
-        this.isStreaming = false
+    recordStreamEntry = (entry: SurveyEntry): void => {
+        const year = parseInt(this.entryStore.selectedYear, 10)
+        if (year !== this.boxStatsYear) {
+            this.boxAccumulator.reset()
+            this.boxStatsYear = year
+            this.streamCounter = 0
+        }
+        this.boxAccumulator.add(this.convertSalary(entry))
+        this.streamCounter++
+        if (this.streamCounter % this.flushInterval === 0) {
+            this.boxStats = this.boxAccumulator.toBoxStats()
+        }
     }
 
     private rebuildBoxStatsRequestId = 0
 
-rebuildBoxStats = (): void => {
-    const year = parseInt(this.entryStore.selectedYear, 10)
-    this.boxAccumulator.reset()
-    this.boxStatsYear = year
-    const parsedData = this.entryStore.parsedDataByYear[year]
-    const controlState = this.controlStore.controlState
-    if (parsedData?.resultSet) {
-        const entries = parsedData.resultSet
-        const chunkSize = 1000
-        let index = 0
-        const requestId = ++this.rebuildBoxStatsRequestId
-        const processChunk = (): void => {
-            if (requestId !== this.rebuildBoxStatsRequestId) return
-            const end = Math.min(index + chunkSize, entries.length)
-            for (let i = index; i < end; i++) {
-                if (controlState.filterByState(entries[i])) {
-                    this.boxAccumulator.add(this.convertSalary(entries[i]))
+    rebuildBoxStats = (): void => {
+        const year = parseInt(this.entryStore.selectedYear, 10)
+        this.boxAccumulator.reset()
+        this.boxStatsYear = year
+        const parsedData = this.entryStore.parsedDataByYear[year]
+        const controlState = this.controlStore.controlState
+        mark('ui-rebuild-boxstats-start')
+        
+        if (parsedData?.resultSet) {
+            const entries = parsedData.resultSet
+            const chunkSize = 1000
+            let index = 0
+            const requestId = ++this.rebuildBoxStatsRequestId
+            const processChunk = (): void => {
+                if (requestId !== this.rebuildBoxStatsRequestId) return
+                const end = Math.min(index + chunkSize, entries.length)
+                for (let i = index; i < end; i++) {
+                    if (controlState.filterByState(entries[i])) {
+                        this.boxAccumulator.add(this.convertSalary(entries[i]))
+                    }
+                }
+                index = end
+                if (index < entries.length) {
+                    requestAnimationFrame(processChunk)
+                } else {
+                    this.boxStats = this.boxAccumulator.toBoxStats()
+                    const duration = measure('ui-rebuild-boxstats', 'ui-rebuild-boxstats-start')
+                    console.log(`[PERF] rebuildBoxStats: ${duration.toFixed(0)}ms, entries=${entries.length}`)
                 }
             }
-            index = end
-            if (index < entries.length) {
-                requestAnimationFrame(processChunk)
-            } else {
-                this.boxStats = this.boxAccumulator.toBoxStats()
-            }
+            requestAnimationFrame(processChunk)
+        } else {
+            this.boxStats = this.boxAccumulator.toBoxStats()
         }
-        requestAnimationFrame(processChunk)
-    } else {
-        this.boxStats = this.boxAccumulator.toBoxStats()
     }
-}
 
     destroy(): void {
         if (this.reactionDisposer) {
@@ -226,4 +228,3 @@ rebuildBoxStats = (): void => {
 export const uiStore = new UiStore(controlStore, entryStore)
 
 entryStore.setStreamSink((entry) => uiStore.recordStreamEntry(entry))
-entryStore.setStreamFinalize(() => uiStore.finalizeStream())
